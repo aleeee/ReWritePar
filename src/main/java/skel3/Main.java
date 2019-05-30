@@ -7,6 +7,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import pattern.skel3.Skel3Lexer;
 import pattern.skel3.Skel3Parser;
 import rewriter.SkelReWriter;
@@ -29,18 +32,21 @@ public class Main {
         ParseTree tree = parser.skeletonProgram();
         Visitor6 visitor3 = new Visitor6();
         SkeletonPatt n =visitor3.visit(tree);
-        System.out.println("n "+ n);
+//        System.out.println("n "+ n);
 //        printTree(n);
 //		display(n);
         NodesVisitor v = new NodesVisitor();
 //        v.visit( n);
 
         n.accept(v);
-        System.out.println("after " + n);
+//        System.out.println("after " + n);
         SkelReWriter reWriter = new SkelReWriter();
         n.refactor(reWriter);
-        System.out.println("refactoring options" + n.getPatterns());
-       n.getChildren().stream().forEach(sk -> System.out.println(sk.getPatterns()));
+//        System.out.println("refactoring options" + n.getPatterns());
+//       n.getChildren().stream().forEach(sk -> System.out.println(sk.getPatterns()));
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().serializeNulls().create();
+        gson.toJson(n);
+        System.out.println(gson);
 //        System.out.println(getMainNode(n));
 //        System.out.println(Util.computeServiceTime(getMainNode(n),0));
     }
