@@ -1,0 +1,3 @@
+a = SEQ (10);
+b = SEQ (20);
+MAIN = PIPE (a,b);

@@ -1,0 +1,13 @@
+SCOL=1
+ASSIGN=2
+OPAR=3
+CPAR=4
+ID=5
+INT=6
+COMMENT=7
+SPACE=8
+OTHER=9
+';'=1
+'='=2
+'('=3
+')'=4
