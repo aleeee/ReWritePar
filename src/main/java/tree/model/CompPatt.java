@@ -102,8 +102,9 @@ public class CompPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-		return "CompPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
-				+ ", serviceTime=" + serviceTime + "]";
+//		return "CompPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
+//				+ ", serviceTime=" + serviceTime + "]";
+		return getLable() +( this.getChildren() != null? this.getChildren().toString():null);
 	}
 	
 

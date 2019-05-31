@@ -117,7 +117,7 @@ public class SkelReWriter implements ReWriter {
 		patterns.add(comp);
 
 //		pipeassoc pipe(D1; pipe(D2;D3)) = pipe(pipe(D1;D2);D3)
-				if (s.getChildren() != null && s.getChildren().size() > 2
+				if (s.getChildren() != null
 						&& s.getChildren().stream().anyMatch(sk -> sk instanceof PipePatt)) {
 
 					PipePatt p0 = (PipePatt) s.getChildren().stream().filter(e -> e instanceof PipePatt).findFirst()
@@ -129,6 +129,8 @@ public class SkelReWriter implements ReWriter {
 							PipePatt pipe0= (PipePatt) s.getChildren().get(index);  
 							SkeletonPatt pat = pipe0.getChildren().get(0);
 							ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
+							ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
+
 							PipePatt outerPipe = new PipePatt("pipe",0);
 							PipePatt innerPipe = new PipePatt("pipe",0);
 							for(int i =1 ; i < pipe0.getChildren().size(); i++) { //start i at 1 because we took the first element to form associative pipe
@@ -136,14 +138,16 @@ public class SkelReWriter implements ReWriter {
 							}
 							innerPipeNodes.addAll(s.getChildren().subList(1, s.getChildren().size()));
 							innerPipe.setChildren(innerPipeNodes);
-							outerPipe.getChildren().add(pat);
-							outerPipe.getChildren().add(innerPipe);
-							
+							outerPipeNodes.add(pat);
+							outerPipeNodes.add(innerPipe);
+							outerPipe.setChildren(outerPipeNodes);
 							patterns.add(outerPipe);
 						}else {
 								PipePatt pipei= (PipePatt) s.getChildren().get(index);  
 								SkeletonPatt pat = pipei.getChildren().get(pipei.getChildren().size()-1); //get the last element of the inner pipe
 								ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
+								ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
+
 								PipePatt outerPipe = new PipePatt("pipe",0);
 								PipePatt innerPipe = new PipePatt("pipe",0);
 								innerPipeNodes.addAll(s.getChildren().subList(0, index));
@@ -151,9 +155,11 @@ public class SkelReWriter implements ReWriter {
 								innerPipe.setChildren(innerPipeNodes);
 								// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
 								
-								outerPipe.getChildren().add(innerPipe);
-								outerPipe.getChildren().addAll(s.getChildren().subList(index+1, s.getChildren().size())); //if there are elements after inner pipe 
-								
+								outerPipeNodes.add(innerPipe);
+								outerPipeNodes.addAll(s.getChildren().subList(index+1, s.getChildren().size())); //if there are elements after inner pipe 
+								outerPipeNodes.add(pat);
+
+								outerPipe.setChildren(outerPipeNodes);
 								patterns.add(outerPipe);
 							}
 					}

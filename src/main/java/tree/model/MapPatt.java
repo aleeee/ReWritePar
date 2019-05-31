@@ -99,8 +99,9 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public String toString() {
-		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
-				+ ", serviceTime=" + serviceTime + "]";
+//		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
+//				+ ", serviceTime=" + serviceTime + "]";
+		return lable + this.getChild() != null? this.getChild().toString():null;
 	}
 
 	
