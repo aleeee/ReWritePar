@@ -36,10 +36,11 @@ public class Main {
 //        v.visit( n);
 
         n.accept(v);
-        System.out.println("after " + n);
+//        System.out.println("after " + n);
         SkelReWriter reWriter = new SkelReWriter();
         n.refactor(reWriter);
-        System.out.println("refactoring options" + n.getPatterns());
+//        System.out.println("refactoring options" + n.getPatterns());
+        n.getPatterns().forEach(p -> System.out.println(p));
 //       n.getChildren().stream().forEach(sk -> System.out.println(sk.getPatterns()));
 //        System.out.println(getMainNode(n));
 //        System.out.println(Util.computeServiceTime(getMainNode(n),0));

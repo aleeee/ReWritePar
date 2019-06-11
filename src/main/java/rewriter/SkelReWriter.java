@@ -3,6 +3,8 @@ package rewriter;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import javax.naming.RefAddr;
+
 import org.antlr.runtime.misc.IntArray;
 
 import tree.model.CompPatt;
@@ -13,39 +15,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 /**
-
- * pipeintro comp(D1;D2)! pipe(D1;D2)
-pipeelim pipe(D1;D2)!comp(D1;D2)
-compassoc comp(D1;comp(D2;D3))$comp(comp(D1;D2);D3)
-pipeassoc pipe(D1; pipe(D2;D3))$ pipe(pipe(D1;D2);D3)
-mapofcomp comp(map(D1);map(D2))!map(comp((D1;D2))
-compofmap map(comp(D1;D2)!comp((map(D1);map(D2))
-mapofpipe pipe(map(D1);map(D2))!map(pipe((D1;D2))
-pipeofmap map(pipe(D1;D2)! pipe((map(D1);map(D2))
-mapelim map(D)!D
-farmelim f arm(D)!D
-farmintro D! f arm(D)
-/***
- * X -> <- farm(x)
-map(pipe(X1,....Xk) -> <- pipe(map(X1),....map(Xk))
-map(comp(X1,....Xk) -> <- comp(map(X1),....map(Xk))
-map(pipe(X1,....Xk) -> <- map(comp(X1,....Xk))
-pipe(map(X1),....map(Xk)) -> <- comp(map(X1),....map(Xk))
- 
-=======
- * pipeintro comp(D1;D2)! pipe(D1;D2) 
- * pipeelim pipe(D1;D2)!comp(D1;D2)
- *  compassoc * comp(D1;comp(D2;D3))=comp(comp(D1;D2);D3) 
- *  pipeassoc pipe(D1; pipe(D2;D3))= pipe(pipe(D1;D2);D3)
- *   mapofcomp comp(map(D1);map(D2))=map(comp((D1;D2))
- * compofmap map(comp(D1;D2)=comp((map(D1);map(D2)) 
- * mapofpipe pipe(map(D1);map(D2))=map(pipe((D1;D2))
- *  pipeofmap map(pipe(D1;D2)=  pipe((map(D1);map(D2)) 
- *  mapelim map(D)!D
- *   farmelim farm(D)!D 
- *   farmintro D! f * arm(D)
  * 
->>>>>>> branch 'master' of https://github.com/aleeee/DslSkelReWriting.git
  * @author me
  *
  */
@@ -88,6 +58,12 @@ public class SkelReWriter implements ReWriter {
 
 		// for each stage
 		// rewrite
+		ArrayList<SkeletonPatt> stages = new ArrayList<SkeletonPatt>();		
+		for(SkeletonPatt skel: s.getChildren()) {
+			 skel.refactor(this);
+			 stages.add(skel);
+		}
+//		stages.forEach(st -> System.out.println(" comp stages" + st.getPatterns()));
 	}
 
 	@Override
@@ -101,6 +77,11 @@ public class SkelReWriter implements ReWriter {
 		farm.setChild(s);
 		patterns.add(farm);
 		// rewrite child
+		SkeletonPatt c = s.getChild();
+		 c.refactor(this);
+		c.getPatterns().forEach(p-> {farm.setChild(p); patterns.add(farm);}); 
+//		System.out.println("farm stages" + c.getPatterns());
+		
 	}
 
 	@Override
@@ -163,13 +144,13 @@ public class SkelReWriter implements ReWriter {
 								patterns.add(outerPipe);
 							}
 					}
-
 			// find index of pipe
 			// if at 0,
 			// get first child of pipe0 as patt0
 			// create pipe (patt0, pipe of the remaining patterns),
 			// if index > 0
 			// create pipe (patt@0, .. 1st element of inner pipe), remaining patterns)
+			
 		}
 		// farm intro
 		FarmPatt farm = new FarmPatt("farm", s.getServiceTime() / n);
@@ -197,7 +178,15 @@ public class SkelReWriter implements ReWriter {
 		// for each stage
 		// rewrite
 		s.setPatterns(patterns);
-		System.out.println("patterns " + patterns);
+		ArrayList<SkeletonPatt> stages = new ArrayList<SkeletonPatt>();		
+		PipePatt pPat = new PipePatt("pipe",0);
+		for(SkeletonPatt skel: s.getChildren()) {
+			 skel.refactor(this);
+			 comp.setChildren(skel.getPatterns());
+			 patterns.add(comp);
+		}
+		s.setPatterns(patterns);
+//		stages.forEach(st -> st.getPatterns());
 	}
 
 	@Override

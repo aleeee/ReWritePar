@@ -102,7 +102,7 @@ public class PipePatt implements SkeletonPatt {
 	public String toString() {
 //		return "PipePatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() + (this.getChildren() != null? this.getChildren().toString():null);
+		return getLable() +" /n    "+ (this.getChildren() != null? this.getChildren().toString():null);
 	}
 
 	

@@ -101,7 +101,7 @@ public class MapPatt  implements SkeletonPatt {
 	public String toString() {
 //		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return lable + this.getChild() != null? this.getChild().toString():null;
+		return lable +" /n    "+ this.getChild() != null? this.getChild().toString():null;
 	}
 
 	
