@@ -2,7 +2,7 @@ package tree.model;
 
 import java.util.ArrayList;
 
-import rewriter.SkelReWriter;
+import rewriter.ReWriter;
 import visitor.NodeVisitor;
 
 public class MapPatt  implements SkeletonPatt {
@@ -23,7 +23,7 @@ public class MapPatt  implements SkeletonPatt {
 
 	}
 	@Override
-	public void refactor(SkelReWriter reWriter) {
+	public void refactor(ReWriter reWriter) {
 		reWriter.reWrite(this);
 	}
 	@Override
@@ -101,7 +101,7 @@ public class MapPatt  implements SkeletonPatt {
 	public String toString() {
 //		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return lable +" /n    "+ this.getChild() != null? this.getChild().toString():null;
+		return lable +" \n    "+ this.getChild() != null? this.getChild().toString():null;
 	}
 
 	

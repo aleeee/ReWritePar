@@ -9,10 +9,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import pattern.skel3.Skel3Lexer;
 import pattern.skel3.Skel3Parser;
-import rewriter.SkelReWriter;
-import tree.model.SeqPatt;
+import rewriter.Refactorer;
 import tree.model.SkeletonPatt;
-import util.Util;
 import visitor.NodesVisitor;
 import visitor.Visitor6;
 public class Main {
@@ -34,13 +32,14 @@ public class Main {
 //		display(n);
         NodesVisitor v = new NodesVisitor();
 //        v.visit( n);
-
         n.accept(v);
 //        System.out.println("after " + n);
-        SkelReWriter reWriter = new SkelReWriter();
+        Refactorer reWriter = new Refactorer();
         n.refactor(reWriter);
 //        System.out.println("refactoring options" + n.getPatterns());
-        n.getPatterns().forEach(p -> System.out.println(p));
+//        n.getPatterns().forEach(p -> System.out.println(p));
+        System.out.println("nodes");
+        n.getChildren().forEach(p-> System.out.println(p.getPatterns()));
 //       n.getChildren().stream().forEach(sk -> System.out.println(sk.getPatterns()));
 //        System.out.println(getMainNode(n));
 //        System.out.println(Util.computeServiceTime(getMainNode(n),0));

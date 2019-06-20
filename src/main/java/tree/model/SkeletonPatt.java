@@ -2,6 +2,7 @@ package tree.model;
 
 import java.util.ArrayList;
 
+import rewriter.ReWriter;
 import rewriter.SkelReWriter;
 import visitor.NodeVisitor;
 
@@ -16,6 +17,6 @@ public interface SkeletonPatt {
 	public String getLable() ;
 	public SkeletonPatt getChild() ;
 	public void accept(NodeVisitor visitor);
-	public void refactor(SkelReWriter reWriter);
+	public void refactor(ReWriter reWriter);
 	public ArrayList<SkeletonPatt> getPatterns();
 }

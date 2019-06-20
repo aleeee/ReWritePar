@@ -2,7 +2,7 @@ package tree.model;
 
 import java.util.ArrayList;
 
-import rewriter.SkelReWriter;
+import rewriter.ReWriter;
 import visitor.NodeVisitor;
 
 public class PipePatt implements SkeletonPatt {
@@ -24,7 +24,7 @@ public class PipePatt implements SkeletonPatt {
 
 	}
 	@Override
-	public void refactor(SkelReWriter reWriter) {
+	public void refactor(ReWriter reWriter) {
 		reWriter.reWrite(this);
 	}
 	@Override
@@ -102,7 +102,7 @@ public class PipePatt implements SkeletonPatt {
 	public String toString() {
 //		return "PipePatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() +" /n    "+ (this.getChildren() != null? this.getChildren().toString():null);
+		return getLable() +" \n    "+ (this.getChildren() != null? this.getChildren().toString():null);
 	}
 
 	

@@ -2,7 +2,7 @@ package tree.model;
 
 import java.util.ArrayList;
 
-import rewriter.SkelReWriter;
+import rewriter.ReWriter;
 import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
@@ -24,7 +24,7 @@ public class SeqPatt implements SkeletonPatt {
 	}
 
 	@Override
-	public void refactor(SkelReWriter reWriter) {
+	public void refactor(ReWriter reWriter) {
 		reWriter.reWrite(this);
 	}
 

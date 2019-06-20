@@ -19,7 +19,7 @@ import tree.model.SkeletonPatt;
  * @author me
  *
  */
-public class SkelReWriter implements ReWriter {
+public class Refactorer implements ReWriter {
 	private int n = 4;
 
 	@Override
@@ -58,11 +58,11 @@ public class SkelReWriter implements ReWriter {
 
 		// for each stage
 		// rewrite
-		ArrayList<SkeletonPatt> stages = new ArrayList<SkeletonPatt>();		
-		for(SkeletonPatt skel: s.getChildren()) {
-			 skel.refactor(this);
-			 stages.add(skel);
-		}
+//		ArrayList<SkeletonPatt> stages = new ArrayList<SkeletonPatt>();		
+//		for(SkeletonPatt skel: s.getChildren()) {
+//			 skel.refactor(this);
+//			 stages.add(skel);
+//		}
 //		stages.forEach(st -> System.out.println(" comp stages" + st.getPatterns()));
 	}
 
@@ -77,9 +77,9 @@ public class SkelReWriter implements ReWriter {
 		farm.setChild(s);
 		patterns.add(farm);
 		// rewrite child
-		SkeletonPatt c = s.getChild();
-		 c.refactor(this);
-		c.getPatterns().forEach(p-> {farm.setChild(p); patterns.add(farm);}); 
+//		SkeletonPatt c = s.getChild();
+//		 c.refactor(this);
+//		c.getPatterns().forEach(p-> {farm.setChild(p); patterns.add(farm);}); 
 //		System.out.println("farm stages" + c.getPatterns());
 		
 	}
@@ -179,13 +179,14 @@ public class SkelReWriter implements ReWriter {
 		// rewrite
 		s.setPatterns(patterns);
 		ArrayList<SkeletonPatt> stages = new ArrayList<SkeletonPatt>();		
-		PipePatt pPat = new PipePatt("pipe",0);
+//		PipePatt pPat = new PipePatt("pipe",0);
 		for(SkeletonPatt skel: s.getChildren()) {
 			 skel.refactor(this);
-			 comp.setChildren(skel.getPatterns());
-			 patterns.add(comp);
+			 System.out.println("skel patterns "+skel+" p " + skel.getPatterns());
+//			 comp.setChildren(skel.getPatterns());
+//			 patterns.add(comp);
 		}
-		s.setPatterns(patterns);
+//		s.setPatterns(patterns);
 //		stages.forEach(st -> st.getPatterns());
 	}
 
