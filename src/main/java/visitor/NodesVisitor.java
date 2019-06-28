@@ -18,22 +18,22 @@ public class NodesVisitor implements NodeVisitor {
 
 	@Override
 	public void visit(SeqPatt s) {
-		System.out.println("v " +s);
-		SkeletonPatt c = s.getChild();
-		if(c != null)
-			c.accept(this);
-		if(s.getChildren() != null)
-			s.getChildren().forEach(cl -> { if(cl != null) { cl.accept(this);}});
+//		System.out.println("v " +s);		
 		
 	}
 	@Override
 	public void visit(CompPatt s) {
-		System.out.println(s);
+//		System.out.println("comp");
 		SkeletonPatt c = s.getChild();
+		double sum=0;
+		double ts=0;
 		if(c != null)
 			c.accept(this);
-		if(s.getChildren() != null)
+		if(s.getChildren() != null) {
 			s.getChildren().forEach(cl -> { if(cl != null) { cl.accept(this);}});
+			sum = s.getChildren().parallelStream().reduce(ts,(output,sk) -> output+ sk.getServiceTime(),(a,b) -> a+b);
+		}
+		s.setServiceTime(sum);
 //		get children
 //		list<Node> 
 //		for each Node
@@ -44,23 +44,23 @@ public class NodesVisitor implements NodeVisitor {
 	}
 	@Override
 	public void visit(FarmPatt s) {
-		System.out.println("farm "+s);
+//		System.out.println("farm "+s);
 		SkeletonPatt c = s.getChild();
 		if(c != null){
 			c.accept(this);
-			s.setServiceTime(c.serviceTime()/n);
+			s.setServiceTime(c.getServiceTime()/n);
 		}
 	}
 	@Override
 	public void visit(PipePatt s) {
-		System.out.println("pipe "+s);
-		long serviceTime = 0;
-		long sum=0;
+//		System.out.println("pipe "+s);
+		double serviceTime = 0;
+		double sum=0;
 		if(s.getChildren() != null){
 			s.getChildren().forEach(cl -> {
 				if(cl != null) { cl.accept(this); }});
 //			sum = s.getChildren().parallelStream().reduce(serviceTime,(output,sk) -> output+ sk.serviceTime(),(a,b) -> a+b);
-			serviceTime = s.getChildren().parallelStream().mapToLong(SkeletonPatt::serviceTime)
+			serviceTime = s.getChildren().parallelStream().mapToDouble(SkeletonPatt::getServiceTime)
 					.reduce(0 , (c1,c2) -> c1 > c2 ? c1:c2);
 
 		}
@@ -68,7 +68,11 @@ public class NodesVisitor implements NodeVisitor {
 	}
 	@Override
 	public void visit(MapPatt s) {
-		System.out.println(s);
+		SkeletonPatt c = s.getChild();
+		if(c != null){
+			c.accept(this);
+			s.setServiceTime(c.getServiceTime()/n);
+		}
 	}	
 
 }

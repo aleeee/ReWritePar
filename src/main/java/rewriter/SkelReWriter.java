@@ -26,11 +26,11 @@ public class SkelReWriter implements ReWriter {
 	public void reWrite(SeqPatt s) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
 		// farm intro
-		FarmPatt farm = new FarmPatt("farm", s.serviceTime() / n);
+		FarmPatt farm = new FarmPatt("farm", s.getServiceTime() / n);
 		farm.setChild(s);
 		patterns.add(farm);
 		// map intro
-		MapPatt map = new MapPatt("map", s.serviceTime() / n);
+		MapPatt map = new MapPatt("map", s.getServiceTime() / n);
 		map.setChild(s);
 		patterns.add(map);
 		s.setPatterns(patterns);
@@ -43,7 +43,7 @@ public class SkelReWriter implements ReWriter {
 		// pipe intro
 		PipePatt pipe = new PipePatt("pipe",
 				s.getChildren() != null
-						? (s.getChildren().stream().mapToLong(SkeletonPatt::serviceTime).reduce(0,
+						? (s.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0,
 								(c1, c2) -> c1 > c2 ? c1 : c2))
 						: 0);
 		pipe.setChildren(s.getChildren());
@@ -92,7 +92,7 @@ public class SkelReWriter implements ReWriter {
 //		pipe(D1;D2) = comp(D1;D2)
 		CompPatt comp = new CompPatt("comp",
 				(s.getChildren() != null
-						? s.getChildren().stream().mapToLong(SkeletonPatt::serviceTime).reduce(0, (c1, c2) -> c1 + c2)
+						? s.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2)
 						: 0));
 		comp.setChildren(s.getChildren());
 		patterns.add(comp);
@@ -168,7 +168,7 @@ public class SkelReWriter implements ReWriter {
 					.map(p -> p.getChild()).collect(Collectors.toList());
 			MapPatt map = new MapPatt("map", s.getServiceTime() / n);
 
-			PipePatt piMap = new PipePatt(s.getLable(), listOfChildrens.stream().mapToLong(SkeletonPatt::serviceTime)
+			PipePatt piMap = new PipePatt(s.getLable(), listOfChildrens.stream().mapToDouble(SkeletonPatt::getServiceTime)
 					.reduce(0, (c1, c2) -> c1 > c2 ? c1 : c2));
 
 			piMap.setChildren(listOfChildrens);
@@ -201,7 +201,7 @@ public class SkelReWriter implements ReWriter {
 			CompPatt c = (CompPatt) s.getChild();
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 			for (SkeletonPatt sk : c.getChildren()) {
-				MapPatt m = new MapPatt("map", sk.serviceTime() / n);
+				MapPatt m = new MapPatt("map", sk.getServiceTime() / n);
 				m.setChild(sk);
 				nodes.add(m);
 			}
@@ -214,7 +214,7 @@ public class SkelReWriter implements ReWriter {
 			PipePatt p = (PipePatt) s.getChild();
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 			for (SkeletonPatt sk : p.getChildren()) {
-				MapPatt m = new MapPatt("map", sk.serviceTime() / n);
+				MapPatt m = new MapPatt("map", sk.getServiceTime() / n);
 				m.setChild(sk);
 				nodes.add(m);
 			}

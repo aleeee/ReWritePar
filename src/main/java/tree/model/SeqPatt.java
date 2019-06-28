@@ -3,6 +3,7 @@ package tree.model;
 import java.util.ArrayList;
 
 import rewriter.ReWriter;
+import util.Util;
 import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
@@ -10,10 +11,10 @@ public class SeqPatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	long serviceTime;
+	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 
-	public SeqPatt(long serviceTime) {
+	public SeqPatt(double serviceTime) {
 		this.serviceTime = serviceTime;
 	}
 
@@ -35,18 +36,19 @@ public class SeqPatt implements SkeletonPatt {
 	}
 
 	@Override
-	public long serviceTime() {
-		return serviceTime;
+	public void calculateServiceTime() {
+//		this.serviceTime=this.getServiceTime();
+
 	}
 
 	@Override
-	public long completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setServiceTime(long ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime = ts;
 
 	}
@@ -74,7 +76,7 @@ public class SeqPatt implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public long getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -103,7 +105,13 @@ public class SeqPatt implements SkeletonPatt {
 //		return "SeqPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
 		
-		return lable ;
+		return lable +" , " +getServiceTime();
+	}
+
+	@Override
+	public void setReWriteNodes(boolean flag) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

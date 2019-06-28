@@ -3,6 +3,7 @@ package tree.model;
 import java.util.ArrayList;
 
 import rewriter.ReWriter;
+import util.Util;
 import visitor.NodeVisitor;
 
 public class MapPatt  implements SkeletonPatt {
@@ -10,9 +11,11 @@ public class MapPatt  implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	long serviceTime;
+	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
-	public MapPatt(String lable, long serviceTime) {
+	boolean reWriteNodes;
+	
+	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
 		this.serviceTime = serviceTime;
@@ -33,13 +36,13 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public long serviceTime() {
-		// TODO Auto-generated method stub
-		return serviceTime;
+	public void calculateServiceTime() {
+		this.serviceTime=Util.getServiceTime(this);
+
 	}
 
 	@Override
-	public long completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -47,7 +50,7 @@ public class MapPatt  implements SkeletonPatt {
 
 
 	@Override
-	public void setServiceTime(long ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime=ts;
 		
 	}
@@ -75,7 +78,7 @@ public class MapPatt  implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public long getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -97,11 +100,17 @@ public class MapPatt  implements SkeletonPatt {
 	public void setPatterns(ArrayList<SkeletonPatt> patterns) {
 		this.patterns = patterns;
 	}
+	public boolean reWriteNodes() {
+		return reWriteNodes;
+	}
+	public void setReWriteNodes(boolean reWriteNodes) {
+		this.reWriteNodes = reWriteNodes;
+	}
 	@Override
 	public String toString() {
 //		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return lable +" \n    "+ this.getChild() != null? this.getChild().toString():null;
+		return lable +" ( "+ this.getChild() != null? this.getChild().toString() +" ) " :null;
 	}
 
 	
