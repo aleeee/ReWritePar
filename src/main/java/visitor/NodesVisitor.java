@@ -24,11 +24,8 @@ public class NodesVisitor implements NodeVisitor {
 	@Override
 	public void visit(CompPatt s) {
 //		System.out.println("comp");
-		SkeletonPatt c = s.getChild();
 		double sum=0;
-		double ts=0;
-		if(c != null)
-			c.accept(this);
+		double ts=0;		
 		if(s.getChildren() != null) {
 			s.getChildren().forEach(cl -> { if(cl != null) { cl.accept(this);}});
 			sum = s.getChildren().parallelStream().reduce(ts,(output,sk) -> output+ sk.getServiceTime(),(a,b) -> a+b);

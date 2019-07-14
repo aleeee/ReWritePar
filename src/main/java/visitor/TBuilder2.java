@@ -1,29 +1,26 @@
 package visitor;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import pattern.skel3.Skel3BaseVisitor;
-import pattern.skel3.Skel3Parser.AssignmentContext;
-import pattern.skel3.Skel3Parser.BlockContext;
-import pattern.skel3.Skel3Parser.CompositionContext;
-import pattern.skel3.Skel3Parser.DataParallelPatternContext;
-import pattern.skel3.Skel3Parser.FarmSkelContext;
-import pattern.skel3.Skel3Parser.MainContext;
-import pattern.skel3.Skel3Parser.MainExprContext;
-import pattern.skel3.Skel3Parser.MapSkelContext;
-import pattern.skel3.Skel3Parser.PatternExprContext;
-import pattern.skel3.Skel3Parser.PipeSkelContext;
-import pattern.skel3.Skel3Parser.ProgramPartContext;
-import pattern.skel3.Skel3Parser.SequenceContext;
-import pattern.skel3.Skel3Parser.SequentialContext;
-import pattern.skel3.Skel3Parser.SkeletonProgramContext;
-import pattern.skel3.Skel3Parser.StagesContext;
-import pattern.skel3.Skel3Parser.StatementContext;
-import pattern.skel3.Skel3Parser.StreamPatternContext;
-import pattern.skel3.Skel3Parser.VarTypeContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import pattern.skel4.Skel4BaseVisitor;
+import pattern.skel4.Skel4Parser.AssignmentContext;
+import pattern.skel4.Skel4Parser.BlockContext;
+import pattern.skel4.Skel4Parser.CompositionContext;
+import pattern.skel4.Skel4Parser.FarmSkelContext;
+import pattern.skel4.Skel4Parser.MainContext;
+import pattern.skel4.Skel4Parser.MainExprContext;
+import pattern.skel4.Skel4Parser.MapSkelContext;
+import pattern.skel4.Skel4Parser.PatternExprContext;
+import pattern.skel4.Skel4Parser.PipeSkelContext;
+import pattern.skel4.Skel4Parser.ProgramPartContext;
+import pattern.skel4.Skel4Parser.SequenceContext;
+import pattern.skel4.Skel4Parser.SkeletonProgramContext;
+import pattern.skel4.Skel4Parser.StagesContext;
+import pattern.skel4.Skel4Parser.StatementContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
@@ -32,7 +29,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 import util.Util;
 
-public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
+public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	Map<String,SkeletonPatt> variables = new HashMap<>();
 
 	@Override
@@ -57,23 +54,19 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitStatement(StatementContext ctx) {
-		return visit(ctx.assignment());
-		
+		// TODO Auto-generated method stub
+		return super.visitStatement(ctx);
 	}
 
 	@Override
 	public SkeletonPatt visitMainExpr(MainExprContext ctx) {
-//		SeqPatt root = new SeqPatt(0);
 		SkeletonPatt  main = visit(ctx.expr);
-//		root.setChild(main);
-//		System.out.println("root main " + main.toString() );
 		return main;
-		
 	}
 
 	@Override
 	public SkeletonPatt visitAssignment(AssignmentContext ctx) {
-//		variables.put(ctx.varName.getText(),Util.getType(ctx));
+		variables.put(ctx.varName.getText(),Util.getType(ctx));
 		return super.visitAssignment(ctx);
 	}
 
@@ -95,29 +88,7 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 		}
 	}
 
-	@Override
-	public SkeletonPatt visitVarType(VarTypeContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitVarType(ctx);
-	}
-
-	@Override
-	public SkeletonPatt visitStreamPattern(StreamPatternContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitStreamPattern(ctx);
-	}
-
-	@Override
-	public SkeletonPatt visitSequential(SequentialContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitSequential(ctx);
-	}
-
-	@Override
-	public SkeletonPatt visitDataParallelPattern(DataParallelPatternContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitDataParallelPattern(ctx);
-	}
+	
 
 	@Override
 	public SkeletonPatt visitMain(MainContext ctx) {
@@ -125,12 +96,7 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 		return super.visitMain(ctx);
 	}
 
-	@Override
-	public SkeletonPatt visitBlock(BlockContext ctx) {
-		SkeletonPatt block = visit(ctx.expr);
-		return block;
-		
-	}
+	
 
 	@Override
 	public SkeletonPatt visitSequence(SequenceContext ctx) {
@@ -141,7 +107,7 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 	@Override
 	public SkeletonPatt visitComposition(CompositionContext ctx) {
 		CompPatt comp = new CompPatt("comp",0);
-		comp.setChild(visit(ctx.block()));
+		comp.setChildren(visit(ctx.stages()).getChildren());
 		return comp;
 	}
 
@@ -149,18 +115,13 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitPipeSkel(PipeSkelContext ctx) {
 		PipePatt pipe = new PipePatt("pipe",0);
 		pipe.setChildren(visit(ctx.stages()).getChildren());
-//		pipe.setChild(stages);
-//		pipe.setChildren(stages.getChildren());
 		return pipe;
 	}
 
 	@Override
 	public SkeletonPatt visitFarmSkel(FarmSkelContext ctx) {
 		FarmPatt farm = new FarmPatt("farm",0);
-		if(ctx.block().getChildCount() >1) {
-			System.out.println("farm can not have more than one function");
-			System.exit(1);
-		}
+		
 		farm.setChild(visit(ctx.block()));
 		return farm;
 	}
@@ -181,6 +142,11 @@ public class Visitor6 extends Skel3BaseVisitor<SkeletonPatt>{
 		return stages;
 	}
 
-	
+	@Override
+	public SkeletonPatt visitBlock(BlockContext ctx) {
+		// TODO Auto-generated method stub
+		return visit(ctx.expr);
+	}
 
+	
 }

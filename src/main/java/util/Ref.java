@@ -64,7 +64,22 @@ public class Ref {
 				skel.setReWriteNodes(false);
 				skel.refactor(reWriter);
 			}
+			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(comp);
+			for (List<SkeletonPatt> stage : stages) {
+				CompPatt compPat = new CompPatt("comp", 0);
+				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
+				patterns.add(compPat);
+
+				PipePatt pipePat = new PipePatt("pipe", 0);
+				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
+				patterns.add(pipePat);
+
+				FarmPatt farmPat = new FarmPatt("farm", 0);
+				farmPat.setChild(pipePat);
+				patterns.add(farmPat);
+			}
 		}
+		comp.setPatterns(patterns);
 		return comp;
 	}
 
@@ -76,7 +91,10 @@ public class Ref {
 	 */
 	public static FarmPatt refactor(FarmPatt farm) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
-
+		if(farm.getChildren() != null) {
+			System.out.println("Farm can can not have stages ");
+			System.exit(1);
+		}
 		// farm elim
 		patterns.add(farm.getChild());
 		// farm intro
@@ -87,6 +105,12 @@ public class Ref {
 		if (farm.reWriteNodes()) {
 			farm.getChild().setReWriteNodes(false);
 			farm.getChild().refactor(reWriter);
+			
+			for (SkeletonPatt p : farm.getChild().getPatterns()) {
+				FarmPatt fp = new FarmPatt("farm", 0);
+				fp.setChild(p);
+				patterns.add(fp);
+			}
 		}
 		farm.setPatterns(patterns);
 		return farm;
@@ -214,6 +238,10 @@ public class Ref {
 	 */
 	public static MapPatt refactor(MapPatt map) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		if(map.getChildren() != null) {
+			System.out.println("Map can can not have stages ");
+			System.exit(1);
+		}
 //		mapelim map(D)!D
 		patterns.add(map.getChild());
 

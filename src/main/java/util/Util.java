@@ -10,7 +10,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-import pattern.skel3.Skel3Parser.AssignmentContext;
+import pattern.skel4.Skel4Parser.AssignmentContext;
+import pattern.skel4.Skel4Parser.PatternExprContext;
+import pattern.skel4.Skel4Parser.SequenceContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
@@ -21,11 +23,10 @@ import tree.model.SkeletonPatt;
 public class Util {
 	static int n= 4;
 	public static SkeletonPatt getType(AssignmentContext ctx) {
-		
-		switch (ctx.varType().getText()) {
+		String type = ctx.expr.sType.getText();
+		switch (type) {
 		case "Seq":
-//			return new Seq(ctx.expr.se);
-			SeqPatt s = new SeqPatt(Double.parseDouble(ctx.expr.seq.sec.ts.getText()));
+			SeqPatt s = new SeqPatt(Double.parseDouble(ctx.expr.sequence().ts.getText()));
 			s.setLable(ctx.varName.getText());
 			return s;
 
