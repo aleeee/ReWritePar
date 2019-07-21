@@ -13,7 +13,7 @@ import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
-public class Ref {
+public class Ref2 {
 	private static RW reWriter = new RW();
 
 	/**
@@ -24,16 +24,14 @@ public class Ref {
 	 */
 	public static SeqPatt refactor(SeqPatt seq) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
+		fc.add(seq);
 		// farm intro
 		FarmPatt farm = new FarmPatt("farm", 0);
-		farm.setChild(seq);
+		farm.setChildren(fc);
+		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		patterns.add(farm);
-		// map intro
-		MapPatt map = new MapPatt("map", 0);
-		map.setChild(seq);
-		patterns.add(map);
-		seq.setPatterns(patterns);
-
+		
 		return seq;
 	}
 
@@ -45,15 +43,20 @@ public class Ref {
 	 */
 	public static CompPatt refactor(CompPatt comp) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
+
 		// pipe intro
 		PipePatt pipe = new PipePatt("pipe", 0);
 		pipe.setChildren(comp.getChildren());
+		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
 		patterns.add(pipe);
 		
 
 		// farm intro
 		FarmPatt farm = new FarmPatt("farm", 0);
-		farm.setChild(comp);
+		fc.add(comp);
+		farm.setChildren(fc);
+		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		patterns.add(farm);
 
 		// map intro
@@ -69,14 +72,19 @@ public class Ref {
 			for (List<SkeletonPatt> stage : stages) {
 				CompPatt compPat = new CompPatt("comp", 0);
 				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
+				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
 				patterns.add(compPat);
 
 				PipePatt pipePat = new PipePatt("pipe", 0);
 				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
+				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
 				patterns.add(pipePat);
 
 				FarmPatt farmPat = new FarmPatt("farm", 0);
-				farmPat.setChild(pipePat);
+				fc = new ArrayList<SkeletonPatt>();
+				fc.add(pipePat);
+				farmPat.setChildren(fc);
+				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
 				patterns.add(farmPat);
 			}
 		}
@@ -92,15 +100,17 @@ public class Ref {
 	 */
 	public static FarmPatt refactor(FarmPatt farm) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
-		if(farm.getChildren() != null) {
-			System.out.println("Farm can can not have stages ");
-			System.exit(1);
-		}
+		
 		// farm elim
-		patterns.add(farm.getChild());
+		SkeletonPatt c = farm.getChild();
+		c.setReWritingRule(ReWritingRules.FARM_ELIM);
+		patterns.add(c);
 		// farm intro
 		FarmPatt farmPat = new FarmPatt("farm", 0);
-		farmPat.setChild(farm);
+		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
+		fc.add(farm);
+		farmPat.setChildren(fc);
+		farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
 		patterns.add(farmPat);
 
 		if (farm.reWriteNodes()) {
@@ -109,7 +119,10 @@ public class Ref {
 			
 			for (SkeletonPatt p : farm.getChild().getPatterns()) {
 				FarmPatt fp = new FarmPatt("farm", 0);
-				fp.setChild(p);
+				 fc = new  ArrayList<SkeletonPatt>();
+				fc.add(p);
+				fp.setChildren(fc);
+				fp.setReWritingRule(ReWritingRules.FARM_INTRO);
 				patterns.add(fp);
 			}
 		}
@@ -129,12 +142,16 @@ public class Ref {
 
 		// farm intro
 		FarmPatt farm = new FarmPatt("farm", 0);
-		farm.setChild(pipe);
+		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
+		fc.add(pipe);
+		farm.setChildren(fc);
+		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		patterns.add(farm);
 
 		// pipe elim
 		CompPatt comp = new CompPatt("comp", 0);
 		comp.setChildren(pipe.getChildren());
+		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
 		patterns.add(comp);
 
 		// pipeassoc pipe(D1; pipe(D2;D3)) = pipe(pipe(D1;D2);D3)
@@ -162,6 +179,7 @@ public class Ref {
 					outerPipeNodes.add(pat);
 					outerPipeNodes.add(innerPipe);
 					outerPipe.setChildren(outerPipeNodes);
+					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
 					patterns.add(outerPipe);
 				} else {
 					PipePatt pipei = (PipePatt) pipe.getChildren().get(index);
@@ -182,6 +200,7 @@ public class Ref {
 					outerPipeNodes.add(pat);
 
 					outerPipe.setChildren(outerPipeNodes);
+					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
 					patterns.add(outerPipe);
 
 				}
@@ -203,6 +222,7 @@ public class Ref {
 
 					piMap.setChildren(listOfChildrens);
 					map.setChild(piMap);
+					piMap.setReWritingRule(ReWritingRules.MAP_DIST);
 					patterns.add(map);
 				}
 		// refactor stages
@@ -216,14 +236,19 @@ public class Ref {
 			for (List<SkeletonPatt> stage : stages) {
 				CompPatt compPat = new CompPatt("comp", 0);
 				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
+				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
 				patterns.add(compPat);
 
 				PipePatt pipePat = new PipePatt("pipe", 0);
 				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
+				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
 				patterns.add(pipePat);
+				 fc = new  ArrayList<SkeletonPatt>();
 
 				FarmPatt farmPat = new FarmPatt("farm", 0);
-				farmPat.setChild(pipePat);
+				fc.add(pipePat);
+				farmPat.setChildren(fc);
+				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
 				patterns.add(farmPat);
 			}
 		}
@@ -259,14 +284,18 @@ public class Ref {
 				nodes.add(m);
 			}
 			pat.setChildren(nodes);
+			pat.setReWritingRule(ReWritingRules.MAP_DIST);
 			patterns.add(pat);
 		}
 
 		// farm intro
-		FarmPatt farm = new FarmPatt("farm", 0);
-		farm.setChild(map);
-		patterns.add(farm);
+		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 
+		FarmPatt farm = new FarmPatt("farm", 0);
+		fc.add(map);
+		farm.setChildren(fc);
+		patterns.add(farm);
+		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		map.setPatterns(patterns);
 
 		if (map.reWriteNodes()) {

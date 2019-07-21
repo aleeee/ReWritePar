@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import rewriter.ReWriter;
 import rewriter.SkelReWriter;
+import util.ReWritingRules;
 import visitor.NodeVisitor;
 
 
@@ -23,4 +24,6 @@ public interface SkeletonPatt {
 	public void setParent(SkeletonPatt parent);
 	public void setChildren(ArrayList<SkeletonPatt> children);
 	void setReWriteNodes(boolean flag);
+	public ReWritingRules getRule();
+	public void setReWritingRule(ReWritingRules rule);
 }

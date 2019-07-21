@@ -121,15 +121,22 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	@Override
 	public SkeletonPatt visitFarmSkel(FarmSkelContext ctx) {
 		FarmPatt farm = new FarmPatt("farm",0);
-		
-		farm.setChild(visit(ctx.block()));
+		ArrayList<SkeletonPatt> s = new ArrayList<SkeletonPatt>();
+		SkeletonPatt p =visit(ctx.block()); 
+		s.add(p);
+		farm.setChildren(s);
+		farm.setChild(p);
 		return farm;
 	}
 
 	@Override
 	public SkeletonPatt visitMapSkel(MapSkelContext ctx) {
 		MapPatt map = new MapPatt("map",0);
-		map.setChild(visit(ctx.block()));
+		ArrayList<SkeletonPatt> s = new ArrayList<SkeletonPatt>();
+		SkeletonPatt p =visit(ctx.block()); 
+		s.add(p);
+		map.setChildren(s);
+		map.setChild(p);
 		return map;
 	}
 

@@ -3,6 +3,7 @@ package tree.model;
 import java.util.ArrayList;
 
 import rewriter.ReWriter;
+import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
 
@@ -14,7 +15,7 @@ public class MapPatt  implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
-	
+	ReWritingRules rule;
 	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
@@ -47,7 +48,16 @@ public class MapPatt  implements SkeletonPatt {
 		return 0;
 	}
 
+	@Override
+	public ReWritingRules getRule() {
+		return rule;
+	}
 
+	@Override
+	public void setReWritingRule(ReWritingRules rule) {
+		this.rule = rule;
+		
+	}
 
 	@Override
 	public void setServiceTime(double ts) {

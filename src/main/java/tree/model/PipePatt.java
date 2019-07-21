@@ -3,6 +3,7 @@ package tree.model;
 import java.util.ArrayList;
 
 import rewriter.ReWriter;
+import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
 
@@ -15,7 +16,7 @@ public class PipePatt implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
-	
+	ReWritingRules rule;
 	public PipePatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
@@ -47,7 +48,16 @@ public class PipePatt implements SkeletonPatt {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	@Override
+	public ReWritingRules getRule() {
+		return rule;
+	}
 
+	@Override
+	public void setReWritingRule(ReWritingRules rule) {
+		this.rule = rule;
+		
+	}
 
 
 	@Override

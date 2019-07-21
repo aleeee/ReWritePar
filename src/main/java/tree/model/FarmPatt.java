@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import rewriter.ReWriter;
 import rewriter.SkelReWriter;
+import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
 
@@ -15,7 +16,7 @@ public class FarmPatt implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
-	
+	ReWritingRules rule;
 	public FarmPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
@@ -70,7 +71,16 @@ public class FarmPatt implements SkeletonPatt {
 	public SkeletonPatt getChild() {
 		return child;
 	}
+	@Override
+	public ReWritingRules getRule() {
+		return rule;
+	}
 
+	@Override
+	public void setReWritingRule(ReWritingRules rule) {
+		this.rule = rule;
+		
+	}
 	public SkeletonPatt getParent() {
 		return parent;
 	}
@@ -116,7 +126,7 @@ public class FarmPatt implements SkeletonPatt {
 	public String toString() {
 //		return "FarmPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() +" "+(this.getChild() != null? " ( " +this.getChild().toString() +" ) ":null);
+		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null);
 	}
 
 }

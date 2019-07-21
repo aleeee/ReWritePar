@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import rewriter.ReWriter;
 import rewriter.SkelReWriter;
+import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
 
@@ -15,7 +16,7 @@ public class CompPatt implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
-	
+	ReWritingRules rule;
 	public CompPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
@@ -31,6 +32,19 @@ public class CompPatt implements SkeletonPatt {
 	@Override
 	public void refactor(ReWriter reWriter) {
 		reWriter.reWrite(this);
+	}
+	
+	
+
+	@Override
+	public ReWritingRules getRule() {
+		return rule;
+	}
+
+	@Override
+	public void setReWritingRule(ReWritingRules rule) {
+		this.rule = rule;
+		
 	}
 
 	@Override
