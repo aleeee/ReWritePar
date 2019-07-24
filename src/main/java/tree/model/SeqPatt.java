@@ -15,6 +15,10 @@ public class SeqPatt implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	ReWritingRules rule;
+	
+	public SeqPatt() {
+		
+	}
 	public SeqPatt(double serviceTime) {
 		this.serviceTime = serviceTime;
 	}

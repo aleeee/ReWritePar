@@ -17,6 +17,10 @@ public class CompPatt implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
+
+	public CompPatt() {
+		
+	}
 	public CompPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;

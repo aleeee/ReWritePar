@@ -1,6 +1,8 @@
 package test;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import org.apache.commons.lang3.SerializationUtils;
 
 import rewriter.RW;
 import rewriter.RW2;
@@ -149,18 +153,12 @@ public class DigraphT2 {
 			List<SkeletonPatt> children = curNode.getChildren();	
 			if (children != null) {
 				for (SkeletonPatt node : children) {
+					node.setParent(curNode);
 					node.refactor(rw);
 					queue.add(node);
 					if (node.getPatterns() != null) {
+						patterns.addAll(node.getPatterns());
 						
-						for(SkeletonPatt p: node.getPatterns()) {
-							ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
-							SkeletonPatt newP = s;
-							sc.addAll(s.getChildren());
-							sc.add(sc.indexOf(node), p);
-							newP.setChildren(sc);
-							patterns.add(newP);
-						}
 					}
 				}
 
@@ -175,4 +173,50 @@ public class DigraphT2 {
 
 		}
 	}
+//	public void bfs(SkeletonPatt s) {
+//		s.refactor(rw);
+//		queue.add(s);
+////		s.visited = true;
+//		List<SkeletonPatt> patterns = new ArrayList<SkeletonPatt>();
+//		patterns.addAll(s.getPatterns());
+//		while (!queue.isEmpty()) {
+//			SkeletonPatt curNode = queue.remove();
+//			this.add(curNode);
+//			List<SkeletonPatt> children = curNode.getChildren();	
+//			if (children != null) {
+//				for (SkeletonPatt node : children) {
+//					node.setParent(curNode);
+//					node.refactor(rw);
+//					queue.add(node);
+//					if (node.getPatterns() != null) {
+//						
+//						for(SkeletonPatt p: node.getPatterns()) {
+//							ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
+//							SkeletonPatt newP= null;
+//							try {
+//								newP = (SkeletonPatt) SerializationUtils.clone(s);
+//							} catch (IllegalArgumentException
+//									| SecurityException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//							sc.addAll(s.getChildren());
+//							sc.set(sc.indexOf(node), p);
+//							newP.setChildren(sc);
+//							patterns.add(newP);
+//						}
+//					}
+//				}
+//
+//			}
+//		}
+//		if (patterns != null) {
+//			for (SkeletonPatt pat : patterns) {
+////				System.out.println("before : " + neighbors);
+//				this.add(s, pat, pat.getRule());
+////				System.out.println("after : " + neighbors);
+//			}
+//
+//		}
+//	}
 }

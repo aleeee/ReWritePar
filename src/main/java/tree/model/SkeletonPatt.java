@@ -1,5 +1,6 @@
 package tree.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import rewriter.ReWriter;
@@ -9,7 +10,7 @@ import visitor.NodeVisitor;
 
 
 
-public interface SkeletonPatt {
+public interface SkeletonPatt extends Serializable{
 	int parallelismDegree();
 	void calculateServiceTime();
 	double completionTime();

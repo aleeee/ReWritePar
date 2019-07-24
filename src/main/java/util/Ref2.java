@@ -31,7 +31,9 @@ public class Ref2 {
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		patterns.add(farm);
-		
+		seq.setPatterns(patterns);
+		if(seq.getParent() != null) 
+		seq.setPatterns(Util.createTreeNode(seq.getParent(), seq));
 		return seq;
 	}
 
@@ -89,6 +91,8 @@ public class Ref2 {
 			}
 		}
 		comp.setPatterns(patterns);
+		if(comp.getParent() != null) 
+		comp.setPatterns(Util.createTreeNode(comp.getParent(), comp));
 		return comp;
 	}
 
@@ -102,7 +106,7 @@ public class Ref2 {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
 		
 		// farm elim
-		SkeletonPatt c = farm.getChild();
+		SkeletonPatt c = farm.getChildren().get(0);
 		c.setReWritingRule(ReWritingRules.FARM_ELIM);
 		patterns.add(c);
 		// farm intro
@@ -114,10 +118,10 @@ public class Ref2 {
 		patterns.add(farmPat);
 
 		if (farm.reWriteNodes()) {
-			farm.getChild().setReWriteNodes(false);
-			farm.getChild().refactor(reWriter);
+			farm.getChildren().get(0).setReWriteNodes(false);
+			farm.getChildren().get(0).refactor(reWriter);
 			
-			for (SkeletonPatt p : farm.getChild().getPatterns()) {
+			for (SkeletonPatt p : farm.getChildren().get(0).getPatterns()) {
 				FarmPatt fp = new FarmPatt("farm", 0);
 				 fc = new  ArrayList<SkeletonPatt>();
 				fc.add(p);
@@ -127,6 +131,9 @@ public class Ref2 {
 			}
 		}
 		farm.setPatterns(patterns);
+		if(farm.getParent() != null) 
+		farm.setPatterns(Util.createTreeNode(farm.getParent(), farm));
+
 		return farm;
 	}
 
@@ -214,7 +221,7 @@ public class Ref2 {
 				if (pipe.getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
 					System.out.println("maps");
 					ArrayList<SkeletonPatt> listOfChildrens = (ArrayList<SkeletonPatt>) pipe.getChildren().stream()
-							.map(p -> p.getChild()).collect(Collectors.toList());
+							.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
 					MapPatt map = new MapPatt("map", 0);
 
 					PipePatt piMap = new PipePatt(pipe.getLable(), listOfChildrens.stream().mapToDouble(SkeletonPatt::getServiceTime)
@@ -253,6 +260,9 @@ public class Ref2 {
 			}
 		}
 		pipe.setPatterns(patterns);
+		if(pipe.getParent() != null) 
+		pipe.setPatterns(Util.createTreeNode(pipe.getParent(), pipe));
+
 		return pipe;
 	}
 
@@ -269,14 +279,14 @@ public class Ref2 {
 			System.exit(1);
 		}
 //		mapelim map(D)!D
-		patterns.add(map.getChild());
+		patterns.add(map.getChildren().get(0));
 
 		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
 		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
 
-		if (map.getChild() instanceof CompPatt) {
-			CompPatt c = (CompPatt) map.getChild();
-			SkeletonPatt pat = map.getChild();
+		if (map.getChildren().get(0) instanceof CompPatt) {
+			CompPatt c = (CompPatt) map.getChildren().get(0);
+			SkeletonPatt pat = map.getChildren().get(0);
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 			for (SkeletonPatt sk : pat.getChildren()) {
 				MapPatt m = new MapPatt("map", 0);
@@ -299,9 +309,11 @@ public class Ref2 {
 		map.setPatterns(patterns);
 
 		if (map.reWriteNodes()) {
-			map.getChild().setReWriteNodes(false);
-			map.getChild().refactor(reWriter);
+			map.getChildren().get(0).setReWriteNodes(false);
+			map.getChildren().get(0).refactor(reWriter);
 		}
+		if(map.getParent() != null) 
+		map.setPatterns(Util.createTreeNode(map.getParent(), map));
 
 		return map;
 	}

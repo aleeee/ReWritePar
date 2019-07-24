@@ -16,6 +16,10 @@ public class MapPatt  implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
+
+	public MapPatt() {
+		
+	}
 	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;

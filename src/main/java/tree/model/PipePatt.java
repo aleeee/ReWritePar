@@ -17,6 +17,10 @@ public class PipePatt implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
+
+	public PipePatt() {
+		
+	}
 	public PipePatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
