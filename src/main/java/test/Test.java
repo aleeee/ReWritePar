@@ -21,8 +21,9 @@ import tree.model.SkeletonPatt;
 
 public class Test {
 	public static void main(String args[]) {
-		cartesianProduct();
-		cp();
+//		cartesianProduct();
+//		cp();
+		streamTest();
 	}
 	private static void cartesianProduct() {
 		Set<Character> first = ImmutableSet.of('a', 'b');
@@ -62,5 +63,10 @@ public class Test {
 		System.out.println(stage1);
 		
 		
+	}
+	private static void streamTest() {
+		System.out.println("testing null stream");
+		List<String> sts = null;
+		sts.stream().findAny().ifPresent(s -> System.out.println(s.toUpperCase()));
 	}
 }

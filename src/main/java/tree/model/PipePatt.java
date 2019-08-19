@@ -19,7 +19,7 @@ public class PipePatt implements SkeletonPatt {
 	ReWritingRules rule;
 
 	public PipePatt() {
-		
+		this.lable= "pipe";
 	}
 	public PipePatt(String lable, double serviceTime) {
 		super();
@@ -126,6 +126,35 @@ public class PipePatt implements SkeletonPatt {
 //		return "PipePatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
 		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null);
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((children == null) ? 0 : children.hashCode());
+		result = prime * result + ((lable == null) ? 0 : lable.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PipePatt other = (PipePatt) obj;
+		if (children == null) {
+			if (other.children != null)
+				return false;
+		} else if (!children.equals(other.children))
+			return false;
+		if (lable == null) {
+			if (other.lable != null)
+				return false;
+		} else if (!lable.equals(other.lable))
+			return false;
+		return true;
 	}
 
 	

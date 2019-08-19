@@ -43,7 +43,7 @@ public class DigraphT2 {
 
 		@Override
 		public String toString() {
-			return "Edge [vertex=" + vertex + ", rule=" + vertex.getRule() + "]";
+			return "Edge [V=" + vertex + ", rule=" + vertex.getRule() + "]";
 		}
 
 	}
@@ -64,6 +64,14 @@ public class DigraphT2 {
 		for (SkeletonPatt v : neighbors.keySet())
 			s.append("\n    " + v + " -> " + neighbors.get(v));
 		return s.toString();
+	}
+
+	public Map<SkeletonPatt, List<Edge>> getNeighbors() {
+		return neighbors;
+	}
+
+	public void setNeighbors(Map<SkeletonPatt, List<Edge>> neighbors) {
+		this.neighbors = neighbors;
 	}
 
 	/**
@@ -142,81 +150,47 @@ public class DigraphT2 {
 	}
 
 	public void bfs(SkeletonPatt s) {
-		s.refactor(rw);
+//		s.refactor(rw);
+		int i = 0;
 		queue.add(s);
-//		s.visited = true;
-		List<SkeletonPatt> patterns = new ArrayList<SkeletonPatt>();
-		patterns.addAll(s.getPatterns());
+		Map<SkeletonPatt,List<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
+		   
 			SkeletonPatt curNode = queue.remove();
+			curNode.refactor(rw);
 			this.add(curNode);
+			patterns.put(curNode, curNode.getPatterns());
+			for(SkeletonPatt sk : curNode.getPatterns()) {
+				if (i++ < 50) queue.add(sk);
+			}
+			
 			List<SkeletonPatt> children = curNode.getChildren();	
 			if (children != null) {
 				for (SkeletonPatt node : children) {
 					node.setParent(curNode);
 					node.refactor(rw);
-					queue.add(node);
+//					queue.add(node);
 					if (node.getPatterns() != null) {
-						patterns.addAll(node.getPatterns());
-						
-					}
+						for(SkeletonPatt sk : node.getPatterns()) {
+							if (i++ < 50) queue.add(sk);
+							}
+						}
+						patterns.get(curNode).addAll(node.getPatterns());
+//						patterns.put(curNode,node.getPatterns());
 				}
-
 			}
+
+			
 		}
 		if (patterns != null) {
-			for (SkeletonPatt pat : patterns) {
-//				System.out.println("before : " + neighbors);
-				this.add(s, pat, pat.getRule());
-//				System.out.println("after : " + neighbors);
+			patterns.entrySet().forEach( e -> {
+				SkeletonPatt k = e.getKey();
+				e.getValue().forEach( v -> {
+					this.add(k, v, v.getRule());
+				});
+			});
 			}
-
-		}
+System.out.println(patterns);
 	}
-//	public void bfs(SkeletonPatt s) {
-//		s.refactor(rw);
-//		queue.add(s);
-////		s.visited = true;
-//		List<SkeletonPatt> patterns = new ArrayList<SkeletonPatt>();
-//		patterns.addAll(s.getPatterns());
-//		while (!queue.isEmpty()) {
-//			SkeletonPatt curNode = queue.remove();
-//			this.add(curNode);
-//			List<SkeletonPatt> children = curNode.getChildren();	
-//			if (children != null) {
-//				for (SkeletonPatt node : children) {
-//					node.setParent(curNode);
-//					node.refactor(rw);
-//					queue.add(node);
-//					if (node.getPatterns() != null) {
-//						
-//						for(SkeletonPatt p: node.getPatterns()) {
-//							ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
-//							SkeletonPatt newP= null;
-//							try {
-//								newP = (SkeletonPatt) SerializationUtils.clone(s);
-//							} catch (IllegalArgumentException
-//									| SecurityException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
-//							sc.addAll(s.getChildren());
-//							sc.set(sc.indexOf(node), p);
-//							newP.setChildren(sc);
-//							patterns.add(newP);
-//						}
-//					}
-//				}
-//
-//			}
-//		}
-//		if (patterns != null) {
-//			for (SkeletonPatt pat : patterns) {
-////				System.out.println("before : " + neighbors);
-//				this.add(s, pat, pat.getRule());
-////				System.out.println("after : " + neighbors);
-//			}
-//
-//		}
-//	}
+
 }

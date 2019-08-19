@@ -1,5 +1,6 @@
 package util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -123,16 +124,23 @@ public class Util {
 
 			SkeletonPatt newP = null;
 			try {
-				newP = (SkeletonPatt) SerializationUtils.clone(parent);
-			} catch (IllegalArgumentException | SecurityException e) {
+				newP = parent.getClass().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(1);
+				e1.printStackTrace();
 			}
+//			try {
+//				newP = (SkeletonPatt) SerializationUtils.clone(parent);
+//			} catch (IllegalArgumentException | SecurityException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				System.exit(1);
+//			}
 			sc.addAll(parent.getChildren());
-			sc.set(sc.indexOf(node), p);
+//			newP.setParent(parent);
 			newP.setChildren(sc);
-
+			newP.getChildren().set(newP.getChildren().indexOf(node), p);
+			newP.setReWritingRule(p.getRule());
 			patterns.add(newP);
 		}
 		return patterns;

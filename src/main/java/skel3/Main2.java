@@ -2,23 +2,16 @@ package skel3;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.dgc.DGC;
-import java.util.Comparator;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import bfs.BFS;
-import mcts.MCTS;
-import mcts.MCTS2;
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
-import rewriter.RW;
-import test.DigraphT2;
+import test.DigraphT3;
 import tree.model.SkeletonPatt;
 import view.ViewTree;
-import visitor.NodesVisitor;
 import visitor.TBuilder2;
 
 public class Main2 {
@@ -48,9 +41,12 @@ public class Main2 {
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
 		
-		DigraphT2 dg = new  DigraphT2();
+		DigraphT3 dg = new  DigraphT3();
 		dg.bfs(n);
 		System.out.println(dg);
+		
+//		ViewTree vT = new ViewTree(n);
+//		vT.showTree("my tree");
 //		RW reWriter = new RW(); // refactors skeletons
 //		n.setReWriteNodes(true);
 //		n.refactor(reWriter);
