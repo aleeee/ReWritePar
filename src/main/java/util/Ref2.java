@@ -28,8 +28,10 @@ public class Ref2 {
 		fc.add(seq);
 		// farm intro
 		FarmPatt farm = new FarmPatt("farm", 0);
+		farm.setDepth(seq.getDepth()+1);
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farm.calculateServiceTime();
 		patterns.add(farm);
 		seq.setPatterns(patterns);
 		if(seq.getParent() != null) 
@@ -51,6 +53,8 @@ public class Ref2 {
 		PipePatt pipe = new PipePatt("pipe", 0);
 		pipe.setChildren(comp.getChildren());
 		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
+		pipe.setDepth(comp.getDepth());
+		pipe.calculateServiceTime();
 		patterns.add(pipe);
 		
 
@@ -58,7 +62,9 @@ public class Ref2 {
 		FarmPatt farm = new FarmPatt("farm", 0);
 		fc.add(comp);
 		farm.setChildren(fc);
+		farm.setDepth(comp.getDepth()+1);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farm.calculateServiceTime();
 		patterns.add(farm);
 
 		// map intro
@@ -68,27 +74,31 @@ public class Ref2 {
 		if (comp.reWriteNodes()) {
 			for (SkeletonPatt skel : comp.getChildren()) {
 				skel.setReWriteNodes(false);
+				
 				skel.refactor(reWriter);
 			}
-			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(comp);
-			for (List<SkeletonPatt> stage : stages) {
-				CompPatt compPat = new CompPatt("comp", 0);
-				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
-				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
-				patterns.add(compPat);
-
-				PipePatt pipePat = new PipePatt("pipe", 0);
-				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
-				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
-				patterns.add(pipePat);
-
-				FarmPatt farmPat = new FarmPatt("farm", 0);
-				fc = new ArrayList<SkeletonPatt>();
-				fc.add(pipePat);
-				farmPat.setChildren(fc);
-				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
-				patterns.add(farmPat);
-			}
+//			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(comp);
+//			for (List<SkeletonPatt> stage : stages) {
+//				CompPatt compPat = new CompPatt("comp", 0);
+//				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
+//				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
+//				compPat.setDepth(comp.getDepth());
+//				patterns.add(compPat);
+//
+//				PipePatt pipePat = new PipePatt("pipe", 0);
+//				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
+//				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
+//				pipePat.setDepth(comp.getDepth());
+//				patterns.add(pipePat);
+//
+//				FarmPatt farmPat = new FarmPatt("farm", 0);
+//				fc = new ArrayList<SkeletonPatt>();
+//				fc.add(pipePat);
+//				farmPat.setChildren(fc);
+//				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
+//				farmPat.setDepth(comp.getDepth()+1);
+//				patterns.add(farmPat);
+//			}
 		}
 		comp.setPatterns(patterns);
 		if(comp.getParent() != null) 
@@ -107,7 +117,9 @@ public class Ref2 {
 		
 		// farm elim
 		SkeletonPatt c = farm.getChildren().get(0);
+		c.setDepth(c.getDepth()+1);
 		c.setReWritingRule(ReWritingRules.FARM_ELIM);
+		c.calculateServiceTime();
 		patterns.add(c);
 		// farm intro
 		FarmPatt farmPat = new FarmPatt("farm", 0);
@@ -115,6 +127,8 @@ public class Ref2 {
 		fc.add(farm);
 		farmPat.setChildren(fc);
 		farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farmPat.setDepth(farm.getDepth()+1);
+		farmPat.calculateServiceTime();
 		patterns.add(farmPat);
 
 		if (farm.reWriteNodes()) {
@@ -127,6 +141,8 @@ public class Ref2 {
 				fc.add(p);
 				fp.setChildren(fc);
 				fp.setReWritingRule(ReWritingRules.FARM_INTRO);
+				fp.setDepth(farm.getDepth()+1);
+				fp.calculateServiceTime();
 				patterns.add(fp);
 			}
 		}
@@ -153,12 +169,15 @@ public class Ref2 {
 		fc.add(pipe);
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farm.setDepth(pipe.getDepth()+1);
+		farm.calculateServiceTime();
 		patterns.add(farm);
 
 		// pipe elim
 		CompPatt comp = new CompPatt("comp", 0);
 		comp.setChildren(pipe.getChildren());
 		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
+		comp.calculateServiceTime();
 		patterns.add(comp);
 
 		// pipeassoc pipe(D1; pipe(D2;D3)) = pipe(pipe(D1;D2);D3)
@@ -175,18 +194,22 @@ public class Ref2 {
 					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
 					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
 
-					PipePatt outerPipe = new PipePatt("pipe", 0);
-					PipePatt innerPipe = new PipePatt("pipe", 0);
+					PipePatt outerPipe = new PipePatt();
+					PipePatt innerPipe = new PipePatt();
 					for (int i = 1; i < pipe0.getChildren().size(); i++) { // start i at 1 because we took the first
 																			// element to form associative pipe
 						innerPipeNodes.add(pipe0.getChildren().get(i));
 					}
 					innerPipeNodes.addAll(pipe.getChildren().subList(1, pipe.getChildren().size()));
 					innerPipe.setChildren(innerPipeNodes);
+					innerPipe.calculateServiceTime();
+					innerPipe.setDepth(pipe.getDepth());
 					outerPipeNodes.add(pat);
 					outerPipeNodes.add(innerPipe);
 					outerPipe.setChildren(outerPipeNodes);
 					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
+					outerPipe.calculateServiceTime();
+					outerPipe.setDepth(pipe.getDepth());
 					patterns.add(outerPipe);
 				} else {
 					PipePatt pipei = (PipePatt) pipe.getChildren().get(index);
@@ -195,19 +218,23 @@ public class Ref2 {
 					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
 					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
 
-					PipePatt outerPipe = new PipePatt("pipe", 0);
-					PipePatt innerPipe = new PipePatt("pipe", 0);
+					PipePatt outerPipe = new PipePatt();
+					PipePatt innerPipe = new PipePatt();
 					innerPipeNodes.addAll(pipe.getChildren().subList(0, index));
 					innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1));
 					innerPipe.setChildren(innerPipeNodes);
+					innerPipe.setDepth(pipe.getDepth());
+					innerPipe.calculateServiceTime();
 					// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
-
+					
 					outerPipeNodes.add(innerPipe);
 					outerPipeNodes.addAll(pipe.getChildren().subList(index + 1, pipe.getChildren().size())); // if there are elements after inner pipe
 					outerPipeNodes.add(pat);
-
+					
 					outerPipe.setChildren(outerPipeNodes);
 					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
+					outerPipe.calculateServiceTime();
+					outerPipe.setDepth(pipe.getDepth());
 					patterns.add(outerPipe);
 
 				}
@@ -222,13 +249,16 @@ public class Ref2 {
 					System.out.println("maps");
 					ArrayList<SkeletonPatt> listOfChildrens = (ArrayList<SkeletonPatt>) pipe.getChildren().stream()
 							.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
-					MapPatt map = new MapPatt("map", 0);
+					MapPatt map = new MapPatt();
 
 					PipePatt piMap = new PipePatt(pipe.getLable(), listOfChildrens.stream().mapToDouble(SkeletonPatt::getServiceTime)
 							.reduce(0, (c1, c2) -> c1 > c2 ? c1 : c2));
 
 					piMap.setChildren(listOfChildrens);
+					piMap.setDepth(pipe.getDepth()+1);
 					map.setChild(piMap);
+					map.setDepth(pipe.getDepth());
+					map.calculateServiceTime();
 					piMap.setReWritingRule(ReWritingRules.MAP_DIST);
 					patterns.add(map);
 				}
@@ -239,25 +269,28 @@ public class Ref2 {
 				skel.refactor(reWriter);
 			}
 
-			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(pipe);
-			for (List<SkeletonPatt> stage : stages) {
-				CompPatt compPat = new CompPatt("comp", 0);
-				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
-				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
-				patterns.add(compPat);
-
-				PipePatt pipePat = new PipePatt("pipe", 0);
-				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
-				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
-				patterns.add(pipePat);
-				 fc = new  ArrayList<SkeletonPatt>();
-
-				FarmPatt farmPat = new FarmPatt("farm", 0);
-				fc.add(pipePat);
-				farmPat.setChildren(fc);
-				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
-				patterns.add(farmPat);
-			}
+//			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(pipe);
+//			for (List<SkeletonPatt> stage : stages) {
+//				CompPatt compPat = new CompPatt("comp", 0);
+//				compPat.setChildren((ArrayList<SkeletonPatt>) stage);
+//				compPat.setReWritingRule(ReWritingRules.PIPE_ELIM);
+//				compPat.setDepth(pipe.getDepth());
+//				patterns.add(compPat);
+//
+//				PipePatt pipePat = new PipePatt("pipe", 0);
+//				pipePat.setChildren((ArrayList<SkeletonPatt>) stage);
+//				pipePat.setReWritingRule(ReWritingRules.PIPE_INTRO);
+//				pipePat.setDepth(pipe.getDepth());
+//				patterns.add(pipePat);
+//				 fc = new  ArrayList<SkeletonPatt>();
+//
+//				FarmPatt farmPat = new FarmPatt("farm", 0);
+//				fc.add(pipePat);
+//				farmPat.setChildren(fc);
+//				farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
+//				farmPat.setDepth(pipe.getDepth());
+//				patterns.add(farmPat);
+//			}
 		}
 		pipe.setPatterns(patterns);
 		if(pipe.getParent() != null) 
@@ -294,6 +327,7 @@ public class Ref2 {
 				nodes.add(m);
 			}
 			pat.setChildren(nodes);
+			pat.calculateServiceTime();
 			pat.setReWritingRule(ReWritingRules.MAP_DIST);
 			patterns.add(pat);
 		}
@@ -306,6 +340,8 @@ public class Ref2 {
 		farm.setChildren(fc);
 		patterns.add(farm);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farm.setDepth(map.getDepth()+1);
+		farm.calculateServiceTime();
 		map.setPatterns(patterns);
 
 		if (map.reWriteNodes()) {

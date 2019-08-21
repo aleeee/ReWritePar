@@ -27,4 +27,7 @@ public interface SkeletonPatt extends Serializable{
 	void setReWriteNodes(boolean flag);
 	public ReWritingRules getRule();
 	public void setReWritingRule(ReWritingRules rule);
+	void setDepth(int depth);
+	int getDepth();
+	
 }

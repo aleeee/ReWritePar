@@ -15,6 +15,7 @@ public class SeqPatt implements SkeletonPatt {
 	double serviceTime;
 	ArrayList<SkeletonPatt> patterns;
 	ReWritingRules rule;
+	int depth;
 	
 	public SeqPatt() {
 		this.lable="seq";
@@ -156,6 +157,14 @@ public class SeqPatt implements SkeletonPatt {
 		} else if (!lable.equals(other.lable))
 			return false;
 		return true;
+	}
+	@Override
+	public void setDepth(int depth) {
+		this.depth=depth;
+	}
+	@Override
+	public int getDepth() {
+		return depth;
 	}
 
 }

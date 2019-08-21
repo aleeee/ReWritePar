@@ -17,7 +17,7 @@ public class FarmPatt implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
-	
+	int depth;
 	
 	public FarmPatt() {
 		this.lable= "farm";
@@ -132,18 +132,25 @@ public class FarmPatt implements SkeletonPatt {
 	public String toString() {
 //		return "FarmPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null);
+		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) + " ts: ["+getServiceTime()+"]";
 	}
 
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = 1;
+//		result = prime * result + ((children == null) ? 0 : children.hashCode());
+//		result = prime * result + ((lable == null) ? 0 : lable.hashCode());
+//		return result;
+//	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((children == null) ? 0 : children.hashCode());
+//		result = prime * result + ((children == null) ? 0 : children.hashCode());
 		result = prime * result + ((lable == null) ? 0 : lable.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -164,6 +171,16 @@ public class FarmPatt implements SkeletonPatt {
 		} else if (!lable.equals(other.lable))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void setDepth(int depth) {
+		this.depth=depth;
+	}
+
+	@Override
+	public int getDepth() {
+		return depth;
 	}
 
 }

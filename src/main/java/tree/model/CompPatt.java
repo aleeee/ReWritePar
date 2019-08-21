@@ -17,7 +17,8 @@ public class CompPatt implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
-
+	int depth;
+	
 	public CompPatt() {
 		this.lable = "comp";
 	}
@@ -134,7 +135,7 @@ public class CompPatt implements SkeletonPatt {
 	public String toString() {
 //		return "CompPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null);
+		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + " ts: ["+getServiceTime()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -164,6 +165,14 @@ public class CompPatt implements SkeletonPatt {
 		} else if (!lable.equals(other.lable))
 			return false;
 		return true;
+	}
+	@Override
+	public void setDepth(int depth) {
+		this.depth=depth;
+	}
+	@Override
+	public int getDepth() {
+		return depth;
 	}
 	
 

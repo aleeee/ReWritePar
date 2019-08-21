@@ -16,7 +16,8 @@ public class MapPatt  implements SkeletonPatt {
 	ArrayList<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
-
+	int depth;
+	
 	public MapPatt() {
 		this.lable= "map";
 	}
@@ -124,7 +125,7 @@ public class MapPatt  implements SkeletonPatt {
 	public String toString() {
 //		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return lable +" ( "+ this.getChild() != null? this.getChild().toString() +" ) " :null;
+		return lable +" ( "+( this.getChildren() != null? this.getChildren().toString() +" ) " :null)  + " ts: ["+getServiceTime()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -154,6 +155,14 @@ public class MapPatt  implements SkeletonPatt {
 		} else if (!lable.equals(other.lable))
 			return false;
 		return true;
+	}
+	@Override
+	public void setDepth(int depth) {
+		this.depth=depth;
+	}
+	@Override
+	public int getDepth() {
+		return depth;
 	}
 
 	

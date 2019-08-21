@@ -95,7 +95,7 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(FarmPatt pat) {
-		return pat.getChild().getServiceTime() / n;
+		return pat.getChildren().get(0).getServiceTime() / n;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(MapPatt pat) {
-		return pat.getChild().getServiceTime() / n;
+		return pat.getChildren().get(0).getServiceTime() / n;
 	}
 
 	/**
@@ -126,21 +126,16 @@ public class Util {
 			try {
 				newP = parent.getClass().getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-//			try {
-//				newP = (SkeletonPatt) SerializationUtils.clone(parent);
-//			} catch (IllegalArgumentException | SecurityException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				System.exit(1);
-//			}
+
 			sc.addAll(parent.getChildren());
 //			newP.setParent(parent);
+			newP.setDepth(p.getDepth());
 			newP.setChildren(sc);
 			newP.getChildren().set(newP.getChildren().indexOf(node), p);
 			newP.setReWritingRule(p.getRule());
+			newP.calculateServiceTime();
 			patterns.add(newP);
 		}
 		return patterns;

@@ -1,30 +1,23 @@
 package test;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import org.apache.commons.lang3.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import rewriter.RW;
 import rewriter.RW2;
-import tree.model.FarmPatt;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
-import util.Util;
 
 public class DigraphT3 {
+	private  Logger log = LoggerFactory.getLogger(getClass());
 	RW2 rw = new RW2();
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
-	private Queue<SkeletonPatt> temp = new LinkedList<SkeletonPatt>();
-
 	public static class Edge {
 		private SkeletonPatt vertex;
 		private ReWritingRules rule;
@@ -34,7 +27,7 @@ public class DigraphT3 {
 			rule = c;
 		}
 
-		public SkeletonPatt getSkeletonPattertex() {
+		public SkeletonPatt getVertex() {
 			return vertex;
 		}
 
@@ -55,15 +48,13 @@ public class DigraphT3 {
 
 	private Map<SkeletonPatt, List<Edge>> neighbors = new HashMap<SkeletonPatt, List<Edge>>();
 
-	private int nr_edges;
-
 	/**
 	 * String representation of graph.
 	 */
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		for (SkeletonPatt v : neighbors.keySet())
-			s.append("\n    " + v + " -> " + neighbors.get(v));
+			s.append("\n    " + v + " d "+ v.getDepth()+" -> " + neighbors.get(v));
 		return s.toString();
 	}
 
@@ -152,40 +143,45 @@ public class DigraphT3 {
 
 	public void bfs(SkeletonPatt s) {
 //		s.refactor(rw);
-		temp.add(s);
-		while (!temp.isEmpty()) {
-			queue.add(temp.remove());
-			Map<SkeletonPatt, List<SkeletonPatt>> patterns = new HashMap<>();
-			while (!queue.isEmpty()) {
-
-				SkeletonPatt curNode = queue.remove();
-				curNode.refactor(rw);
-				this.add(curNode);
-				patterns.put(curNode, curNode.getPatterns());
-				for (SkeletonPatt sk : curNode.getPatterns()) {
-				if(!this.contains(sk) && !queue.contains(sk))
+		s.setDepth(0);
+		s.getChildren().forEach(c -> c.setDepth(1));
+		queue.add(s);
+		Map<SkeletonPatt, List<SkeletonPatt>> patterns = new HashMap<>();
+		while (!queue.isEmpty()) {
+			SkeletonPatt curNode = queue.remove();
+			curNode.refactor(rw);
+			this.add(curNode);
+			log.debug("curNode: "+ curNode );
+			patterns.put(curNode, curNode.getPatterns());
+			for (SkeletonPatt sk : curNode.getPatterns()) {
+				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
 					queue.add(sk);
+					log.debug("sk1: " + sk);
+					
 				}
+			}
 
-				List<SkeletonPatt> children = curNode.getChildren();
-				if (children != null) {
-					for (SkeletonPatt node : children) {
-						node.setParent(curNode);
-						node.refactor(rw);
+			List<SkeletonPatt> children = curNode.getChildren();
+			if (children != null) {
+				for (SkeletonPatt node : children) {
+					node.setParent(curNode);
+					node.refactor(rw);
 //					queue.add(node);
-						if (node.getPatterns() != null) {
-							for (SkeletonPatt sk : node.getPatterns()) {
-								if(!this.contains(sk)&& !queue.contains(sk))
+					if (node.getPatterns() != null) {
+						for (SkeletonPatt sk : node.getPatterns()) {
+							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
 								queue.add(sk);
+								log.debug("sk2: " + sk);
 							}
 						}
-						patterns.get(curNode).addAll(node.getPatterns());
-//						patterns.put(curNode,node.getPatterns());
 					}
+					patterns.get(curNode).addAll(node.getPatterns());
+//						patterns.put(curNode,node.getPatterns());
 				}
-
 			}
-		
+
+		}
+
 		if (patterns != null) {
 			patterns.entrySet().forEach(e -> {
 				SkeletonPatt k = e.getKey();
@@ -197,5 +193,5 @@ public class DigraphT3 {
 			});
 		}
 	}
-}
+
 }
