@@ -1,15 +1,19 @@
 package test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import rewriter.RW2;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
@@ -54,7 +58,7 @@ public class DigraphT3 {
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		for (SkeletonPatt v : neighbors.keySet())
-			s.append("\n    " + v + " d "+ v.getDepth()+" -> " + neighbors.get(v));
+			s.append("\n    " + v +" -> " + neighbors.get(v));
 		return s.toString();
 	}
 
@@ -151,12 +155,14 @@ public class DigraphT3 {
 			SkeletonPatt curNode = queue.remove();
 			curNode.refactor(rw);
 			this.add(curNode);
-			log.debug("curNode: "+ curNode );
+//			log.debug("curNode: "+ curNode );
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
 				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
 					queue.add(sk);
-					log.debug("sk1: " + sk);
+//					log.debug("sk1: " + sk);
+					
+				}else {
 					
 				}
 			}
@@ -171,7 +177,7 @@ public class DigraphT3 {
 						for (SkeletonPatt sk : node.getPatterns()) {
 							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
 								queue.add(sk);
-								log.debug("sk2: " + sk);
+//								log.debug("sk2: " + sk);
 							}
 						}
 					}
@@ -191,7 +197,23 @@ public class DigraphT3 {
 //						temp.add(k);
 				});
 			});
+		Map<SkeletonPatt, Long> count =  (Map<SkeletonPatt, Long>) patterns.values().stream()
+					.flatMap(Collection::stream)
+					.collect(Collectors.collectingAndThen(
+							Collectors.groupingBy(Function.identity(), Collectors.counting()), 
+							m -> {m.values().removeIf(v -> v < 2L); 
+							System.out.println(m);
+							System.out.println("of ");
+							m.entrySet().forEach(mm -> {
+								System.out.println(mm);
+								System.out.println("of ");
+								System.out.println(patterns.get(mm));
+							});
+						return m;})
+							);
+		System.out.println(patterns);
 		}
 	}
-
+    
+	
 }

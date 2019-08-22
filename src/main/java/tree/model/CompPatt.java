@@ -133,9 +133,9 @@ public class CompPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-//		return "CompPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
-//				+ ", serviceTime=" + serviceTime + "]";
-		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + " ts: ["+getServiceTime()+"]";
+		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
+
+		//		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + " ts: ["+getServiceTime()+"]";
 	}
 	@Override
 	public int hashCode() {

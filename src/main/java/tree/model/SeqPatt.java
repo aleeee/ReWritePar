@@ -118,10 +118,8 @@ public class SeqPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-//		return "SeqPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
-//				+ ", serviceTime=" + serviceTime + "]";
-		
-		return lable +" , " +getServiceTime();
+		return lable;
+//		return lable +" , " +getServiceTime();
 	}
 
 	@Override
