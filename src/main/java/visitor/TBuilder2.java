@@ -135,7 +135,6 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 		SkeletonPatt p =visit(ctx.block()); 
 		s.add(p);
 		map.setChildren(s);
-		map.setChild(p);
 		return map;
 	}
 

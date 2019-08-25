@@ -256,7 +256,9 @@ public class Ref2 {
 
 					piMap.setChildren(listOfChildrens);
 					piMap.setDepth(pipe.getDepth()+1);
-					map.setChild(piMap);
+					ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+					mNodes.add(piMap);
+					map.setChildren(mNodes);
 					map.setDepth(pipe.getDepth());
 					map.calculateServiceTime();
 					piMap.setReWritingRule(ReWritingRules.MAP_DIST);
@@ -307,12 +309,14 @@ public class Ref2 {
 	 */
 	public static MapPatt refactor(MapPatt map) {
 		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
-		if(map.getChildren() != null) {
-			System.out.println("Map can can not have stages ");
-			System.exit(1);
+		if(map.getChildren() == null) {
+			return map;
 		}
+//			System.out.println("Map can can not have stages ");
+//			System.exit(1);
+//		}
 //		mapelim map(D)!D
-		patterns.add(map.getChildren().get(0));
+//		patterns.add(map.getChildren().get(0));
 
 		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
 		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
@@ -323,7 +327,9 @@ public class Ref2 {
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 			for (SkeletonPatt sk : pat.getChildren()) {
 				MapPatt m = new MapPatt("map", 0);
-				m.setChild(sk);
+				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+				mNodes.add(sk);
+				m.setChildren(mNodes);
 				nodes.add(m);
 			}
 			pat.setChildren(nodes);

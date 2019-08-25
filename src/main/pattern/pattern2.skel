@@ -1,4 +1,4 @@
 a = Seq (10);
 b = Seq (20);
 c = Seq(30);
-main = Farm(Pipe(c,b));
+main = Map(Pipe(c,b));

@@ -181,6 +181,7 @@ public class DigraphT3 {
 							}
 						}
 					}
+					if(node.getPatterns() != null)
 					patterns.get(curNode).addAll(node.getPatterns());
 //						patterns.put(curNode,node.getPatterns());
 				}
@@ -197,21 +198,21 @@ public class DigraphT3 {
 //						temp.add(k);
 				});
 			});
-		Map<SkeletonPatt, Long> count =  (Map<SkeletonPatt, Long>) patterns.values().stream()
-					.flatMap(Collection::stream)
-					.collect(Collectors.collectingAndThen(
-							Collectors.groupingBy(Function.identity(), Collectors.counting()), 
-							m -> {m.values().removeIf(v -> v < 2L); 
-							System.out.println(m);
-							System.out.println("of ");
-							m.entrySet().forEach(mm -> {
-								System.out.println(mm);
-								System.out.println("of ");
-								System.out.println(patterns.get(mm));
-							});
-						return m;})
-							);
-		System.out.println(patterns);
+//		Map<SkeletonPatt, Long> count =  (Map<SkeletonPatt, Long>) patterns.values().stream()
+//					.flatMap(Collection::stream)
+//					.collect(Collectors.collectingAndThen(
+//							Collectors.groupingBy(Function.identity(), Collectors.counting()), 
+//							m -> {m.values().removeIf(v -> v < 2L); 
+//							System.out.println(m);
+//							System.out.println("of ");
+//							m.entrySet().forEach(mm -> {
+//								System.out.println(mm);
+//								System.out.println("of ");
+//								System.out.println(patterns.get(mm));
+//							});
+//						return m;})
+//							);
+//		System.out.println(patterns);
 		}
 	}
     
