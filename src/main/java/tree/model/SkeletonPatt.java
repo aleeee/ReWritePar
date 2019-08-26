@@ -3,6 +3,8 @@ package tree.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import rewriter.ReWriter;
 import rewriter.SkelReWriter;
 import util.ReWritingRules;
@@ -18,10 +20,13 @@ public interface SkeletonPatt extends Serializable{
 	void setServiceTime(double ts);
 	public ArrayList<SkeletonPatt> getChildren();
 	public String getLable() ;
+	@JsonIgnore
 	public SkeletonPatt getChild() ;
 	public void accept(NodeVisitor visitor);
 	public void refactor(ReWriter reWriter);
+	@JsonIgnore
 	public ArrayList<SkeletonPatt> getPatterns();
+	@JsonIgnore
 	public void setParent(SkeletonPatt parent);
 	public void setChildren(ArrayList<SkeletonPatt> children);
 	void setReWriteNodes(boolean flag);

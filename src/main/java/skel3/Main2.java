@@ -9,9 +9,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
-import test.DigraphT3;
+import test.DigraphT4;
 import tree.model.SkeletonPatt;
-import view.ViewTree;
 import visitor.TBuilder2;
 
 public class Main2 {
@@ -41,7 +40,7 @@ public class Main2 {
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
 		
-		DigraphT3 dg = new  DigraphT3();
+		DigraphT4 dg = new  DigraphT4();
 		dg.bfs(n);
 		System.out.println(dg);
 		
