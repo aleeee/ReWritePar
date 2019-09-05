@@ -1,8 +1,10 @@
 package test;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,15 +12,16 @@ import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.json.JsonObject;
-
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import rewriter.RW2;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
@@ -26,13 +29,17 @@ import util.ReWritingRules;
 public class DigraphT4 {
 	private  Logger log = LoggerFactory.getLogger(getClass());
 	RW2 rw = new RW2();
-	ObjectMapper mapper = new ObjectMapper();
-	
+	public Graph<SkeletonPatt, Edge> g = new  DefaultDirectedGraph<>(Edge.class);
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
 	public static class Edge {
 		private SkeletonPatt vertex;
 		private ReWritingRules rule;
-
+		private SkeletonPatt to;
+		public Edge(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
+			this.vertex=from;
+			this.to=to;
+			this.rule=rule;
+		}
 		public Edge(SkeletonPatt v, ReWritingRules c) {
 			vertex = v;
 			rule = c;
@@ -57,19 +64,18 @@ public class DigraphT4 {
 	 * A Map is used to map each vertex to its list of adjacent vertices.
 	 */
 
-	private Map<SkeletonPatt, List<Edge>> neighbors = new HashMap<SkeletonPatt, List<Edge>>();
+	private Map<SkeletonPatt, List<Edge>> neighbors = new LinkedHashMap<SkeletonPatt, List<Edge>>();
 
 	/**
 	 * String representation of graph.
 	 */
 	public String toString() {
 		StringBuffer s = new StringBuffer();
-		mapper.createObjectNode();
-		mapper.createArrayNode();
 		for (SkeletonPatt v : neighbors.keySet())
 			try {
-				s.append("\n    " + mapper.writeValueAsString(v) +" -> " + neighbors.get(v));
-			} catch (JsonProcessingException e) {
+				s.append("\n    " + v +" -> " + neighbors.get(v));
+				
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -114,6 +120,9 @@ public class DigraphT4 {
 	 */
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		this.add(from);
+		g.addVertex(from);
+		g.addVertex(to);
+		g.addEdge(from,to,new Edge(from, to, rule));
 		this.add(to);
 		neighbors.get(from).add(new Edge(to, rule));
 	}
@@ -160,10 +169,14 @@ public class DigraphT4 {
 	}
 
 	public void bfs(SkeletonPatt s) {
-//		s.refactor(rw);
+		Gson gson = new Gson();
 		s.setDepth(0);
 		s.getChildren().forEach(c -> c.setDepth(1));
 		queue.add(s);
+	    JsonObject root = new  JsonObject();
+	    JsonElement el = gson.toJsonTree(s);
+	    root.add("root", el);
+	    JsonObject tmp ;
 		Map<SkeletonPatt, List<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
 			SkeletonPatt curNode = queue.remove();
@@ -172,7 +185,7 @@ public class DigraphT4 {
 //			log.debug("curNode: "+ curNode );
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
+				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 2) {
 					queue.add(sk);
 //					log.debug("sk1: " + sk);
 					
@@ -189,7 +202,7 @@ public class DigraphT4 {
 //					queue.add(node);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 16) {
+							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 2) {
 								queue.add(sk);
 //								log.debug("sk2: " + sk);
 							}
@@ -211,6 +224,7 @@ public class DigraphT4 {
 //						temp.add(k);
 				});
 			});
+//		System.out.println(gson.toJsonTree(patterns));
 		Map<SkeletonPatt, Long> count =  (Map<SkeletonPatt, Long>) patterns.values().stream()
 					.flatMap(Collection::stream)
 					.collect(Collectors.collectingAndThen(

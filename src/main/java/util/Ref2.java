@@ -103,6 +103,7 @@ public class Ref2 {
 		comp.setPatterns(patterns);
 		if(comp.getParent() != null) 
 		comp.setPatterns(Util.createTreeNode(comp.getParent(), comp));
+		comp.calculateServiceTime();
 		return comp;
 	}
 
@@ -149,7 +150,7 @@ public class Ref2 {
 		farm.setPatterns(patterns);
 		if(farm.getParent() != null) 
 		farm.setPatterns(Util.createTreeNode(farm.getParent(), farm));
-
+		farm.calculateServiceTime();
 		return farm;
 	}
 
@@ -257,11 +258,13 @@ public class Ref2 {
 					piMap.setChildren(listOfChildrens);
 					piMap.setDepth(pipe.getDepth()+1);
 					ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+					piMap.setReWritingRule(ReWritingRules.MAP_DIST);
+					piMap.calculateServiceTime();
 					mNodes.add(piMap);
 					map.setChildren(mNodes);
 					map.setDepth(pipe.getDepth());
 					map.calculateServiceTime();
-					piMap.setReWritingRule(ReWritingRules.MAP_DIST);
+					
 					patterns.add(map);
 				}
 		// refactor stages
@@ -297,7 +300,7 @@ public class Ref2 {
 		pipe.setPatterns(patterns);
 		if(pipe.getParent() != null) 
 		pipe.setPatterns(Util.createTreeNode(pipe.getParent(), pipe));
-
+		pipe.calculateServiceTime();
 		return pipe;
 	}
 
@@ -330,6 +333,7 @@ public class Ref2 {
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);
 				m.setChildren(mNodes);
+				m.calculateServiceTime();
 				nodes.add(m);
 			}
 			pat.setChildren(nodes);
@@ -356,7 +360,7 @@ public class Ref2 {
 		}
 		if(map.getParent() != null) 
 		map.setPatterns(Util.createTreeNode(map.getParent(), map));
-
+		map.calculateServiceTime();
 		return map;
 	}
 

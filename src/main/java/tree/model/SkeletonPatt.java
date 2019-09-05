@@ -18,6 +18,7 @@ public interface SkeletonPatt extends Serializable{
 	double completionTime();
 	double getServiceTime();
 	void setServiceTime(double ts);
+	@JsonIgnore
 	public ArrayList<SkeletonPatt> getChildren();
 	public String getLable() ;
 	@JsonIgnore
@@ -28,6 +29,7 @@ public interface SkeletonPatt extends Serializable{
 	public ArrayList<SkeletonPatt> getPatterns();
 	@JsonIgnore
 	public void setParent(SkeletonPatt parent);
+	@JsonIgnore
 	public void setChildren(ArrayList<SkeletonPatt> children);
 	void setReWriteNodes(boolean flag);
 	public ReWritingRules getRule();

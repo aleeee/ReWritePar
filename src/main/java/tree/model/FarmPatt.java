@@ -130,7 +130,7 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-		return "F "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null);
+		return "F "+(this.getChildren() != null? " ( " +this.getChildren().get(0).toString() +" ) ":null);
 
 //		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) + " ts: ["+getServiceTime()+"]";
 	}

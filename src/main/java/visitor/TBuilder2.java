@@ -107,6 +107,9 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitComposition(CompositionContext ctx) {
 		CompPatt comp = new CompPatt("comp",0);
 		comp.setChildren(visit(ctx.stages()).getChildren());
+		if(comp.getChildren() == null || comp.getChildren().size() < 2) {
+			System.out.println("Error Comp stages must not be less than 2");
+			System.exit(1);}
 		return comp;
 	}
 
@@ -114,6 +117,9 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitPipeSkel(PipeSkelContext ctx) {
 		PipePatt pipe = new PipePatt("pipe",0);
 		pipe.setChildren(visit(ctx.stages()).getChildren());
+		if(pipe.getChildren() == null || pipe.getChildren().size() < 2) {
+			System.out.println("Error Pipe stages must not be less than 2");
+			System.exit(1);}
 		return pipe;
 	}
 
