@@ -1,10 +1,12 @@
 package util;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import graph.DiGraphGen;
+import graph.DiGraphGen2;
 import rewriter.RW;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
@@ -23,17 +25,17 @@ public class Ref2 {
 	 * @return Seq with its possible refactoring options (list of patterns)
 	 */
 	public static SeqPatt refactor(SeqPatt seq) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 		fc.add(seq);
 		// farm intro
-		FarmPatt farm = new FarmPatt("farm", 0);
+		FarmPatt farm = new FarmPatt();
 		farm.setDepth(seq.getDepth()+1);
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		farm.calculateServiceTime();
 		patterns.add(farm);
-		seq.setPatterns(patterns);
+		seq.setPatterns( patterns);
 		if(seq.getParent() != null) 
 		seq.setPatterns(Util.createTreeNode(seq.getParent(), seq));
 		return seq;
@@ -46,11 +48,11 @@ public class Ref2 {
 	 * @return CompPatt with its possible refactoring options (list of patterns)
 	 */
 	public static CompPatt refactor(CompPatt comp) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 
 		// pipe intro
-		PipePatt pipe = new PipePatt("pipe", 0);
+		PipePatt pipe = new PipePatt();
 		pipe.setChildren(comp.getChildren());
 		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
 		pipe.setDepth(comp.getDepth());
@@ -59,7 +61,7 @@ public class Ref2 {
 		
 
 		// farm intro
-		FarmPatt farm = new FarmPatt("farm", 0);
+		FarmPatt farm = new FarmPatt();
 		fc.add(comp);
 		farm.setChildren(fc);
 		farm.setDepth(comp.getDepth()+1);
@@ -71,12 +73,17 @@ public class Ref2 {
 
 		// for each stage
 		// rewrite
-		if (comp.reWriteNodes()) {
+//		if (comp.reWriteNodes()) {
 			for (SkeletonPatt skel : comp.getChildren()) {
-				skel.setReWriteNodes(false);
-				
-				skel.refactor(reWriter);
-			}
+//				skel.setReWriteNodes(false);
+//				if(skel.getDepth() < 5) {
+					if(!DiGraphGen2.g.containsVertex(skel)){
+						DiGraphGen2.g.addVertex(skel);
+					System.out.println(skel.getDepth() + " " + comp);
+					skel.refactor(reWriter);
+				}
+					
+//			}
 //			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(comp);
 //			for (List<SkeletonPatt> stage : stages) {
 //				CompPatt compPat = new CompPatt("comp", 0);
@@ -114,7 +121,7 @@ public class Ref2 {
 	 * @return Farm pattern with its possible refactoring options (list of patterns)
 	 */
 	public static FarmPatt refactor(FarmPatt farm) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		
 		// farm elim
 		SkeletonPatt c = farm.getChildren().get(0);
@@ -123,7 +130,7 @@ public class Ref2 {
 		c.calculateServiceTime();
 		patterns.add(c);
 		// farm intro
-		FarmPatt farmPat = new FarmPatt("farm", 0);
+		FarmPatt farmPat = new FarmPatt();
 		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 		fc.add(farm);
 		farmPat.setChildren(fc);
@@ -132,12 +139,15 @@ public class Ref2 {
 		farmPat.calculateServiceTime();
 		patterns.add(farmPat);
 
-		if (farm.reWriteNodes()) {
-			farm.getChildren().get(0).setReWriteNodes(false);
-			farm.getChildren().get(0).refactor(reWriter);
+//		if (farm.reWriteNodes()) {
+			SkeletonPatt skel = farm.getChildren().get(0);
+		if(!DiGraphGen2.g.containsVertex(skel)){ 
+				System.out.println(farm.getChildren().get(0).getDepth() + " " + farm.getChildren().get(0).getDepth());
+				DiGraphGen2.g.addVertex(skel);
+				farm.getChildren().get(0).refactor(reWriter);
 			
 			for (SkeletonPatt p : farm.getChildren().get(0).getPatterns()) {
-				FarmPatt fp = new FarmPatt("farm", 0);
+				FarmPatt fp = new FarmPatt();
 				 fc = new  ArrayList<SkeletonPatt>();
 				fc.add(p);
 				fp.setChildren(fc);
@@ -162,10 +172,10 @@ public class Ref2 {
 	 *         patterns)
 	 */
 	public static PipePatt refactor(PipePatt pipe) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 
 		// farm intro
-		FarmPatt farm = new FarmPatt("farm", 0);
+		FarmPatt farm = new FarmPatt();
 		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 		fc.add(pipe);
 		farm.setChildren(fc);
@@ -175,7 +185,7 @@ public class Ref2 {
 		patterns.add(farm);
 
 		// pipe elim
-		CompPatt comp = new CompPatt("comp", 0);
+		CompPatt comp = new CompPatt();
 		comp.setChildren(pipe.getChildren());
 		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
 		comp.calculateServiceTime();
@@ -247,12 +257,11 @@ public class Ref2 {
 				// create pipe of map.getchild for all
 				// creat map of the pipe
 				if (pipe.getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
-					System.out.println("maps");
 					ArrayList<SkeletonPatt> listOfChildrens = (ArrayList<SkeletonPatt>) pipe.getChildren().stream()
 							.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
 					MapPatt map = new MapPatt();
 
-					PipePatt piMap = new PipePatt(pipe.getLable(), listOfChildrens.stream().mapToDouble(SkeletonPatt::getServiceTime)
+					PipePatt piMap = new PipePatt(pipe.getLable(), listOfChildrens.stream().mapToInt(SkeletonPatt::getServiceTime)
 							.reduce(0, (c1, c2) -> c1 > c2 ? c1 : c2));
 
 					piMap.setChildren(listOfChildrens);
@@ -268,10 +277,12 @@ public class Ref2 {
 					patterns.add(map);
 				}
 		// refactor stages
-		if (pipe.reWriteNodes()) {
+//		if (pipe.reWriteNodes()) {
 			for (SkeletonPatt skel : pipe.getChildren()) {
-				skel.setReWriteNodes(false);
-				skel.refactor(reWriter);
+				if(!DiGraphGen2.g.containsVertex(skel)){
+					System.out.println(skel.getDepth() + " " +skel);
+					DiGraphGen2.g.addVertex(skel);
+					skel.refactor(reWriter);
 			}
 
 //			List<List<SkeletonPatt>> stages = Util.getStagesPatterns(pipe);
@@ -311,7 +322,7 @@ public class Ref2 {
 	 * @return Map pattern with its possible refactoring options (list of patterns)
 	 */
 	public static MapPatt refactor(MapPatt map) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<>();
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		if(map.getChildren() == null) {
 			return map;
 		}
@@ -329,7 +340,7 @@ public class Ref2 {
 			SkeletonPatt pat = map.getChildren().get(0);
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 			for (SkeletonPatt sk : pat.getChildren()) {
-				MapPatt m = new MapPatt("map", 0);
+				MapPatt m = new MapPatt();
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);
 				m.setChildren(mNodes);
@@ -345,7 +356,7 @@ public class Ref2 {
 		// farm intro
 		ArrayList<SkeletonPatt> fc = new  ArrayList<SkeletonPatt>();
 
-		FarmPatt farm = new FarmPatt("farm", 0);
+		FarmPatt farm = new FarmPatt();
 		fc.add(map);
 		farm.setChildren(fc);
 		patterns.add(farm);
@@ -354,9 +365,12 @@ public class Ref2 {
 		farm.calculateServiceTime();
 		map.setPatterns(patterns);
 
-		if (map.reWriteNodes()) {
-			map.getChildren().get(0).setReWriteNodes(false);
-			map.getChildren().get(0).refactor(reWriter);
+//		if (map.reWriteNodes()) {
+			SkeletonPatt skel = map.getChildren().get(0);
+		if(!DiGraphGen2.g.containsVertex(skel)){
+				System.out.println(map.getChildren().get(0).getDepth() + " "+map.getChildren().get(0).getDepth() );
+				DiGraphGen2.g.addVertex(skel);
+				map.getChildren().get(0).refactor(reWriter);
 		}
 		if(map.getParent() != null) 
 		map.setPatterns(Util.createTreeNode(map.getParent(), map));

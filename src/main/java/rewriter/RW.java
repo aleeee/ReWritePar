@@ -5,34 +5,34 @@ import tree.model.FarmPatt;
 import tree.model.MapPatt;
 import tree.model.PipePatt;
 import tree.model.SeqPatt;
-import util.Ref;
+import util.Ref2;
 
 public class RW implements ReWriter {
 	
 	@Override
 	public void reWrite(SeqPatt seq) {
-		seq = Ref.refactor(seq);
+		seq = Ref2.refactor(seq);
 	}
 
 	@Override
 	public void reWrite(CompPatt comp) {
-		comp = Ref.refactor(comp);
+		comp = Ref2.refactor(comp);
 	}
 
 	@Override
 	public void reWrite(FarmPatt farm) {
-        farm = Ref.refactor(farm);
+        farm = Ref2.refactor(farm);
 	}
 
 	@Override
 	public void reWrite(PipePatt pipe) {
-		pipe = Ref.refactor(pipe);
+		pipe = Ref2.refactor(pipe);
 
 	}
 
 	@Override
 	public void reWrite(MapPatt map) {
-		map = Ref.refactor(map);
+		map = Ref2.refactor(map);
 	}
 
 }

@@ -3,19 +3,15 @@ package util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.SerializationUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
+import graph.DiGraphGen2;
 import pattern.skel4.Skel4Parser.AssignmentContext;
-import pattern.skel4.Skel4Parser.PatternExprContext;
-import pattern.skel4.Skel4Parser.SequenceContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
@@ -30,7 +26,7 @@ public class Util {
 		String type = ctx.expr.sType.getText();
 		switch (type) {
 		case "Seq":
-			SeqPatt s = new SeqPatt(Double.parseDouble(ctx.expr.sequence().ts.getText()));
+			SeqPatt s = new SeqPatt(Integer.parseInt(ctx.expr.sequence().ts.getText()));
 			s.setLable(ctx.varName.getText());
 			return s;
 
@@ -72,8 +68,8 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(PipePatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0,
+	public static int getServiceTime(PipePatt pat) {
+		return pat.getChildren().stream().mapToInt(SkeletonPatt::getServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2);
 
 	}
@@ -84,8 +80,8 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(CompPatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+	public static int getServiceTime(CompPatt pat) {
+		return pat.getChildren().stream().mapToInt(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2);
 	}
 
 	/**
@@ -94,7 +90,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(FarmPatt pat) {
+	public static int getServiceTime(FarmPatt pat) {
 		return pat.getChildren().get(0).getServiceTime() / n;
 	}
 
@@ -104,20 +100,21 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(MapPatt pat) {
+	public static int getServiceTime(MapPatt pat) {
 		return pat.getChildren().get(0).getServiceTime() / n;
 	}
 
 	/**
 	 * creates n trees from the input tree replacing input node with its n rewriting
 	 * (refactoring option) pattern
-	 * 
+	 * since the refactoring is at pattern level, it creates the tree structure by replacing one childNode with it's
+	 * refactoring options so if it has N rewriting options, the N trees will be created
 	 * @param parent
 	 * @param node
 	 * @return
 	 */
-	public static ArrayList<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
-		ArrayList<SkeletonPatt> patterns = new ArrayList<SkeletonPatt>();
+	public static Set<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 
 		for (SkeletonPatt p : node.getPatterns()) {
 			ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
@@ -125,7 +122,7 @@ public class Util {
 			SkeletonPatt newP = null;
 			try {
 				newP = parent.getClass().getDeclaredConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+			} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
 				e1.printStackTrace();
 			}
 
@@ -137,6 +134,7 @@ public class Util {
 			newP.setReWritingRule(p.getRule());
 			newP.calculateServiceTime();
 			patterns.add(newP);
+			DiGraphGen2.g.addVertex(newP);
 		}
 		return patterns;
 	}

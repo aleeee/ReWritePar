@@ -8,7 +8,6 @@ import java.util.Queue;
 
 import rewriter.RW;
 import tree.model.SkeletonPatt;
-import view.ViewTree;
 
 public class BFS {
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
@@ -53,7 +52,6 @@ public class BFS {
 			s.getChild().getPatterns().stream().sorted(Comparator.comparing(SkeletonPatt::getServiceTime))
 					.forEach(sk -> System.out.println("nodes : " + sk + "\t" + sk.getServiceTime()));
 		}
-		ViewTree tv = new ViewTree(s);
-		tv.showTree("After  play outs");
+		
 	}
 }

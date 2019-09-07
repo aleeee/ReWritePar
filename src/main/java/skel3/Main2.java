@@ -5,33 +5,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.io.ComponentAttributeProvider;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
-import org.jgrapht.io.JSONExporter;
 
-import com.ibm.icu.impl.duration.impl.DataRecord.EGender;
-
-import edu.emory.mathcs.backport.java.util.Collections;
+import graph.DiGraphGen2.Edge;
+import graph.DiGraphGen2;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
-import test.DigraphT4;
-import test.DigraphT4.Edge;
 import tree.model.SkeletonPatt;
 import visitor.TBuilder2;
 
@@ -42,7 +32,10 @@ public class Main2 {
 	 * @throws Exception
 	 */
 	public static <T> void main(String[] args) throws Exception {
-
+		Main2 m = new Main2();
+		m.start(args);
+	}
+		public void start(String [] args) throws Exception {
 		if (args.length == 0) {
 			args = new String[] { "src/main/pattern/pattern2.skel" };
 		}
@@ -62,7 +55,7 @@ public class Main2 {
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
 		
-		DigraphT4 dg = new  DigraphT4();
+		DiGraphGen2 dg = new  DiGraphGen2();
 		dg.bfs(n);
 		System.out.println(dg);
 		renderHrefGraph(dg);
@@ -87,7 +80,7 @@ public class Main2 {
 
 	}
 
-	 private static void renderHrefGraph(DigraphT4 dg)
+	 private static void renderHrefGraph(DiGraphGen2 dg)
 		        throws ExportException
 		    {	
 		
@@ -124,19 +117,21 @@ public class Main2 {
 //				ComponentAttributeProvider<Edge> edgeAttributeProvider = (Edge ee) ->
 //				{return null;};
 				  GraphExporter<SkeletonPatt, Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
-		        		new DOTExporter<SkeletonPatt, DigraphT4.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+		        		new DOTExporter<SkeletonPatt, DiGraphGen2.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
+		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\ddd1.dot");;
 //				try {
 //					writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\d1.dot");
 //				} catch (IOException e1) {
 //					// TODO Auto-generated catch block
 //					e1.printStackTrace();
 //				}
-		        exporter.exportGraph(dg.g, writer);
+		        exporter.exportGraph(dg.g, f);
+		        
 //		        System.out.println(writer.toString());
 		       
 		        try {
-					Graphviz.fromString(writer.toString()).height(200).render(Format.SVG_STANDALONE).toFile(new File("C:\\Users\\me\\Desktop\\out\\s1.svg"));
+					Graphviz.fromFile(f).height(200).render(Format.SVG_STANDALONE).toFile(new File("C:\\Users\\me\\Desktop\\out\\s11.svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -1,6 +1,5 @@
-package test;
+package graph;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,27 +8,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import rewriter.RW2;
+import rewriter.RW;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
 
-public class DigraphT4 {
+public class DiGraphGen {
 	private  Logger log = LoggerFactory.getLogger(getClass());
-	RW2 rw = new RW2();
-	public Graph<SkeletonPatt, Edge> g = new  DefaultDirectedGraph<>(Edge.class);
+	RW rw = new RW();
+	public  Graph<SkeletonPatt, Edge> g = new  DefaultDirectedGraph<>(Edge.class);
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
 	public static class Edge {
 		private SkeletonPatt vertex;
@@ -169,15 +164,10 @@ public class DigraphT4 {
 	}
 
 	public void bfs(SkeletonPatt s) {
-		Gson gson = new Gson();
 		s.setDepth(0);
 		s.getChildren().forEach(c -> c.setDepth(1));
 		queue.add(s);
-	    JsonObject root = new  JsonObject();
-	    JsonElement el = gson.toJsonTree(s);
-	    root.add("root", el);
-	    JsonObject tmp ;
-		Map<SkeletonPatt, List<SkeletonPatt>> patterns = new HashMap<>();
+		Map<SkeletonPatt, Set<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
 			SkeletonPatt curNode = queue.remove();
 			curNode.refactor(rw);
@@ -185,7 +175,7 @@ public class DigraphT4 {
 //			log.debug("curNode: "+ curNode );
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 2) {
+				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
 					queue.add(sk);
 //					log.debug("sk1: " + sk);
 					
@@ -202,11 +192,17 @@ public class DigraphT4 {
 //					queue.add(node);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 2) {
+							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
 								queue.add(sk);
 //								log.debug("sk2: " + sk);
 							}
 						}
+					}
+					if(node.getPatterns() == null || patterns == null || patterns.get(curNode) == null) {
+						System.out.println(patterns.get(curNode));
+						System.out.println(patterns);
+						System.out.println();
+						System.out.println(curNode);
 					}
 					patterns.get(curNode).addAll(node.getPatterns());
 //						patterns.put(curNode,node.getPatterns());

@@ -1,6 +1,7 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import rewriter.ReWriter;
 import util.ReWritingRules;
@@ -13,15 +14,15 @@ public class PipePatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
-	ArrayList<SkeletonPatt> patterns;
+	int serviceTime;
+	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth ;
 	public PipePatt() {
 		this.lable= "pipe";
 	}
-	public PipePatt(String lable, double serviceTime) {
+	public PipePatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
 		this.serviceTime = serviceTime;
@@ -48,7 +49,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 
 	@Override
-	public double completionTime() {
+	public int completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -65,7 +66,7 @@ public class PipePatt implements SkeletonPatt {
 
 
 	@Override
-	public void setServiceTime(double ts) {
+	public void setServiceTime(int ts) {
 		this.serviceTime=ts;
 		
 	}
@@ -93,7 +94,7 @@ public class PipePatt implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public double getServiceTime() {
+	public int getServiceTime() {
 		return serviceTime;
 	}
 
@@ -109,10 +110,10 @@ public class PipePatt implements SkeletonPatt {
 		this.child = child;
 	}
 	@Override
-	public ArrayList<SkeletonPatt> getPatterns() {
+	public Set<SkeletonPatt> getPatterns() {
 		return patterns;
 	}
-	public void setPatterns(ArrayList<SkeletonPatt> patterns) {
+	public void setPatterns(Set<SkeletonPatt> patterns) {
 		this.patterns = patterns;
 	}
 	public boolean reWriteNodes() {

@@ -1,0 +1,322 @@
+2019-09-07 12:32:29,375 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp on LAPTOP-HTGTRC2F with PID 23344 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:32:29,377 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:32:29,423 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:32:29,424 INFO org.springframework.boot.logging.DeferredLog [restartedMain] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2019-09-07 12:32:29,450 WARN org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor [restartedMain] 
+
+** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.
+
+
+2019-09-07 12:32:35,615 WARN org.springframework.context.support.AbstractApplicationContext [restartedMain] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+2019-09-07 12:32:35,625 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [restartedMain] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 12:32:35,630 ERROR org.springframework.boot.SpringApplication [restartedMain] Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:454)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:316)
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:275)
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:287)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:242)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:199)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:167)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:315)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:232)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:275)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:95)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:705)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:531)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:743)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:390)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at ReWriterApp.main(ReWriterApp.java:10)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49)
+Caused by: java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:54)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:108)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:88)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:71)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isConditionMatch(ClassPathScanningCandidateComponentProvider.java:515)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isCandidateComponent(ClassPathScanningCandidateComponentProvider.java:498)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:431)
+	... 25 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: org/springframework/dao/DataAccessException
+	at org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseCondition.getMatchOutcome(DataSourceAutoConfiguration.java:139)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47)
+	... 31 common frames omitted
+Caused by: java.lang.ClassNotFoundException: org.springframework.dao.DataAccessException
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+	... 33 common frames omitted
+2019-09-07 12:34:00,245 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp on LAPTOP-HTGTRC2F with PID 29896 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:34:00,249 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:34:00,296 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:34:00,296 INFO org.springframework.boot.logging.DeferredLog [restartedMain] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2019-09-07 12:34:00,318 WARN org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor [restartedMain] 
+
+** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.
+
+
+2019-09-07 12:34:06,417 WARN org.springframework.context.support.AbstractApplicationContext [restartedMain] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+2019-09-07 12:34:06,426 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [restartedMain] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 12:34:06,432 ERROR org.springframework.boot.SpringApplication [restartedMain] Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:454)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:316)
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:275)
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:287)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:242)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:199)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:167)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:315)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:232)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:275)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:95)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:705)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:531)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:743)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:390)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at ReWriterApp.main(ReWriterApp.java:10)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49)
+Caused by: java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:54)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:108)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:88)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:71)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isConditionMatch(ClassPathScanningCandidateComponentProvider.java:515)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isCandidateComponent(ClassPathScanningCandidateComponentProvider.java:498)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:431)
+	... 25 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: org/springframework/dao/DataAccessException
+	at org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseCondition.getMatchOutcome(DataSourceAutoConfiguration.java:139)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47)
+	... 31 common frames omitted
+Caused by: java.lang.ClassNotFoundException: org.springframework.dao.DataAccessException
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+	... 33 common frames omitted
+2019-09-07 12:38:48,552 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp on LAPTOP-HTGTRC2F with PID 21168 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:38:48,555 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:38:48,600 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:38:48,600 INFO org.springframework.boot.logging.DeferredLog [restartedMain] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2019-09-07 12:38:48,618 WARN org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor [restartedMain] 
+
+** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.
+
+
+2019-09-07 12:38:54,560 WARN org.springframework.context.support.AbstractApplicationContext [restartedMain] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+2019-09-07 12:38:54,569 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [restartedMain] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 12:38:54,574 ERROR org.springframework.boot.SpringApplication [restartedMain] Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to read candidate component class: URL [jar:file:C:\Users\me\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\2.1.7.RELEASE\spring-boot-autoconfigure-2.1.7.RELEASE.jar!/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration.class]; nested exception is java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:454)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:316)
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:275)
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:287)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:242)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:199)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:167)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:315)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:232)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:275)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:95)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:705)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:531)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:743)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:390)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at ReWriterApp.main(ReWriterApp.java:10)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49)
+Caused by: java.lang.IllegalStateException: Could not evaluate condition on org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseConfiguration due to org/springframework/dao/DataAccessException not found. Make sure your own configuration does not rely on that class. This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:54)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:108)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:88)
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:71)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isConditionMatch(ClassPathScanningCandidateComponentProvider.java:515)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.isCandidateComponent(ClassPathScanningCandidateComponentProvider.java:498)
+	at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.scanCandidateComponents(ClassPathScanningCandidateComponentProvider.java:431)
+	... 25 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: org/springframework/dao/DataAccessException
+	at org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$EmbeddedDatabaseCondition.getMatchOutcome(DataSourceAutoConfiguration.java:139)
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47)
+	... 31 common frames omitted
+Caused by: java.lang.ClassNotFoundException: org.springframework.dao.DataAccessException
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:583)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+	... 33 common frames omitted
+2019-09-07 12:40:53,024 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp2 on LAPTOP-HTGTRC2F with PID 26056 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:40:53,027 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:40:53,067 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:40:53,067 INFO org.springframework.boot.logging.DeferredLog [restartedMain] For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2019-09-07 12:40:54,285 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [restartedMain] Tomcat initialized with port(s): 8080 (http)
+2019-09-07 12:40:54,304 INFO org.apache.juli.logging.DirectJDKLog [restartedMain] Initializing ProtocolHandler ["http-nio-8080"]
+2019-09-07 12:40:54,317 INFO org.apache.juli.logging.DirectJDKLog [restartedMain] Starting service [Tomcat]
+2019-09-07 12:40:54,317 INFO org.apache.juli.logging.DirectJDKLog [restartedMain] Starting Servlet engine: [Apache Tomcat/9.0.22]
+2019-09-07 12:40:54,496 INFO org.apache.juli.logging.DirectJDKLog [restartedMain] Initializing Spring embedded WebApplicationContext
+2019-09-07 12:40:54,496 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [restartedMain] Root WebApplicationContext: initialization completed in 1428 ms
+2019-09-07 12:40:54,732 INFO org.springframework.scheduling.concurrent.ExecutorConfigurationSupport [restartedMain] Initializing ExecutorService 'applicationTaskExecutor'
+2019-09-07 12:40:54,932 INFO org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer [restartedMain] LiveReload server is running on port 35729
+2019-09-07 12:40:54,958 INFO org.apache.juli.logging.DirectJDKLog [restartedMain] Starting ProtocolHandler ["http-nio-8080"]
+2019-09-07 12:40:54,997 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [restartedMain] Tomcat started on port(s): 8080 (http) with context path ''
+2019-09-07 12:40:55,002 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started ReWriterApp2 in 2.258 seconds (JVM running for 2.871)
+2019-09-07 12:40:55,376 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [restartedMain] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 12:40:55,391 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Starting V8 runtime...
+2019-09-07 12:40:56,019 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Started V8 runtime. Initializing graphviz...
+2019-09-07 12:40:56,186 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Initialized graphviz.
+2019-09-07 12:41:29,374 INFO org.apache.juli.logging.DirectJDKLog [http-nio-8080-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-09-07 12:41:29,375 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8080-exec-1] Initializing Servlet 'dispatcherServlet'
+2019-09-07 12:41:29,384 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8080-exec-1] Completed initialization in 9 ms
+2019-09-07 12:42:09,261 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp2 on LAPTOP-HTGTRC2F with PID 16428 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:42:09,264 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:42:09,301 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:42:09,840 INFO org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer [restartedMain] LiveReload server is running on port 35729
+2019-09-07 12:42:09,873 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started ReWriterApp2 in 0.839 seconds (JVM running for 1.399)
+2019-09-07 12:42:10,227 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [restartedMain] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 12:42:10,243 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Starting V8 runtime...
+2019-09-07 12:42:10,840 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Started V8 runtime. Initializing graphviz...
+2019-09-07 12:42:10,991 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Initialized graphviz.
+2019-09-07 12:48:45,024 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp2 on LAPTOP-HTGTRC2F with PID 13980 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:48:45,027 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:48:45,064 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:48:45,586 INFO org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer [restartedMain] LiveReload server is running on port 35729
+2019-09-07 12:48:45,605 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started ReWriterApp2 in 0.818 seconds (JVM running for 1.37)
+2019-09-07 12:48:45,974 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [restartedMain] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 12:48:45,991 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Starting V8 runtime...
+2019-09-07 12:48:46,616 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Started V8 runtime. Initializing graphviz...
+2019-09-07 12:48:46,766 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Initialized graphviz.
+2019-09-07 12:59:51,287 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting ReWriterApp2 on LAPTOP-HTGTRC2F with PID 29464 (D:\T\rewriterpar\target\classes started by me in D:\T\rewriterpar)
+2019-09-07 12:59:51,290 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2019-09-07 12:59:51,332 INFO org.springframework.boot.logging.DeferredLog [restartedMain] Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2019-09-07 12:59:51,858 INFO org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer [restartedMain] LiveReload server is running on port 35729
+2019-09-07 12:59:51,884 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started ReWriterApp2 in 0.833 seconds (JVM running for 1.4)
+2019-09-07 12:59:52,352 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [restartedMain] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 12:59:52,369 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Starting V8 runtime...
+2019-09-07 12:59:53,008 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Started V8 runtime. Initializing graphviz...
+2019-09-07 12:59:53,196 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [restartedMain] Initialized graphviz.
+2019-09-07 14:06:55,764 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 10304 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 14:06:55,767 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 14:06:56,239 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.744 seconds (JVM running for 1.296)
+2019-09-07 14:06:56,548 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 14:06:56,563 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 14:06:56,913 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 14:06:57,070 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 14:47:14,206 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 17836 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 14:47:14,209 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 14:47:14,694 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.772 seconds (JVM running for 1.324)
+2019-09-07 14:47:15,005 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 14:47:15,018 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 14:47:15,374 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 14:47:15,515 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 16:49:56,472 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 30724 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 16:49:56,488 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 16:49:56,989 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.817 seconds (JVM running for 1.373)
+2019-09-07 16:49:57,306 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 16:49:57,321 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 16:49:57,606 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 16:49:57,753 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 16:52:59,298 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 16:52:59,329 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 16:52:59,625 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 16:52:59,785 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 17:04:28,310 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 17:04:28,330 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 17:04:28,663 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 17:04:28,898 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:11:19,434 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:11:19,457 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:11:19,773 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:11:20,019 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:21:11,959 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:21:11,983 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:21:12,369 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:21:12,562 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:22:31,139 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:22:31,161 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:22:31,519 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:22:31,674 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:23:12,205 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:23:12,225 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:23:12,545 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:23:12,723 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:23:59,414 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:23:59,433 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:23:59,730 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:23:59,885 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 18:34:01,963 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 18:34:01,984 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 18:34:02,302 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 18:34:02,491 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 19:35:33,144 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 19:35:33,160 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 19:35:33,428 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 19:35:33,585 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 19:39:59,109 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 19:39:59,144 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 19:39:59,405 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 19:39:59,546 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 19:42:15,698 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 19:42:16,162 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 19:42:16,536 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 19:42:16,677 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 19:50:01,142 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 19:50:01,159 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 19:50:01,443 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 19:50:01,590 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 19:54:40,646 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 19312 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 19:54:40,646 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 19:54:41,146 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.781 seconds (JVM running for 1.337)
+2019-09-07 20:00:44,105 INFO guru.nidi.graphviz.engine.AbstractGraphvizEngine [main] Could not initialize guru.nidi.graphviz.engine.GraphvizCmdLineEngine
+guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
+2019-09-07 20:00:44,112 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
+2019-09-07 20:00:44,398 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
+2019-09-07 20:00:44,554 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.

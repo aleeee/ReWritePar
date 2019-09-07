@@ -1,6 +1,7 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import rewriter.ReWriter;
 import util.ReWritingRules;
@@ -12,8 +13,8 @@ public class MapPatt  implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
-	ArrayList<SkeletonPatt> patterns;
+	int serviceTime;
+	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
@@ -21,7 +22,7 @@ public class MapPatt  implements SkeletonPatt {
 	public MapPatt() {
 		this.lable= "map";
 	}
-	public MapPatt(String lable, double serviceTime) {
+	public MapPatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
 		this.serviceTime = serviceTime;
@@ -48,7 +49,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public double completionTime() {
+	public int completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -65,7 +66,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public void setServiceTime(double ts) {
+	public void setServiceTime(int ts) {
 		this.serviceTime=ts;
 		
 	}
@@ -93,7 +94,7 @@ public class MapPatt  implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public double getServiceTime() {
+	public int getServiceTime() {
 		return serviceTime;
 	}
 
@@ -109,10 +110,10 @@ public class MapPatt  implements SkeletonPatt {
 		this.child = child;
 	}
 
-	public ArrayList<SkeletonPatt> getPatterns() {
+	public Set<SkeletonPatt> getPatterns() {
 		return patterns;
 	}
-	public void setPatterns(ArrayList<SkeletonPatt> patterns) {
+	public void setPatterns(Set<SkeletonPatt> patterns) {
 		this.patterns = patterns;
 	}
 	public boolean reWriteNodes() {
