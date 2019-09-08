@@ -21,20 +21,23 @@ import rewriter.RW;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
 
-public class DiGraphGen2 {
-	private  Logger log = LoggerFactory.getLogger(getClass());
+public class DiGraphGen3 {
+	private Logger log = LoggerFactory.getLogger(getClass());
 	RW rw = new RW();
-	public static Graph<SkeletonPatt, Edge> g = new  DefaultDirectedGraph<>(Edge.class);
+	public static Graph<SkeletonPatt, Edge> g = new DefaultDirectedGraph<>(Edge.class);
 	private Map<SkeletonPatt, List<Edge>> neighbors = new LinkedHashMap<SkeletonPatt, List<Edge>>();
 
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
+
 	public static class Edge {
 		private SkeletonPatt vertex;
 		private ReWritingRules rule;
+
 		public Edge(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
-			this.vertex=from;
-			this.rule=rule;
+			this.vertex = from;
+			this.rule = rule;
 		}
+
 		public Edge(SkeletonPatt v, ReWritingRules c) {
 			vertex = v;
 			rule = c;
@@ -55,13 +58,12 @@ public class DiGraphGen2 {
 
 	}
 
-
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		for (SkeletonPatt v : neighbors.keySet())
 			try {
-				s.append("\n    " + v +" -> " + neighbors.get(v));
-				
+				s.append("\n    " + v + " -> " + neighbors.get(v));
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -86,58 +88,72 @@ public class DiGraphGen2 {
 		neighbors.put(vertex, new ArrayList<Edge>());
 	}
 
-
 	public boolean contains(SkeletonPatt vertex) {
 		return neighbors.containsKey(vertex);
 	}
 
 	/**
-	 * Add an edge to the graph 
+	 * Add an edge to the graph
 	 */
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		this.add(from);
 		g.addVertex(from);
 		g.addVertex(to);
-		g.addEdge(from,to,new Edge(from, to, rule));
+		g.addEdge(from, to, new Edge(from, to, rule));
 		this.add(to);
 		neighbors.get(from).add(new Edge(to, rule));
 	}
 
-
 	public void bfs(SkeletonPatt s) {
-		s.setDepth(0); //set depth of the root to zero and increments as it goes deep, this is used to terminate the process after certain depth
+		s.setDepth(0); // set depth of the root to zero and increments as it goes deep, this is used to
+						// terminate the process after certain depth
 		s.getChildren().forEach(c -> c.setDepth(1));
 		queue.add(s);
 		Map<SkeletonPatt, Set<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
 			SkeletonPatt curNode = queue.remove();
+			curNode.calculateServiceTime();
+//			if(curNode.getServiceTime() > 1) {//Ts=1 is optimal time so no need to refactor
 			curNode.refactor(rw);
 			this.add(curNode);
 			g.addVertex(curNode);
+			if(curNode.getPatterns() == null)
+				System.out.println(curNode);
+			if(patterns.containsKey(curNode)) {
+				System.out.println(curNode);
+			}
 			patterns.put(curNode, curNode.getPatterns());
+			System.out.println("putting " + curNode + " with " + curNode.getChildren() );
+			System.out.println("getting"+ patterns.get(curNode));
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 6) {
-					queue.add(sk);	
+				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
+					queue.add(sk);
 				}
 			}
 
 			List<SkeletonPatt> children = curNode.getChildren();
 			if (children != null) {
 				for (SkeletonPatt node : children) {
-					DiGraphGen2.g.addVertex(node);
+					DiGraphGen3.g.addVertex(node);
 					node.setParent(curNode);
 					node.refactor(rw);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 6) {
+							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
 								queue.add(sk);
 							}
+						}
+					}
+					if(patterns.get(curNode) == null){
+						System.out.println(curNode);
+						if(patterns.containsKey(curNode)) {
+							System.out.println(patterns.keySet().contains(curNode));
 						}
 					}
 					patterns.get(curNode).addAll(node.getPatterns());
 				}
 			}
-
+//}
 		}
 
 		if (patterns != null) {
@@ -150,6 +166,5 @@ public class DiGraphGen2 {
 
 		}
 	}
-    
-	
+
 }

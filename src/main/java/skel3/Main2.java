@@ -1,7 +1,6 @@
 package skel3;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -16,10 +15,12 @@ import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
 
-import graph.DiGraphGen2.Edge;
 import graph.DiGraphGen2;
+import graph.DiGraphGen2.Edge;
+import graph.DiGraphGen3;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.GraphvizJdkEngine;
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
 import tree.model.SkeletonPatt;
@@ -55,10 +56,10 @@ public class Main2 {
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
 		
-		DiGraphGen2 dg = new  DiGraphGen2();
+		DiGraphGen3 dg = new  DiGraphGen3();
 		dg.bfs(n);
 		System.out.println(dg);
-		renderHrefGraph(dg);
+//		renderHrefGraph(dg);
 //		try {
 //			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));
 //		} catch (IOException e) {
@@ -81,9 +82,10 @@ public class Main2 {
 	}
 
 	 private static void renderHrefGraph(DiGraphGen2 dg)
+	 
 		        throws ExportException
 		    {	
-		
+//		 dg.g.removeAllVertices( dg.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
 		        // @example:render:begin
 
 		        // use helper classes to define how vertices should be rendered,
@@ -126,12 +128,17 @@ public class Main2 {
 //					// TODO Auto-generated catch block
 //					e1.printStackTrace();
 //				}
+		        
 		        exporter.exportGraph(dg.g, f);
 		        
 //		        System.out.println(writer.toString());
 		       
 		        try {
-					Graphviz.fromFile(f).height(200).render(Format.SVG_STANDALONE).toFile(new File("C:\\Users\\me\\Desktop\\out\\s11.svg"));
+		        	
+		        	Graphviz.useEngine(new GraphvizJdkEngine());
+//					CGraphviz..VizjsOptions();
+					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\s11.svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

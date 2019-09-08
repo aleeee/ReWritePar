@@ -20,7 +20,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class Util {
-	static int n = 4;
+	static int n = 256;
 
 	public static SkeletonPatt getType(AssignmentContext ctx) {
 		String type = ctx.expr.sType.getText();

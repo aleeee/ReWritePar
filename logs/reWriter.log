@@ -320,3 +320,108 @@ guru.nidi.graphviz.engine.GraphvizException: dot.exe command not found
 2019-09-07 20:00:44,112 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Starting V8 runtime...
 2019-09-07 20:00:44,398 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Started V8 runtime. Initializing graphviz...
 2019-09-07 20:00:44,554 INFO guru.nidi.graphviz.engine.GraphvizV8Engine$Env [main] Initialized graphviz.
+2019-09-07 20:40:55,837 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 20056 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 20:40:55,837 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 20:40:56,276 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.689 seconds (JVM running for 1.175)
+2019-09-07 20:44:24,209 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 20:44:24,209 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:783)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:764)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at skel3.ReWriterApp2.main(ReWriterApp2.java:11)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:51)
+	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:52)
+Caused by: guru.nidi.graphviz.engine.GraphvizException: abort("Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value 16777216, (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime but prevents some optimizations, (3) set Module.TOTAL_MEMORY to a higher value before the program runs, or (4) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 "). Build with -s ASSERTIONS=1 for more info.
+	at guru.nidi.graphviz.engine.ResultHandler.waitFor(ResultHandler.java:42)
+	at guru.nidi.graphviz.engine.GraphvizNashornEngine.jsExecute(GraphvizNashornEngine.java:47)
+	at guru.nidi.graphviz.engine.AbstractJsGraphvizEngine.execute(AbstractJsGraphvizEngine.java:38)
+	at guru.nidi.graphviz.engine.GraphvizJdkEngine.execute(GraphvizJdkEngine.java:41)
+	at guru.nidi.graphviz.engine.Graphviz.execute(Graphviz.java:211)
+	at guru.nidi.graphviz.engine.Renderer.execute(Renderer.java:133)
+	at guru.nidi.graphviz.engine.Renderer.toFile(Renderer.java:54)
+	at skel3.Main2.renderHrefGraph(Main2.java:143)
+	at skel3.Main2.start(Main2.java:66)
+	at skel3.ReWriterApp2.run(ReWriterApp2.java:17)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780)
+	... 13 common frames omitted
+2019-09-07 23:13:48,953 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 13128 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 23:13:48,953 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 23:13:49,442 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.768 seconds (JVM running for 1.281)
+2019-09-07 23:19:44,727 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 23:19:44,731 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:783)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:764)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at skel3.ReWriterApp2.main(ReWriterApp2.java:11)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:51)
+	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:52)
+Caused by: guru.nidi.graphviz.engine.GraphvizException: java.lang.RuntimeException: buffer.byteLength - byteOffset must be a multiple of the element size
+	at guru.nidi.graphviz.engine.ResultHandler.waitFor(ResultHandler.java:42)
+	at guru.nidi.graphviz.engine.GraphvizNashornEngine.jsExecute(GraphvizNashornEngine.java:47)
+	at guru.nidi.graphviz.engine.AbstractJsGraphvizEngine.execute(AbstractJsGraphvizEngine.java:38)
+	at guru.nidi.graphviz.engine.GraphvizJdkEngine.execute(GraphvizJdkEngine.java:41)
+	at guru.nidi.graphviz.engine.Graphviz.execute(Graphviz.java:211)
+	at guru.nidi.graphviz.engine.Renderer.execute(Renderer.java:133)
+	at guru.nidi.graphviz.engine.Renderer.toFile(Renderer.java:54)
+	at skel3.Main2.renderHrefGraph(Main2.java:146)
+	at skel3.Main2.start(Main2.java:67)
+	at skel3.ReWriterApp2.run(ReWriterApp2.java:17)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780)
+	... 13 common frames omitted
+2019-09-07 23:39:58,286 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 14264 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-07 23:39:58,291 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-07 23:39:58,822 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.801 seconds (JVM running for 1.307)
+2019-09-07 23:44:59,201 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-09-07 23:44:59,207 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:783)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:764)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1214)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1203)
+	at skel3.ReWriterApp2.main(ReWriterApp2.java:11)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:51)
+	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:52)
+Caused by: guru.nidi.graphviz.engine.GraphvizException: java.lang.RuntimeException: buffer.byteLength - byteOffset must be a multiple of the element size
+	at guru.nidi.graphviz.engine.ResultHandler.waitFor(ResultHandler.java:42)
+	at guru.nidi.graphviz.engine.GraphvizNashornEngine.jsExecute(GraphvizNashornEngine.java:47)
+	at guru.nidi.graphviz.engine.AbstractJsGraphvizEngine.execute(AbstractJsGraphvizEngine.java:38)
+	at guru.nidi.graphviz.engine.GraphvizJdkEngine.execute(GraphvizJdkEngine.java:41)
+	at guru.nidi.graphviz.engine.Graphviz.execute(Graphviz.java:211)
+	at guru.nidi.graphviz.engine.Renderer.execute(Renderer.java:133)
+	at guru.nidi.graphviz.engine.Renderer.toFile(Renderer.java:54)
+	at skel3.Main2.renderHrefGraph(Main2.java:146)
+	at skel3.Main2.start(Main2.java:67)
+	at skel3.ReWriterApp2.run(ReWriterApp2.java:17)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:780)
+	... 13 common frames omitted

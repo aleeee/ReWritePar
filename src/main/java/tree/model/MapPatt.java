@@ -126,8 +126,7 @@ public class MapPatt  implements SkeletonPatt {
 	public String toString() {
 //		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
 //				+ ", serviceTime=" + serviceTime + "]";
-		return lable +" ( "+( this.getChildren() != null? this.getChildren().toString() +" ) " :null)  + " ts: ["+getServiceTime()+"]";
-	}
+		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) ;	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

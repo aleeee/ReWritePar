@@ -147,7 +147,7 @@ public class FarmPatt implements SkeletonPatt {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-//		result = prime * result + ((children == null) ? 0 : children.hashCode());
+		result = prime * result + ((children == null) ? 0 : children.hashCode());
 		result = prime * result + ((lable == null) ? 0 : lable.hashCode());
 		return result;
 	}
