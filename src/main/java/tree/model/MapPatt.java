@@ -3,6 +3,8 @@ package tree.model;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.jgrapht.io.AttributeType;
+
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
@@ -13,16 +15,17 @@ public class MapPatt  implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	int serviceTime;
+	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
+	int parallelismDegree;
 	
 	public MapPatt() {
 		this.lable= "map";
 	}
-	public MapPatt(String lable, int serviceTime) {
+	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
 		this.serviceTime = serviceTime;
@@ -38,8 +41,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public int parallelismDegree() {
-		// TODO Auto-generated method stub
-		return 0;
+		return parallelismDegree;
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public int completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -66,7 +68,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public void setServiceTime(int ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime=ts;
 		
 	}
@@ -94,7 +96,7 @@ public class MapPatt  implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public int getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -124,9 +126,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public String toString() {
-//		return "MapPatt [children=" + children + ", parent=" + parent + ", lable=" + lable + ", child=" + child
-//				+ ", serviceTime=" + serviceTime + "]";
-		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) ;	}
+		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) + "n: " +getParallelismDegree() + "ts::" +getServiceTime();	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -154,6 +154,11 @@ public class MapPatt  implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
+//		if(rule == null) {
+//			if(other.rule != null)
+//				return false;
+//		}else if(!rule.equals(other.rule))
+//			return false;
 		return true;
 	}
 	@Override
@@ -163,6 +168,22 @@ public class MapPatt  implements SkeletonPatt {
 	@Override
 	public int getDepth() {
 		return depth;
+	}
+	public int getParallelismDegree() {
+		return parallelismDegree;
+	}
+	public void setParallelismDegree(int parallelismDegree) {
+		this.parallelismDegree = parallelismDegree;
+	}
+	@Override
+	public String getValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public AttributeType getType() {
+		// TODO Auto-generated method stub
+		return AttributeType.STRING;
 	}
 
 	

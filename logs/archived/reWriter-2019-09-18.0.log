@@ -1,0 +1,3 @@
+2019-09-18 22:29:10,181 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 14092 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-18 22:29:10,185 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-18 22:29:10,657 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.76 seconds (JVM running for 1.273)

@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
+import javax.lang.model.util.Elements.Origin;
 
+import com.google.common.collect.Sets;
 import graph.DiGraphGen2;
+import graph.DiGraphGen3;
 import pattern.skel4.Skel4Parser.AssignmentContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
@@ -26,41 +28,22 @@ public class Util {
 		String type = ctx.expr.sType.getText();
 		switch (type) {
 		case "Seq":
-			SeqPatt s = new SeqPatt(Integer.parseInt(ctx.expr.sequence().ts.getText()));
-			s.setLable(ctx.varName.getText());
+			SeqPatt s = new SeqPatt(Integer.parseInt(ctx.expr.sequence().ts.getText()),ctx.varName.getText());
 			return s;
 
 		case "Comp":
-			return new CompPatt("comp", 0);
+			return  new CompPatt();
 		case "Farm":
-			return new FarmPatt("farm", 0);
+			return new FarmPatt();
 		case "Pipe":
-			return new PipePatt("pipe", 0);
+			return new PipePatt();
 		case "Map":
-			return new MapPatt("map", 0);
+			return new MapPatt();
 		}
 		return null;
 	}
 
-	/**
-	 * a method to generate all the combinations of stages after each stage
-	 * component is refactored their patterns combined using cartesian product
-	 * 
-	 * @param pattern
-	 * @return possible alterative implementations(rewritings ) of stages
-	 */
-	public static List<List<SkeletonPatt>> getStagesPatterns(SkeletonPatt pattern) {
-		List<Set<SkeletonPatt>> sets = new ArrayList<Set<SkeletonPatt>>();
-		for (SkeletonPatt node : pattern.getChildren()) {
-			sets.add(new HashSet<SkeletonPatt>(node.getPatterns()));
-
-		}
-//		return (List<List<SkeletonPatt>>) Sets.cartesianProduct(sets);
-
-		return Sets.cartesianProduct(sets).stream().map(l -> new ArrayList<SkeletonPatt>(l))
-				.collect(Collectors.toList());
-
-	}
+	
 
 	/**
 	 * calculates the service time of pipeline
@@ -68,8 +51,8 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static int getServiceTime(PipePatt pat) {
-		return pat.getChildren().stream().mapToInt(SkeletonPatt::getServiceTime).reduce(0,
+	public static double getServiceTime(PipePatt pat) {
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2);
 
 	}
@@ -80,8 +63,8 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static int getServiceTime(CompPatt pat) {
-		return pat.getChildren().stream().mapToInt(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+	public static double getServiceTime(CompPatt pat) {
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2);
 	}
 
 	/**
@@ -90,8 +73,11 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static int getServiceTime(FarmPatt pat) {
-		return pat.getChildren().get(0).getServiceTime() / n;
+	public static double getServiceTime(FarmPatt pat) {
+		SkeletonPatt farmWorker = pat.getChildren().get(0);
+		int parallelismDegree = (int) (farmWorker.getServiceTime()/Constants.TEmitter);
+		pat.setParallelismDegree(parallelismDegree);
+		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getServiceTime()/pat.getParallelismDegree());
 	}
 
 	/**
@@ -100,8 +86,11 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static int getServiceTime(MapPatt pat) {
-		return pat.getChildren().get(0).getServiceTime() / n;
+	public static double getServiceTime(MapPatt pat) {
+		SkeletonPatt mapWorker = pat.getChildren().get(0);
+		int parallelismDegree = (int) Math.sqrt(mapWorker.getServiceTime()/Math.max(Constants.TScatter, Constants.TGather));
+		pat.setParallelismDegree(parallelismDegree);
+		return mapWorker.getServiceTime()/pat.getParallelismDegree();
 	}
 
 	/**
@@ -128,14 +117,54 @@ public class Util {
 
 			sc.addAll(parent.getChildren());
 //			newP.setParent(parent);
+//			newP.setLable(parent.getLable());
 			newP.setDepth(p.getDepth());
 			newP.setChildren(sc);
 			newP.getChildren().set(newP.getChildren().indexOf(node), p);
 			newP.setReWritingRule(p.getRule());
 			newP.calculateServiceTime();
+			newP.setReWriteNodes(false);
 			patterns.add(newP);
-			DiGraphGen2.g.addVertex(newP);
+			System.out.println(newP);
+			if(DiGraphGen3.g.containsVertex(newP)) {
+//				System.out.println(newP + "already exists");
+			}else {
+			DiGraphGen3.g.addVertex(newP);}
+//			if(newP.getChildren() != null) {
+//			int depth = getMaxDepth(newP);
+////			System.out.println("depth: : #@ " +depth + "  " + newP);
+//			}
 		}
 		return patterns;
+	}
+	
+	public static int getHeight(SkeletonPatt pat) {
+		int height = 0;
+		if (pat == null)
+			return height;
+		if(pat.getChildren() == null) 
+			return 1;
+		for(SkeletonPatt sk: pat.getChildren()) {			
+			height = Math.max(height, getHeight(sk));
+		}
+		return height +1;
+	}
+	
+	public static SkeletonPatt clone(SkeletonPatt original) {
+		SkeletonPatt copy = null;
+		try {
+			copy = original.getClass().getDeclaredConstructor().newInstance();
+			copy.setChildren(original.getChildren());
+			copy.setLable(original.getLable());
+			copy.setDepth(original.getDepth());
+			copy.setReWritingRule(original.getRule());
+			copy.setPatterns(original.getPatterns());
+			copy.calculateServiceTime();
+			return copy;
+		} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+			return null;
+		}
 	}
 }

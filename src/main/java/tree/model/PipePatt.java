@@ -3,6 +3,8 @@ package tree.model;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.jgrapht.io.AttributeType;
+
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
@@ -14,11 +16,13 @@ public class PipePatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	int serviceTime;
+	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth ;
+	int parallelismDegree;
+	
 	public PipePatt() {
 		this.lable= "pipe";
 	}
@@ -38,8 +42,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public int parallelismDegree() {
-		// TODO Auto-generated method stub
-		return 0;
+		return parallelismDegree;
 	}
 
 	@Override
@@ -49,7 +52,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 
 	@Override
-	public int completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -66,7 +69,7 @@ public class PipePatt implements SkeletonPatt {
 
 
 	@Override
-	public void setServiceTime(int ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime=ts;
 		
 	}
@@ -94,7 +97,7 @@ public class PipePatt implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public int getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -124,8 +127,8 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public String toString() {
-		return " P ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null);
-//		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null)  + " ts: ["+getServiceTime()+"]";
+//		return " P ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null);
+		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null)  + "n: " +getParallelismDegree() + "ts:: ["+getServiceTime()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -154,6 +157,11 @@ public class PipePatt implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
+//		if(rule == null) {
+//			if(other.rule != null)
+//				return false;
+//		}else if(!rule.equals(other.rule))
+//			return false;
 		return true;
 	}
 	@Override
@@ -163,6 +171,22 @@ public class PipePatt implements SkeletonPatt {
 	@Override
 	public int getDepth() {
 		return depth;
+	}
+	public int getParallelismDegree() {
+		return parallelismDegree;
+	}
+	public void setParallelismDegree(int parallelismDegree) {
+		this.parallelismDegree = parallelismDegree;
+	}
+	@Override
+	public String getValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public AttributeType getType() {
+		// TODO Auto-generated method stub
+		return AttributeType.STRING;
 	}
 
 	

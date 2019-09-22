@@ -1,7 +1,10 @@
+
 package tree.model;
 
 import java.util.ArrayList;
 import java.util.Set;
+
+import org.jgrapht.io.AttributeType;
 
 import rewriter.ReWriter;
 import util.ReWritingRules;
@@ -12,16 +15,22 @@ public class SeqPatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	int serviceTime;
+	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	ReWritingRules rule;
 	int depth;
+	private int parallelismDegree;
 	
 	public SeqPatt() {
-		this.lable="seq";
+//		this.lable="seq";
+		this.parallelismDegree=1;
 	}
-	public SeqPatt(int serviceTime) {
+	public SeqPatt(double serviceTime) {
+		this.serviceTime=serviceTime;
+	}
+	public SeqPatt(double serviceTime, String lable) {
 		this.serviceTime = serviceTime;
+		this.lable=lable;
 	}
 
 	@Override
@@ -37,8 +46,7 @@ public class SeqPatt implements SkeletonPatt {
 
 	@Override
 	public int parallelismDegree() {
-		// TODO Auto-generated method stub
-		return 0;
+		return parallelismDegree;
 	}
 
 	@Override
@@ -58,13 +66,13 @@ public class SeqPatt implements SkeletonPatt {
 	}
 
 	@Override
-	public int completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setServiceTime(int ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime = ts;
 
 	}
@@ -92,7 +100,7 @@ public class SeqPatt implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public int getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -126,6 +134,10 @@ public class SeqPatt implements SkeletonPatt {
 	public void setReWriteNodes(boolean flag) {
 		// TODO Auto-generated method stub
 		
+	}
+	 @Override
+	public boolean reWriteNodes() {
+		return false;
 	}
 	@Override
 	public int hashCode() {
@@ -163,6 +175,22 @@ public class SeqPatt implements SkeletonPatt {
 	@Override
 	public int getDepth() {
 		return depth;
+	}
+	public int getParallelismDegree() {
+		return parallelismDegree;
+	}
+	public void setParallelismDegree() {
+		this.parallelismDegree = 1;
+	}
+	@Override
+	public String getValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public AttributeType getType() {
+		// TODO Auto-generated method stub
+		return AttributeType.STRING;
 	}
 
 }

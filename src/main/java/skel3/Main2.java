@@ -1,23 +1,37 @@
 package skel3;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import javax.json.JsonObject;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.jgrapht.io.Attribute;
+import org.jgrapht.io.ComponentAttributeProvider;
 import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
+import org.jgrapht.io.JSONExporter;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 
-import graph.DiGraphGen2;
-import graph.DiGraphGen2.Edge;
+import com.google.gson.Gson;
+
 import graph.DiGraphGen3;
+import graph.DiGraphGen3.Edge;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizJdkEngine;
@@ -60,6 +74,7 @@ public class Main2 {
 		dg.bfs(n);
 		System.out.println(dg);
 //		renderHrefGraph(dg);
+		exportJson(dg);
 //		try {
 //			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));
 //		} catch (IOException e) {
@@ -81,7 +96,7 @@ public class Main2 {
 
 	}
 
-	 private static void renderHrefGraph(DiGraphGen2 dg)
+	 private static void renderHrefGraph(DiGraphGen3 dg)
 	 
 		        throws ExportException
 		    {	
@@ -119,7 +134,7 @@ public class Main2 {
 //				ComponentAttributeProvider<Edge> edgeAttributeProvider = (Edge ee) ->
 //				{return null;};
 				  GraphExporter<SkeletonPatt, Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
-		        		new DOTExporter<SkeletonPatt, DiGraphGen2.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
 		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\ddd1.dot");;
 //				try {
@@ -138,11 +153,70 @@ public class Main2 {
 		        	Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
 					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-						.toFile(new File("C:\\Users\\me\\Desktop\\out\\s11.svg"));
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\s13.svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		        // @example:render:end
 		    }
+	 private static void exportJson(DiGraphGen3 dg)  throws ExportException, IOException
+		    {	
+		 AtomicInteger id = new AtomicInteger();
+		 dg.g.removeAllVertices( dg.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
+		       
+		       
+		        
+		        ComponentNameProvider<Edge> edgeLabelProvider = (Edge sk) -> {return sk.getRule() != null? sk.getRule().toString():
+		        													"NO LABLE";}; 
+		        ComponentNameProvider<SkeletonPatt> vertexIDProvider = (SkeletonPatt pat) ->  String.valueOf(id.getAndIncrement()) ;
+				ComponentAttributeProvider<SkeletonPatt> vertexAttributeProvider= new ComponentAttributeProvider<SkeletonPatt>() {
+					
+					@Override
+					public Map<String, Attribute> getComponentAttributes(SkeletonPatt node) {
+						  Map<String, Attribute> attrs = new HashMap<>();
+						    attrs.put("children", (Attribute) node.getChildren().get(0));
+						   
+						    return attrs;
+					}
+				};
+				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(id.incrementAndGet());
+				ComponentAttributeProvider<Edge> edgeAttributeProvider = new ComponentAttributeProvider<DiGraphGen3.Edge>() {
+					
+					@Override
+					public Map<String, Attribute> getComponentAttributes(Edge edge) {
+						Map<String, Attribute> attrs = new HashMap<>();
+					    attrs.put("rule", (Attribute) edge);
+					   
+					    return attrs;
+					}
+				};
+		        GraphExporter<SkeletonPatt, Edge> exporter = 	new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider);
+
+				
+//				  GraphExporter<SkeletonPatt, Edge> exporter =new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
+////		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+		        Writer writer=new StringWriter();
+//		        File f = 
+		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\jsonF.json");
+		        exporter.exportGraph(dg.g, writer);
+		        
+		       
+		        
+		    }
+	 
+	  class vAttributeProv implements ComponentAttributeProvider<SkeletonPatt> {
+		  
+
+		  @Override
+		  public Map<String, Attribute> getComponentAttributes(SkeletonPatt node) {
+			  Map<String, Attribute> attrs = new HashMap<>();
+		    attrs.put("children", (Attribute) node.getChildren());
+		   
+		    return attrs;
+		  }
+
+		
+	  }
+
 }

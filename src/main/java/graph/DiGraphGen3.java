@@ -20,11 +20,13 @@ import org.slf4j.LoggerFactory;
 import rewriter.RW;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
+import util.Util;
 
 public class DiGraphGen3 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	RW rw = new RW();
 	public static Graph<SkeletonPatt, Edge> g = new DefaultDirectedGraph<>(Edge.class);
+	
 	private Map<SkeletonPatt, List<Edge>> neighbors = new LinkedHashMap<SkeletonPatt, List<Edge>>();
 
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
@@ -97,6 +99,9 @@ public class DiGraphGen3 {
 	 */
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		this.add(from);
+		if(g.containsVertex(from) || g.containsVertex(to)) {
+//			System.out.println(from + "or " + to +" exists");
+		}
 		g.addVertex(from);
 		g.addVertex(to);
 		g.addEdge(from, to, new Edge(from, to, rule));
@@ -109,6 +114,7 @@ public class DiGraphGen3 {
 						// terminate the process after certain depth
 		s.getChildren().forEach(c -> c.setDepth(1));
 		queue.add(s);
+		g.addVertex(s);
 		Map<SkeletonPatt, Set<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
 			SkeletonPatt curNode = queue.remove();
@@ -116,17 +122,9 @@ public class DiGraphGen3 {
 //			if(curNode.getServiceTime() > 1) {//Ts=1 is optimal time so no need to refactor
 			curNode.refactor(rw);
 			this.add(curNode);
-			g.addVertex(curNode);
-			if(curNode.getPatterns() == null)
-				System.out.println(curNode);
-			if(patterns.containsKey(curNode)) {
-				System.out.println(curNode);
-			}
 			patterns.put(curNode, curNode.getPatterns());
-			System.out.println("putting " + curNode + " with " + curNode.getChildren() );
-			System.out.println("getting"+ patterns.get(curNode));
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
+				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 1) {
 					queue.add(sk);
 				}
 			}
@@ -134,26 +132,19 @@ public class DiGraphGen3 {
 			List<SkeletonPatt> children = curNode.getChildren();
 			if (children != null) {
 				for (SkeletonPatt node : children) {
-					DiGraphGen3.g.addVertex(node);
 					node.setParent(curNode);
 					node.refactor(rw);
+					node.setDepth(curNode.getDepth()+1);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && sk.getDepth() < 5) {
+							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 1) {
 								queue.add(sk);
 							}
-						}
-					}
-					if(patterns.get(curNode) == null){
-						System.out.println(curNode);
-						if(patterns.containsKey(curNode)) {
-							System.out.println(patterns.keySet().contains(curNode));
 						}
 					}
 					patterns.get(curNode).addAll(node.getPatterns());
 				}
 			}
-//}
 		}
 
 		if (patterns != null) {

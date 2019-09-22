@@ -3,21 +3,31 @@ package tree.model;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.jgrapht.io.AttributeType;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
-
+@Setter @Getter @Builder  @AllArgsConstructor
 public class CompPatt implements SkeletonPatt {
+	
+	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	int serviceTime;
+	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
+	int parallelismDegree;
 	
 	public CompPatt() {
 		this.lable = "comp";
@@ -54,8 +64,7 @@ public class CompPatt implements SkeletonPatt {
 
 	@Override
 	public int parallelismDegree() {
-		// TODO Auto-generated method stub
-		return 0;
+		return parallelismDegree;
 	}
 
 	@Override
@@ -65,13 +74,13 @@ public class CompPatt implements SkeletonPatt {
 	}
 
 	@Override
-	public int completionTime() {
+	public double completionTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setServiceTime(int ts) {
+	public void setServiceTime(double ts) {
 		this.serviceTime = ts;
 	}
 
@@ -98,7 +107,7 @@ public class CompPatt implements SkeletonPatt {
 		this.parent = parent;
 	}
 
-	public int getServiceTime() {
+	public double getServiceTime() {
 		return serviceTime;
 	}
 
@@ -130,12 +139,12 @@ public class CompPatt implements SkeletonPatt {
 	public void setReWriteNodes(boolean reWriteNodes) {
 		this.reWriteNodes = reWriteNodes;
 	}
-
+	
 	@Override
 	public String toString() {
-		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
+//		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
 
-		//		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + " ts: ["+getServiceTime()+"]";
+		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + "n: " +getParallelismDegree() + "ts::+  ["+getServiceTime()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -164,6 +173,11 @@ public class CompPatt implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
+//		if(rule == null) {
+//			if(other.rule != null)
+//				return false;
+//		}else if(!rule.equals(other.rule))
+//			return false;
 		return true;
 	}
 	@Override
@@ -173,6 +187,22 @@ public class CompPatt implements SkeletonPatt {
 	@Override
 	public int getDepth() {
 		return depth;
+	}
+	public int getParallelismDegree() {
+		return parallelismDegree;
+	}
+	public void setParallelismDegree(int parallelismDegree) {
+		this.parallelismDegree = parallelismDegree;
+	}
+	@Override
+	public String getValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public AttributeType getType() {
+		// TODO Auto-generated method stub
+		return AttributeType.STRING;
 	}
 	
 
