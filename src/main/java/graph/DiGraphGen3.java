@@ -17,6 +17,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import rewriter.RW;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
@@ -30,7 +31,7 @@ public class DiGraphGen3 {
 	private Map<SkeletonPatt, List<Edge>> neighbors = new LinkedHashMap<SkeletonPatt, List<Edge>>();
 
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
-
+	AtomicInteger intId = new AtomicInteger();
 	public static class Edge {
 		private SkeletonPatt vertex;
 		private ReWritingRules rule;
@@ -99,11 +100,12 @@ public class DiGraphGen3 {
 	 */
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		this.add(from);
-		if(g.containsVertex(from) || g.containsVertex(to)) {
-//			System.out.println(from + "or " + to +" exists");
-		}
-		g.addVertex(from);
-		g.addVertex(to);
+		if(!g.containsVertex(from)) {
+			from.setId(intId.getAndIncrement());
+			g.addVertex(from);}
+		if(!g.containsVertex(to)) {
+			to.setId(intId.getAndIncrement());
+			g.addVertex(to);}
 		g.addEdge(from, to, new Edge(from, to, rule));
 		this.add(to);
 		neighbors.get(from).add(new Edge(to, rule));
@@ -114,6 +116,7 @@ public class DiGraphGen3 {
 						// terminate the process after certain depth
 		s.getChildren().forEach(c -> c.setDepth(1));
 		queue.add(s);
+		s.setId(intId.getAndIncrement());
 		g.addVertex(s);
 		Map<SkeletonPatt, Set<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
@@ -124,7 +127,7 @@ public class DiGraphGen3 {
 			this.add(curNode);
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 1) {
+				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 4) {
 					queue.add(sk);
 				}
 			}
@@ -137,7 +140,7 @@ public class DiGraphGen3 {
 					node.setDepth(curNode.getDepth()+1);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 1) {
+							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 4) {
 								queue.add(sk);
 							}
 						}

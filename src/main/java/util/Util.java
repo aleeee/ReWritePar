@@ -125,11 +125,11 @@ public class Util {
 			newP.calculateServiceTime();
 			newP.setReWriteNodes(false);
 			patterns.add(newP);
-			System.out.println(newP);
-			if(DiGraphGen3.g.containsVertex(newP)) {
-//				System.out.println(newP + "already exists");
-			}else {
-			DiGraphGen3.g.addVertex(newP);}
+//			System.out.println(newP);
+//			if(DiGraphGen3.g.containsVertex(newP)) {
+////				System.out.println(newP + "already exists");
+//			}else {
+//			DiGraphGen3.g.addVertex(newP);}
 //			if(newP.getChildren() != null) {
 //			int depth = getMaxDepth(newP);
 ////			System.out.println("depth: : #@ " +depth + "  " + newP);

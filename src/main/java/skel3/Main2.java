@@ -169,7 +169,7 @@ public class Main2 {
 		        
 		        ComponentNameProvider<Edge> edgeLabelProvider = (Edge sk) -> {return sk.getRule() != null? sk.getRule().toString():
 		        													"NO LABLE";}; 
-		        ComponentNameProvider<SkeletonPatt> vertexIDProvider = (SkeletonPatt pat) ->  String.valueOf(id.getAndIncrement()) ;
+		        ComponentNameProvider<SkeletonPatt> vertexIDProvider = (SkeletonPatt pat) ->  String.valueOf(pat.getId()) ;
 				ComponentAttributeProvider<SkeletonPatt> vertexAttributeProvider= new ComponentAttributeProvider<SkeletonPatt>() {
 					
 					@Override
@@ -180,38 +180,40 @@ public class Main2 {
 						    return attrs;
 					}
 				};
-				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(id.incrementAndGet());
+//				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(id.incrementAndGet());
+				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(e.getRule());
+
 				ComponentAttributeProvider<Edge> edgeAttributeProvider = new ComponentAttributeProvider<DiGraphGen3.Edge>() {
 					
 					@Override
 					public Map<String, Attribute> getComponentAttributes(Edge edge) {
 						Map<String, Attribute> attrs = new HashMap<>();
-					    attrs.put("rule", (Attribute) edge);
+					    attrs.put("rule", (Attribute) edge.getVertex());
 					   
 					    return attrs;
 					}
 				};
-		        GraphExporter<SkeletonPatt, Edge> exporter = 	new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider);
+//		        GraphExporter<SkeletonPatt, Edge> exporter = 	new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider);
 
 				
-//				  GraphExporter<SkeletonPatt, Edge> exporter =new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
-////		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+				  GraphExporter<SkeletonPatt, Edge> exporter =new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
+//		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
 //		        File f = 
-		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\jsonF.json");
+		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\jsonFul1_.json");
 		        exporter.exportGraph(dg.g, writer);
 		        
 		       
 		        
 		    }
 	 
-	  class vAttributeProv implements ComponentAttributeProvider<SkeletonPatt> {
+	  class VAttributeProv implements ComponentAttributeProvider<SkeletonPatt> {
 		  
 
 		  @Override
 		  public Map<String, Attribute> getComponentAttributes(SkeletonPatt node) {
 			  Map<String, Attribute> attrs = new HashMap<>();
-		    attrs.put("children", (Attribute) node.getChildren());
+		    attrs.put("children", (Attribute) node.getPatterns());
 		   
 		    return attrs;
 		  }

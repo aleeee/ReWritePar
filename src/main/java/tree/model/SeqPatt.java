@@ -20,7 +20,7 @@ public class SeqPatt implements SkeletonPatt {
 	ReWritingRules rule;
 	int depth;
 	private int parallelismDegree;
-	
+	int id;
 	public SeqPatt() {
 //		this.lable="seq";
 		this.parallelismDegree=1;
@@ -185,12 +185,17 @@ public class SeqPatt implements SkeletonPatt {
 	@Override
 	public String getValue() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.toString();
 	}
 	@Override
 	public AttributeType getType() {
 		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
-
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 }

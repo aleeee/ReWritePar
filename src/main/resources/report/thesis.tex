@@ -9,7 +9,7 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{extarrows}
-
+\usepackage{algorithm2e}
 
 \lstdefinestyle{refactor} {
     keywordstyle=\ttfamily\color{green}\ttfamily,
@@ -60,20 +60,75 @@ a simple example of a tree:
 		ReWritingRule rule;
 	}
 	
+%\begin{algorithm}[H]
+%\SetAlgoLined
+%\KwResult{directed graph of the rewriting options}
+%input: program to be parallelized
+%building skeleton tree \texttt{st};
+%creating queue;
+%add \texttt{st to queue}
+%\While{queue is not empty}{
+%	 st = queue.remove();
+%	 patterns= refactor st;
+%	\For{pattern in patterns}{
+%		\If{pattern not in queue and pattern.height < maxHeight}{
+%			queue.add(pattern);
+%		}
+%	}
+%	\For(Skeleton s in st.stages){
+%		patterns = refactor s;
+%\For{pattern in patterns}{
+%		\If{pattern not in queue and pattern.height < maxHeight}{
+%			queue.add(pattern);
+%		}
+%}
+%	
+%}
+%\EndWhile
+%\end{algorithm}
+
+
+\SetKwRepeat{Do}{do}{while}
+\begin{algorithm}[H]
+  input: program to be parallelized\\
+  \KwResult{directed graph of the rewriting options }
+  initialization\;
+  building skeleton tree \texttt{st}\;
+  init queue\;
+  add \texttt{st to queue}\\
+  \While{queue is not empty}{
+     do  st queue.remove()\;
+    patterns = refactor  st\;
+    \Repeat{all patterns are inserted}{
+	     If{pattern not in queue and pattern.height $ \leq$ maxHeight}{
+	        queue.add(pattern)\;  
+		}
+	}
+	\Repeat{all stages are refactored}{
+		 patterns = refactor  stage\;
+	     If{pattern not in queue and pattern.height $ \leq$ maxHeight}{
+	        queue.add(pattern)\;
+	     }      
+	}  
+  }
+ 
+\end{algorithm}
 whenever a new alrernative rewriting option is constructed the algoithm will add it to the forest if it is not already present and it creates an edge from the original skeleton tree to the new one labeling it with the rewring rule applied on the refactoring that generates it. if the tree already exists it will just create an edge between the original tree and the newly created one. 
 
 \section{non functional parameters}
 i have focused mainly on the service time and parallelism degree of the skeletons. 
 while creating trees of refactoring patterns is straight forward , allocating resources is a very difficult problem to tackle. here is how  paralellism degree and service times are computed for each kind of skeleton:\\
-	let \ttfamily Tscatter 	T\textsubscript{s}, 					Tcollector T\textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
+	let \texttt{ Tscatter 	T\textsubscript{s}, 					Tcollector T\textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
 	$T_{\Delta}$ is service time of the stage or worker skeleton\\
 	Sequential Skeleton:	n = 1; Ts = ts\\
 	Farm Skeleton:	the ideal parallelism degree is computed by $\frac{T\textsubscript{e}}{T_{\Delta}}$\\
-	Pipe Skeleton: the ideal parallelism degree is the number of stages\\
+	Pipeline Skeleton: the ideal parallelism degree is the number of stages\\
 	Comp Skeleton:\\
-     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_c)}}$
-
-
+     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_g)}}$}\\
+Farm:\\
+	the ideal service time is calculated using the formula: \texttt {Max($T_e,T_c,\frac{T_\Delta}{n})$}\\
+Pipeline:\\
+	\texttt{$T_s = Max(T_{si}) \forall i \in pipe stages$}
 
 
 \end{document}

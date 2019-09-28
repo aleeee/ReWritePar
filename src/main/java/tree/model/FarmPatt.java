@@ -21,7 +21,7 @@ public class FarmPatt implements SkeletonPatt {
 	ReWritingRules rule;
 	int depth;
 	int parallelismDegree;
-	
+	int id;
 	public FarmPatt() {
 		this.lable= "farm";
 	}
@@ -201,7 +201,7 @@ public class FarmPatt implements SkeletonPatt {
 	@Override
 	public String getValue() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.toString();
 	}
 
 	@Override
@@ -209,5 +209,10 @@ public class FarmPatt implements SkeletonPatt {
 		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
-
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 }

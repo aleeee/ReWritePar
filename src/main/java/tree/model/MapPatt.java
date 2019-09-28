@@ -21,7 +21,7 @@ public class MapPatt  implements SkeletonPatt {
 	ReWritingRules rule;
 	int depth;
 	int parallelismDegree;
-	
+	int id;
 	public MapPatt() {
 		this.lable= "map";
 	}
@@ -178,14 +178,18 @@ public class MapPatt  implements SkeletonPatt {
 	@Override
 	public String getValue() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.toString();
 	}
 	@Override
 	public AttributeType getType() {
 		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
-
 	
-
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 }

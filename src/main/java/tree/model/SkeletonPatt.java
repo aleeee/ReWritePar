@@ -46,6 +46,8 @@ public interface SkeletonPatt extends Serializable, Attribute{
 	void setDepth(int depth);
 	int getDepth();
 	boolean reWriteNodes();
+	int getId();
+	void setId(int id);
 //	void setLable(String lable);
 	
 }

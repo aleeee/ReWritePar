@@ -28,7 +28,7 @@ public class CompPatt implements SkeletonPatt {
 	ReWritingRules rule;
 	int depth;
 	int parallelismDegree;
-	
+	int id;
 	public CompPatt() {
 		this.lable = "comp";
 	}
@@ -205,5 +205,10 @@ public class CompPatt implements SkeletonPatt {
 		return AttributeType.STRING;
 	}
 	
-
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 }
