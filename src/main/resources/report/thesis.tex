@@ -1,0 +1,79 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{svg}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{extarrows}
+
+
+\lstdefinestyle{refactor} {
+    keywordstyle=\ttfamily\color{green}\ttfamily,
+    stringstyle=\sffamily\color{black},
+    morekeywords={Seq,Pipe,Farm,Comp,Map},
+}
+
+\begin{document}	
+\title{}
+
+\maketitle
+
+\section{Grammar and Parser}
+I have a simple grammar just to accept limited number of pattern combinations and create a parse tree of it. I have used ANTLR (ANother Tool for Language Recognition)  to generate the parser . The parser creates a tree of the input program making the outer-most skeleton as root. for example , let's say we pass a file having the following code :
+
+\begin{lstlisting}[style=refactor]
+a = Seq (10);
+b = Seq (20);
+main = Pipe(Farm(a),b);
+\end{lstlisting}
+The parser creates a tree with root Pipe pattern having two stages Farm and Sequential; Farm intrun will have one stage which is type of Sequential. After that i have used a breadth first search algorithm to construct a forest tree staring from the result of the parser. The tree construction is done by implementing rewriting rules at level of the skeletons;which means a tree can have multiple skeleton nodes and the visitor visits each node and creates a new tree from the result of the refactoring. 
+
+here are the basic rewriting rules:
+
+\begin{itemize}
+\item $\Delta \xLongleftrightarrow[\text{Farm\_Intro}]{\text{Farm\_Elim}} farm (\Delta)$\\
+\item $Comp(\Delta_1, \Delta_2 )\xLongleftrightarrow[\text{Pipe\_Intro}]{\text{Pipe\_Elim}} Pipe (\Delta_1,\Delta_2)$\\
+\item $Map(\Delta) \xLongrightarrow[\text{Map\_Elim}]{\text{}}  (\Delta)$\\
+\item $Comp(Comp(\Delta_1, \Delta_2 ),\Delta_3)\xLongleftrightarrow[\text{Comp\_Assoc}]{\text{}} Comp (\Delta_1,Comp(\Delta_2,\Delta_3))$\\
+\item $Pipe(Pipe(\Delta_1, \Delta_2 ),\Delta_3)\xLongleftrightarrow[\text{Pipe\_Assoc}]{\text{}} Pipe (\Delta_1,Pipe(\Delta_2,\Delta_3))$\\
+\item $Map(Pipe(\Delta_1, \Delta_2 ))\xLongleftrightarrow[\text{Pipe\_of\_map}]{\text{Map\_of\_Pipe}} Pipe (Map(\Delta_1),Map(\Delta_2))$\\
+\item $Map(Comp(\Delta_1, \Delta_2 ))\xLongleftrightarrow[\text{Comp\_of\_map}]{\text{Map\_of\_Pipe}} Comp (Map(\Delta_1),Map(\Delta_2))$\\
+\end{itemize}
+
+\section{refactoring algorithm}
+it starts by visiting the root node and proceeds to the child nodes . each visiting operation generates a set of trees ; they indicate different rewriting options for a particular tree.each newly created tree is inserted into queue so that it'll be refactored by the visitor. i have used breadth first search algorithm in combination with visitor pattern for the tree expansion. at the end we have a forest tree of patterns.
+
+a simple example of a tree:
+	Skeleton {
+		Skeleton root;
+		List<Skeleton> children;
+		List<Skeleton> reWritngOptions;
+		ReWringRule rule;
+	}
+	Edge{
+		Skeleton from;
+		Skeleton to;
+		ReWritingRule rule;
+	}
+	
+whenever a new alrernative rewriting option is constructed the algoithm will add it to the forest if it is not already present and it creates an edge from the original skeleton tree to the new one labeling it with the rewring rule applied on the refactoring that generates it. if the tree already exists it will just create an edge between the original tree and the newly created one. 
+
+\section{non functional parameters}
+i have focused mainly on the service time and parallelism degree of the skeletons. 
+while creating trees of refactoring patterns is straight forward , allocating resources is a very difficult problem to tackle. here is how  paralellism degree and service times are computed for each kind of skeleton:\\
+	let \ttfamily Tscatter 	T\textsubscript{s}, 					Tcollector T\textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
+	$T_{\Delta}$ is service time of the stage or worker skeleton\\
+	Sequential Skeleton:	n = 1; Ts = ts\\
+	Farm Skeleton:	the ideal parallelism degree is computed by $\frac{T\textsubscript{e}}{T_{\Delta}}$\\
+	Pipe Skeleton: the ideal parallelism degree is the number of stages\\
+	Comp Skeleton:\\
+     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_c)}}$
+
+
+
+
+\end{document}
