@@ -40,17 +40,17 @@ public class BFS {
 			}
 		}
 		System.out.println(s);
-		s.getPatterns().stream().sorted(Comparator.comparing(SkeletonPatt::getServiceTime))
-				.forEach(sk -> System.out.println(sk + "\t" + sk.getServiceTime()));
+		s.getPatterns().stream().sorted(Comparator.comparing(SkeletonPatt::getIdealServiceTime))
+				.forEach(sk -> System.out.println(sk + "\t" + sk.getIdealServiceTime()));
 		if (s.getChildren() != null) {
 			s.getChildren()
 					.forEach(node -> node.getPatterns().stream()
-							.sorted(Comparator.comparing(SkeletonPatt::getServiceTime))
-							.forEach(sk -> System.out.println("nodes : " + sk + "\t" + sk.getServiceTime())));
+							.sorted(Comparator.comparing(SkeletonPatt::getIdealServiceTime))
+							.forEach(sk -> System.out.println("nodes : " + sk + "\t" + sk.getIdealServiceTime())));
 		}
 		if (s.getChild() != null) {
-			s.getChild().getPatterns().stream().sorted(Comparator.comparing(SkeletonPatt::getServiceTime))
-					.forEach(sk -> System.out.println("nodes : " + sk + "\t" + sk.getServiceTime()));
+			s.getChild().getPatterns().stream().sorted(Comparator.comparing(SkeletonPatt::getIdealServiceTime))
+					.forEach(sk -> System.out.println("nodes : " + sk + "\t" + sk.getIdealServiceTime()));
 		}
 		
 	}

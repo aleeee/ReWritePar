@@ -15,28 +15,30 @@ public class SeqPatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	ReWritingRules rule;
 	int depth;
-	private int parallelismDegree;
 	int id;
+	int idealParDegree;
+	double idealServiceTime;
+	double optimizedTs;
+	
 	public SeqPatt() {
-//		this.lable="seq";
-		this.parallelismDegree=1;
+		this.idealParDegree=1;
 	}
 	public SeqPatt(double serviceTime) {
-		this.serviceTime=serviceTime;
+		this.idealServiceTime=serviceTime;
+		this.idealParDegree=1;
 	}
 	public SeqPatt(double serviceTime, String lable) {
-		this.serviceTime = serviceTime;
+		this.idealServiceTime = serviceTime;
 		this.lable=lable;
+		this.idealParDegree=1;
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
-
 	}
 
 	@Override
@@ -45,13 +47,7 @@ public class SeqPatt implements SkeletonPatt {
 	}
 
 	@Override
-	public int parallelismDegree() {
-		return parallelismDegree;
-	}
-
-	@Override
-	public void calculateServiceTime() {
-//		this.serviceTime=this.getServiceTime();
+	public void calculateIdealServiceTime() {
 
 	}
 	@Override
@@ -63,18 +59,6 @@ public class SeqPatt implements SkeletonPatt {
 	public void setReWritingRule(ReWritingRules rule) {
 		this.rule = rule;
 		
-	}
-
-	@Override
-	public double completionTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setServiceTime(double ts) {
-		this.serviceTime = ts;
-
 	}
 
 	@Override
@@ -98,10 +82,6 @@ public class SeqPatt implements SkeletonPatt {
 
 	public void setParent(SkeletonPatt parent) {
 		this.parent = parent;
-	}
-
-	public double getServiceTime() {
-		return serviceTime;
 	}
 
 	public void setChildren(ArrayList<SkeletonPatt> children) {
@@ -176,20 +156,12 @@ public class SeqPatt implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-	public int getParallelismDegree() {
-		return parallelismDegree;
-	}
-	public void setParallelismDegree() {
-		this.parallelismDegree = 1;
-	}
 	@Override
 	public String getValue() {
-		// TODO Auto-generated method stub
 		return this.toString();
 	}
 	@Override
 	public AttributeType getType() {
-		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
 	public int getId() {
@@ -198,4 +170,49 @@ public class SeqPatt implements SkeletonPatt {
 	public void setId(int id) {
 		this.id = id;
 	}
+	@Override
+	public void setIdealServiceTime(double ts) {		
+	}
+
+	@Override
+	public void setIdealParDegree(int n) {		
+	}
+
+	@Override
+	public double getIdealServiceTime() {
+		return idealServiceTime;
+	}
+
+	@Override
+	public int getIdealParDegree() {
+		return idealParDegree;
+	}
+	@Override
+	public int getOptParallelismDegree() {
+		return idealParDegree;
+	}
+	@Override
+	public double getOptServiceTime() {
+		return idealServiceTime;
+	}
+	@Override
+	public void setOptServiceTime(double ts) {
+				
+	}
+	@Override
+	public void setOptParallelismDegree(int p) {
+		
+	}
+	public double getOptimizedTs() {
+		return idealServiceTime;
+	}
+	public void setOptimizedTs(double optimizedTs) {
+		this.optimizedTs = optimizedTs;
+	}
+	@Override
+	public double calculateOptimalServiceTime() {
+		return idealServiceTime;
+	}
+	
+	
 }

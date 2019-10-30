@@ -15,11 +15,7 @@ import visitor.NodeVisitor;
 
 
 public interface SkeletonPatt extends Serializable, Attribute{
-	int parallelismDegree();
-	void calculateServiceTime();
-	double completionTime();
-	double getServiceTime();
-	void setServiceTime(double ts);
+	
 	@JsonIgnore
 	public ArrayList<SkeletonPatt> getChildren();
 	public String getLable() ;
@@ -48,6 +44,22 @@ public interface SkeletonPatt extends Serializable, Attribute{
 	boolean reWriteNodes();
 	int getId();
 	void setId(int id);
-//	void setLable(String lable);
+	int getOptParallelismDegree();
+	double getOptServiceTime();
+	void setOptServiceTime(double ts);
+	void setOptParallelismDegree(int p);
+	void setIdealServiceTime(double ts);
+	void setIdealParDegree(int n);
+	double getIdealServiceTime();
+	int getIdealParDegree();
+	void calculateIdealServiceTime();
+	double calculateOptimalServiceTime();
+	default String print(){
+		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) 
+				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "
+				+ " O_PD: "+getOptParallelismDegree()+ " O_TS::  ["+getOptServiceTime()+"] "								
+				;
+
+	};
 	
 }

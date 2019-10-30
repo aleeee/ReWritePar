@@ -52,11 +52,20 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(PipePatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0,
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2);
 
 	}
+	/**
+	 * calculate optimal ts
+	 * @param pat
+	 * @return
+	 */
+	public static double getOptimalServiceTime(PipePatt pat) {
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0,
+				(c1, c2) -> c1 > c2 ? c1 : c2);
 
+	}
 	/**
 	 * calculates the service time of Comp pattern
 	 * 
@@ -64,22 +73,37 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(CompPatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0, (c1, c2) -> c1 + c2);
 	}
-
 	/**
-	 * calculates the service time of Farm
+	 * calculate the optimal ts
+	 * @param pat
+	 * @return
+	 */
+	public static double getOptimalServiceTime(CompPatt pat) {
+		return pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+	}
+	/**
+	 * calculates the ideal service time of Farm
 	 * 
 	 * @param pat
 	 * @return
 	 */
 	public static double getServiceTime(FarmPatt pat) {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
-		int parallelismDegree = (int) (farmWorker.getServiceTime()/Constants.TEmitter);
-		pat.setParallelismDegree(parallelismDegree);
-		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getServiceTime()/pat.getParallelismDegree());
+		int parallelismDegree = (int) (farmWorker.getIdealServiceTime()/Constants.TEmitter);
+		pat.setIdealParDegree(parallelismDegree);
+		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree());
 	}
-
+	/**
+	 * calculate optimized ts
+	 * @param pat
+	 * @return
+	 */
+	public static double getOptimizedTs(FarmPatt pat) {
+		SkeletonPatt farmWorker = pat.getChildren().get(0);
+		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree());
+	}
 	/**
 	 * calculates the service time of Map
 	 * 
@@ -88,9 +112,18 @@ public class Util {
 	 */
 	public static double getServiceTime(MapPatt pat) {
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
-		int parallelismDegree = (int) Math.sqrt(mapWorker.getServiceTime()/Math.max(Constants.TScatter, Constants.TGather));
-		pat.setParallelismDegree(parallelismDegree);
-		return mapWorker.getServiceTime()/pat.getParallelismDegree();
+		int parallelismDegree = (int) Math.sqrt(mapWorker.getIdealServiceTime()/Math.max(Constants.TScatter, Constants.TGather));
+		pat.setIdealParDegree(parallelismDegree);
+		return mapWorker.getIdealServiceTime()/pat.getIdealParDegree();
+	}
+	/**
+	 * calculate the optimal service time
+	 * @param pat
+	 * @return
+	 */
+	public static double getOptimalServiceTime(MapPatt pat) {
+		SkeletonPatt mapWorker = pat.getChildren().get(0);
+		return mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree();
 	}
 
 	/**
@@ -122,7 +155,7 @@ public class Util {
 			newP.setChildren(sc);
 			newP.getChildren().set(newP.getChildren().indexOf(node), p);
 			newP.setReWritingRule(p.getRule());
-			newP.calculateServiceTime();
+			newP.calculateIdealServiceTime();
 			newP.setReWriteNodes(false);
 			patterns.add(newP);
 //			System.out.println(newP);
@@ -159,7 +192,8 @@ public class Util {
 			copy.setDepth(original.getDepth());
 			copy.setReWritingRule(original.getRule());
 			copy.setPatterns(original.getPatterns());
-			copy.calculateServiceTime();
+			copy.setIdealServiceTime(original.getIdealServiceTime());
+			copy.calculateIdealServiceTime();
 			return copy;
 		} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
 			e1.printStackTrace();

@@ -15,20 +15,24 @@ public class MapPatt  implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
-	int parallelismDegree;
 	int id;
+	int idealParDegree;
+	double idealServiceTime;
+	int optParDegree;
+	double optServiceTime;
+	double optimizedTs;
+	
 	public MapPatt() {
 		this.lable= "map";
 	}
 	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
-		this.serviceTime = serviceTime;
+		this.idealServiceTime = serviceTime;
 	}
 	@Override
 	public void accept(NodeVisitor visitor) {
@@ -39,21 +43,11 @@ public class MapPatt  implements SkeletonPatt {
 	public void refactor(ReWriter reWriter) {
 		reWriter.reWrite(this);
 	}
-	@Override
-	public int parallelismDegree() {
-		return parallelismDegree;
-	}
 
 	@Override
-	public void calculateServiceTime() {
-		this.serviceTime=Util.getServiceTime(this);
+	public void calculateIdealServiceTime() {
+		this.idealServiceTime=Util.getServiceTime(this);
 
-	}
-
-	@Override
-	public double completionTime() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
@@ -66,13 +60,6 @@ public class MapPatt  implements SkeletonPatt {
 		this.rule = rule;
 		
 	}
-
-	@Override
-	public void setServiceTime(double ts) {
-		this.serviceTime=ts;
-		
-	}
-
 	@Override
 	public ArrayList<SkeletonPatt> getChildren() {
 		return children;
@@ -94,10 +81,6 @@ public class MapPatt  implements SkeletonPatt {
 
 	public void setParent(SkeletonPatt parent) {
 		this.parent = parent;
-	}
-
-	public double getServiceTime() {
-		return serviceTime;
 	}
 
 	public void setChildren(ArrayList<SkeletonPatt> children) {
@@ -126,7 +109,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public String toString() {
-		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) + "n: " +getParallelismDegree() + "ts::" +getServiceTime();	}
+		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) + "n: " +getIdealParDegree() + "ts::" +getIdealServiceTime();	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -169,20 +152,13 @@ public class MapPatt  implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-	public int getParallelismDegree() {
-		return parallelismDegree;
-	}
-	public void setParallelismDegree(int parallelismDegree) {
-		this.parallelismDegree = parallelismDegree;
-	}
+
 	@Override
 	public String getValue() {
-		// TODO Auto-generated method stub
 		return this.toString();
 	}
 	@Override
 	public AttributeType getType() {
-		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
 	
@@ -192,4 +168,59 @@ public class MapPatt  implements SkeletonPatt {
 	public void setId(int id) {
 		this.id = id;
 	}
+	@Override
+	public void setIdealServiceTime(double ts) {
+		this.idealServiceTime = ts;		
+	}
+
+	@Override
+	public void setIdealParDegree(int n) {
+		this.idealParDegree = n;
+	}
+
+	@Override
+	public double getIdealServiceTime() {
+		return idealServiceTime;
+	}
+
+	@Override
+	public int getIdealParDegree() {
+		return idealParDegree;
+	}
+	@Override
+	public int getOptParallelismDegree() {
+		return optParDegree;
+	}
+	@Override
+	public double getOptServiceTime() {
+		return optServiceTime;
+	}
+	@Override
+	public void setOptServiceTime(double ts) {
+		this.optServiceTime=ts;
+		
+	}
+	@Override
+	public void setOptParallelismDegree(int p) {
+		this.optParDegree=p;
+	}
+	@Override
+	public double calculateOptimalServiceTime() {
+		return this.optimizedTs = Util.getOptimalServiceTime(this);
+		
+	}
+	public int getOptParDegree() {
+		return optParDegree;
+	}
+	public void setOptParDegree(int optParDegree) {
+		this.optParDegree = optParDegree;
+	}
+	public double getOptimizedTs() {
+		return optimizedTs;
+	}
+	public void setOptimizedTs(double optimizedTs) {
+		this.optimizedTs = optimizedTs;
+	}
+	
+	
 }

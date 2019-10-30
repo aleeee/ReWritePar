@@ -11,17 +11,25 @@ import util.Util;
 import visitor.NodeVisitor;
 
 public class FarmPatt implements SkeletonPatt {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
-	int parallelismDegree;
+	int optParallelismDegree;
 	int id;
+	int idealParDegree;
+	double idealServiceTime;
+	double optServiceTime;
+	double optimizedTs;
+	
 	public FarmPatt() {
 		this.lable= "farm";
 	}
@@ -29,41 +37,18 @@ public class FarmPatt implements SkeletonPatt {
 	public FarmPatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
-		this.serviceTime = serviceTime;
+		this.idealServiceTime = serviceTime;
 	}
 
 	@Override
 	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
-
 	}
 
 	@Override
 	public void refactor(ReWriter reWriter) {
-		reWriter.reWrite(this);
-	}
-
-	@Override
-	public int parallelismDegree() {
-		return parallelismDegree;
-	}
-
-	@Override
-	public void calculateServiceTime() {
-		this.serviceTime=Util.getServiceTime(this);
-	}
-
-	@Override
-	public double completionTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setServiceTime(double ts) {
-		this.serviceTime = ts;
-
-	}
+		reWriter.reWrite(this);	
+		}	
 
 	@Override
 	public ArrayList<SkeletonPatt> getChildren() {
@@ -95,10 +80,6 @@ public class FarmPatt implements SkeletonPatt {
 
 	public void setParent(SkeletonPatt parent) {
 		this.parent = parent;
-	}
-
-	public double getServiceTime() {
-		return serviceTime;
 	}
 
 	public void setChildren(ArrayList<SkeletonPatt> children) {
@@ -134,7 +115,9 @@ public class FarmPatt implements SkeletonPatt {
 	public String toString() {
 //		return "F "+(this.getChildren() != null? " ( " +this.getChildren().get(0).toString() +" ) ":null);
 
-		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) + "n: " +getParallelismDegree() + "ts::  ["+getServiceTime()+"]";
+		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null)
+				+ " n_id: " +getIdealParDegree() + " ts_id:  ["+getIdealServiceTime()+"]"
+				+ " opt_n: " +getOptParallelismDegree() + " opt_ts:  ["+getOptimizedTs()+"]";
 	}
 
 //	@Override
@@ -190,23 +173,13 @@ public class FarmPatt implements SkeletonPatt {
 		return depth;
 	}
 
-	public int getParallelismDegree() {
-		return parallelismDegree;
-	}
-
-	public void setParallelismDegree(int parallelismDegree) {
-		this.parallelismDegree = parallelismDegree;
-	}
-
 	@Override
 	public String getValue() {
-		// TODO Auto-generated method stub
 		return this.toString();
 	}
 
 	@Override
 	public AttributeType getType() {
-		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
 	public int getId() {
@@ -215,4 +188,65 @@ public class FarmPatt implements SkeletonPatt {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	@Override
+	public void setIdealServiceTime(double ts) {
+		this.idealServiceTime = ts;		
+	}
+
+	@Override
+	public void setIdealParDegree(int n) {
+		this.idealParDegree = n;
+	}
+
+	@Override
+	public double getIdealServiceTime() {
+		return idealServiceTime;
+	}
+
+	@Override
+	public int getIdealParDegree() {
+		return idealParDegree;
+	}
+
+	@Override
+	public int getOptParallelismDegree() {
+		return optParallelismDegree;
+	}
+
+	@Override
+	public double getOptServiceTime() {
+		return optServiceTime;
+	}
+
+	@Override
+	public void setOptServiceTime(double ts) {
+		this.optServiceTime = ts;
+	}
+	@Override
+	public void setOptParallelismDegree(int p) {
+		this.optParallelismDegree = p;
+	}
+
+	@Override
+	public void calculateIdealServiceTime() {
+		this.idealServiceTime=Util.getServiceTime(this);		
+	}
+
+	
+	public double getOptimizedTs() {
+		return optimizedTs=getChildren().get(0).getOptServiceTime()/getOptParallelismDegree();
+	}
+
+	public void setOptimizedTs(double optimizedTs) {
+		this.optimizedTs = optimizedTs;
+	}
+
+	@Override
+	public double calculateOptimalServiceTime() {
+		return this.optimizedTs=Util.getOptimizedTs(this);
+		
+	}
+	
+	
 }

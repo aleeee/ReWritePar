@@ -35,7 +35,7 @@ public class Ref2 {
 		farm.setDepth(seq.getDepth());
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-		farm.calculateServiceTime();
+		farm.calculateIdealServiceTime();
 		farm.setReWriteNodes(false);
 		patterns.add(farm);
 		seq.setPatterns(patterns);
@@ -59,21 +59,23 @@ public class Ref2 {
 		pipe.setChildren(comp.getChildren());
 		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
 		pipe.setDepth(comp.getDepth());
-		pipe.calculateServiceTime();
+		pipe.calculateIdealServiceTime();
 		pipe.setReWriteNodes(false);
 		patterns.add(pipe);
 
 		// farm intro
 		FarmPatt farm = new FarmPatt();
-		CompPatt compStage = CompPatt.builder().children(comp.getChildren())
-										.patterns(comp.getPatterns())
-										.depth(comp.getDepth()+1).rule(comp.getRule()).build();
-		compStage.calculateServiceTime();
+		CompPatt compStage = new CompPatt();
+		compStage.setChildren(comp.getChildren());
+		compStage.setPatterns(comp.getPatterns());
+		compStage.setDepth(comp.getDepth()+1);
+		compStage.setRule(comp.getRule());
+		compStage.calculateIdealServiceTime();
 		fc.add(compStage);
 		farm.setChildren(fc);
 		farm.setDepth(comp.getDepth());
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-		farm.calculateServiceTime();
+		farm.calculateIdealServiceTime();
 		farm.setReWriteNodes(false);
 		patterns.add(farm);
 
@@ -104,11 +106,11 @@ public class Ref2 {
 			compMap.setChildren(listOfChildrens);
 			compMap.setDepth(comp.getDepth() + 1);
 			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-			compMap.calculateServiceTime();
+			compMap.calculateIdealServiceTime();
 			mNodes.add(compMap);
 			map.setChildren(mNodes);
 			map.setDepth(comp.getDepth());
-			map.calculateServiceTime();
+			map.calculateIdealServiceTime();
 			map.setReWritingRule(ReWritingRules.MAP_OF_COMP);
 			map.setReWriteNodes(false);
 			patterns.add(map);
@@ -117,7 +119,7 @@ public class Ref2 {
 		comp.setPatterns(patterns);
 		if (comp.getParent() != null)
 			comp.setPatterns(Util.createTreeNode(comp.getParent(), comp));
-		comp.calculateServiceTime();
+		comp.calculateIdealServiceTime();
 		return comp;
 	}
 
@@ -135,7 +137,7 @@ public class Ref2 {
 		
 		c.setDepth(farm.getDepth());
 		c.setReWritingRule(ReWritingRules.FARM_ELIM);
-		c.calculateServiceTime();
+		c.calculateIdealServiceTime();
 		patterns.add(c);
 		// farm intro
 		FarmPatt farmPat = new FarmPatt();
@@ -146,7 +148,7 @@ public class Ref2 {
 		farmPat.setChildren(fc);
 		farmPat.setReWritingRule(ReWritingRules.FARM_INTRO);
 		farmPat.setDepth(farm.getDepth());
-		farmPat.calculateServiceTime();
+		farmPat.calculateIdealServiceTime();
 		farmPat.setReWriteNodes(false);
 		patterns.add(farmPat);
 
@@ -164,7 +166,7 @@ public class Ref2 {
 				fp.setChildren(fc1);
 				fp.setReWritingRule(ReWritingRules.FARM_INTRO);
 				fp.setDepth(farm.getDepth() + 1);
-				fp.calculateServiceTime();
+				fp.calculateIdealServiceTime();
 				fp.setReWriteNodes(false);
 				patterns.add(fp);
 			}
@@ -172,7 +174,7 @@ public class Ref2 {
 		farm.setPatterns(patterns);
 		if (farm.getParent() != null)
 			farm.setPatterns(Util.createTreeNode(farm.getParent(), farm));
-		farm.calculateServiceTime();
+		farm.calculateIdealServiceTime();
 		return farm;
 	}
 
@@ -195,7 +197,7 @@ public class Ref2 {
 		farm.setChildren(fc);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		farm.setDepth(pipe.getDepth());
-		farm.calculateServiceTime();
+		farm.calculateIdealServiceTime();
 		farm.setReWriteNodes(false);
 		patterns.add(farm);
 
@@ -203,7 +205,7 @@ public class Ref2 {
 		CompPatt comp = new CompPatt();
 		comp.setChildren(pipe.getChildren());
 		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
-		comp.calculateServiceTime();
+		comp.calculateIdealServiceTime();
 		comp.setReWriteNodes(false);
 		comp.setDepth(pipe.getDepth());
 		patterns.add(comp);
@@ -230,13 +232,13 @@ public class Ref2 {
 					}
 					innerPipeNodes.addAll(pipe.getChildren().subList(1, pipe.getChildren().size()));
 					innerPipe.setChildren(innerPipeNodes);
-					innerPipe.calculateServiceTime();
+					innerPipe.calculateIdealServiceTime();
 					innerPipe.setDepth(pipe.getDepth()+1);
 					outerPipeNodes.add(pat);
 					outerPipeNodes.add(innerPipe);
 					outerPipe.setChildren(outerPipeNodes);
 					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
-					outerPipe.calculateServiceTime();
+					outerPipe.calculateIdealServiceTime();
 					outerPipe.setDepth(pipe.getDepth());
 					outerPipe.setReWriteNodes(false);
 					patterns.add(outerPipe);
@@ -253,7 +255,7 @@ public class Ref2 {
 					innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1));
 					innerPipe.setChildren(innerPipeNodes);
 					innerPipe.setDepth(pipe.getDepth()+1);
-					innerPipe.calculateServiceTime();
+					innerPipe.calculateIdealServiceTime();
 					// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
 
 					outerPipeNodes.add(innerPipe);
@@ -268,7 +270,7 @@ public class Ref2 {
 
 					outerPipe.setChildren(outerPipeNodes);
 					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
-					outerPipe.calculateServiceTime();
+					outerPipe.calculateIdealServiceTime();
 					outerPipe.setDepth(pipe.getDepth());
 					outerPipe.setReWriteNodes(false);
 					patterns.add(outerPipe);
@@ -291,11 +293,11 @@ public class Ref2 {
 			piMap.setChildren(listOfChildrens);
 			piMap.setDepth(pipe.getDepth() + 1);
 			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-			piMap.calculateServiceTime();
+			piMap.calculateIdealServiceTime();
 			mNodes.add(piMap);
 			map.setChildren(mNodes);
 			map.setDepth(pipe.getDepth());
-			map.calculateServiceTime();
+			map.calculateIdealServiceTime();
 			map.setReWritingRule(ReWritingRules.MAP_OF_PIPE);
 			map.setReWriteNodes(false);
 			patterns.add(map);
@@ -335,7 +337,7 @@ public class Ref2 {
 		pipe.setPatterns(patterns);
 		if (pipe.getParent() != null)
 			pipe.setPatterns(Util.createTreeNode(pipe.getParent(), pipe));
-		pipe.calculateServiceTime();
+		pipe.calculateIdealServiceTime();
 		return pipe;
 	}
 
@@ -365,7 +367,7 @@ public class Ref2 {
 		newP.setDepth(p.getDepth());
 		newP.setChildren(sc);
 		newP.setReWritingRule(ReWritingRules.MAP_ELIM);
-		newP.calculateServiceTime();
+		newP.calculateIdealServiceTime();
 		newP.setReWriteNodes(false);
 		patterns.add(newP);
 		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
@@ -380,11 +382,11 @@ public class Ref2 {
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);
 				m.setChildren(mNodes);
-				m.calculateServiceTime();
+				m.calculateIdealServiceTime();
 				nodes.add(m);
 			}
 			compPat.setChildren(nodes);
-			compPat.calculateServiceTime();
+			compPat.calculateIdealServiceTime();
 			compPat.setReWritingRule(ReWritingRules.MAP_DIST);
 			compPat.setReWriteNodes(false);
 			patterns.add(compPat);
@@ -397,11 +399,11 @@ public class Ref2 {
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);
 				m.setChildren(mNodes);
-				m.calculateServiceTime();
+				m.calculateIdealServiceTime();
 				nodes.add(m);
 			}
 			pipe.setChildren(nodes);
-			pipe.calculateServiceTime();
+			pipe.calculateIdealServiceTime();
 			pipe.setReWritingRule(ReWritingRules.PIPE_OF_MAP);
 			pipe.setReWriteNodes(false);
 			patterns.add(pipe);
@@ -415,7 +417,7 @@ public class Ref2 {
 		farm.setReWriteNodes(false);
 		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
 		farm.setDepth(map.getDepth() + 1);
-		farm.calculateServiceTime();
+		farm.calculateIdealServiceTime();
 		patterns.add(farm);
 
 		map.setPatterns(patterns);
@@ -429,7 +431,7 @@ public class Ref2 {
 		}
 		if (map.getParent() != null)
 			map.setPatterns(Util.createTreeNode(map.getParent(), map));
-		map.calculateServiceTime();
+		map.calculateIdealServiceTime();
 		return map;
 	}
 

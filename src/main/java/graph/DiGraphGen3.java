@@ -111,7 +111,7 @@ public class DiGraphGen3 {
 		neighbors.get(from).add(new Edge(to, rule));
 	}
 
-	public void bfs(SkeletonPatt s) {
+	public void bfs(SkeletonPatt s, int depth) {
 		s.setDepth(0); // set depth of the root to zero and increments as it goes deep, this is used to
 						// terminate the process after certain depth
 		s.getChildren().forEach(c -> c.setDepth(1));
@@ -121,13 +121,13 @@ public class DiGraphGen3 {
 		Map<SkeletonPatt, Set<SkeletonPatt>> patterns = new HashMap<>();
 		while (!queue.isEmpty()) {
 			SkeletonPatt curNode = queue.remove();
-			curNode.calculateServiceTime();
+			curNode.calculateIdealServiceTime();
 //			if(curNode.getServiceTime() > 1) {//Ts=1 is optimal time so no need to refactor
 			curNode.refactor(rw);
 			this.add(curNode);
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 4) {
+				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < depth) {
 					queue.add(sk);
 				}
 			}
@@ -140,7 +140,7 @@ public class DiGraphGen3 {
 					node.setDepth(curNode.getDepth()+1);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < 4) {
+							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < depth) {
 								queue.add(sk);
 							}
 						}

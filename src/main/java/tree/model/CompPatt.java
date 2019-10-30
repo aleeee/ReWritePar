@@ -5,16 +5,10 @@ import java.util.Set;
 
 import org.jgrapht.io.AttributeType;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
 import visitor.NodeVisitor;
-@Setter @Getter @Builder  @AllArgsConstructor
 public class CompPatt implements SkeletonPatt {
 	
 	private static final long serialVersionUID = 1L;
@@ -22,20 +16,25 @@ public class CompPatt implements SkeletonPatt {
 	SkeletonPatt parent;
 	String lable;
 	SkeletonPatt child;
-	double serviceTime;
 	Set<SkeletonPatt> patterns;
 	boolean reWriteNodes;
 	ReWritingRules rule;
 	int depth;
-	int parallelismDegree;
 	int id;
+	int idealParDegree;
+	double idealServiceTime;
+	int optParDegree;
+	double optServiceTime;
+	double optimizedTs;
+	
 	public CompPatt() {
 		this.lable = "comp";
 	}
 	public CompPatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
-		this.serviceTime = serviceTime;
+		this.idealServiceTime = serviceTime;
+		this.idealParDegree=1;
 	}
 
 	@Override
@@ -61,28 +60,12 @@ public class CompPatt implements SkeletonPatt {
 		this.rule = rule;
 		
 	}
-
+	
 	@Override
-	public int parallelismDegree() {
-		return parallelismDegree;
-	}
-
-	@Override
-	public void calculateServiceTime() {
-		this.serviceTime=Util.getServiceTime(this);
+	public void calculateIdealServiceTime() {
+		this.idealServiceTime=Util.getServiceTime(this);
 		
-	}
-
-	@Override
-	public double completionTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setServiceTime(double ts) {
-		this.serviceTime = ts;
-	}
+	}	
 
 	@Override
 	public ArrayList<SkeletonPatt> getChildren() {
@@ -105,10 +88,6 @@ public class CompPatt implements SkeletonPatt {
 
 	public void setParent(SkeletonPatt parent) {
 		this.parent = parent;
-	}
-
-	public double getServiceTime() {
-		return serviceTime;
 	}
 
 	public void setChildren(ArrayList<SkeletonPatt> children) {
@@ -144,7 +123,7 @@ public class CompPatt implements SkeletonPatt {
 	public String toString() {
 //		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
 
-		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) + "n: " +getParallelismDegree() + "ts::+  ["+getServiceTime()+"]";
+		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) +  "ts::+  ["+getOptimizedTs()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -188,20 +167,13 @@ public class CompPatt implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-	public int getParallelismDegree() {
-		return parallelismDegree;
-	}
-	public void setParallelismDegree(int parallelismDegree) {
-		this.parallelismDegree = parallelismDegree;
-	}
+	
 	@Override
 	public String getValue() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public AttributeType getType() {
-		// TODO Auto-generated method stub
 		return AttributeType.STRING;
 	}
 	
@@ -211,4 +183,59 @@ public class CompPatt implements SkeletonPatt {
 	public void setId(int id) {
 		this.id = id;
 	}
+	@Override
+	public void setIdealServiceTime(double ts) {
+		this.idealServiceTime = ts;		
+	}
+
+	@Override
+	public void setIdealParDegree(int n) {
+		this.idealParDegree = n;
+	}
+
+	@Override
+	public double getIdealServiceTime() {
+		return idealServiceTime;
+	}
+
+	@Override
+	public int getIdealParDegree() {
+		return idealParDegree;
+	}
+	@Override
+	public int getOptParallelismDegree() {
+		return optParDegree;
+	}
+	@Override
+	public void setOptParallelismDegree(int p) {
+		this.optParDegree=p;
+	}
+	@Override
+	public double calculateOptimalServiceTime() {
+		return this.optimizedTs = Util.getOptimalServiceTime(this);
+		
+	}
+	public int getOptParDegree() {
+		return optParDegree;
+	}
+	public void setOptParDegree(int optParDegree) {
+		this.optParDegree = optParDegree;
+	}
+	public double getOptServiceTime() {
+		return optServiceTime;
+	}
+	public void setOptServiceTime(double optServiceTime) {
+		this.optServiceTime = optServiceTime;
+	}
+	public double getOptimizedTs() {
+		return optimizedTs=Util.getOptimalServiceTime(this);
+	}
+	public void setOptimizedTs(double optimizedTs) {
+		this.optimizedTs = optimizedTs;
+	}
+	public void setRule(ReWritingRules rule) {
+		this.rule = rule;
+	}
+	
+	
 }
