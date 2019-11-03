@@ -24,6 +24,7 @@ import org.jgrapht.io.GraphExporter;
 import org.jgrapht.io.JSONExporter;
 import graph.DiGraphGen3;
 import graph.DiGraphGen3.Edge;
+import graph.DiGraphGen4;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizJdkEngine;
@@ -33,6 +34,8 @@ import solver.Solver;
 import solver.Solver2;
 import solver.Solver3;
 import solver.Solver4;
+import solver.Solver5;
+import solver.Solver6;
 import tree.model.FarmPatt;
 import tree.model.SkeletonPatt;
 import visitor.TBuilder2;
@@ -67,8 +70,8 @@ public class Main2 {
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
 		
-		DiGraphGen3 dg = new  DiGraphGen3();
-		dg.bfs(n, 5);
+		DiGraphGen4 dg = new  DiGraphGen4();
+		dg.bfs(n, 4);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -78,7 +81,7 @@ public class Main2 {
 			continue;
 		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		Solver4 model = new Solver4(p, 16);
+		Solver6 model = new Solver6(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
@@ -89,7 +92,7 @@ public class Main2 {
 		System.out.println("after solve: " + p.print());
 		
 			}catch(Exception e) {
-				System.out.println(e.getMessage());
+				System.out.println("Error " + e.getMessage());
 			}
 		}
 		

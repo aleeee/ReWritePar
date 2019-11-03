@@ -2,6 +2,7 @@ package util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -62,6 +63,7 @@ public class Util {
 	 * @return
 	 */
 	public static double getOptimalServiceTime(PipePatt pat) {
+//		pat.getChildren().forEach(p-> System.out.println(p.getLable()+" " +p.calculateOptimalServiceTime()));
 		return pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2);
 
@@ -91,6 +93,7 @@ public class Util {
 	 */
 	public static double getServiceTime(FarmPatt pat) {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
+		farmWorker.calculateIdealServiceTime();
 		int parallelismDegree = (int) (farmWorker.getIdealServiceTime()/Constants.TEmitter);
 		pat.setIdealParDegree(parallelismDegree);
 		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree());
@@ -102,6 +105,7 @@ public class Util {
 	 */
 	public static double getOptimizedTs(FarmPatt pat) {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
+		farmWorker.calculateOptimalServiceTime();
 		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree());
 	}
 	/**
@@ -137,7 +141,7 @@ public class Util {
 	 */
 	public static Set<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-
+		Set<SkeletonPatt> optimalPattern = new LinkedHashSet<SkeletonPatt>();
 		for (SkeletonPatt p : node.getPatterns()) {
 			ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
 
@@ -169,6 +173,8 @@ public class Util {
 //			}
 		}
 		return patterns;
+//		optimalPattern.add(patterns.stream().min(Comparator.comparing(SkeletonPatt::getIdealServiceTime)).get());
+//		return optimalPattern;
 	}
 	
 	public static int getHeight(SkeletonPatt pat) {

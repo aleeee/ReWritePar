@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import ilog.concert.IloConstraint;
 import ilog.concert.IloException;
+import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
@@ -19,7 +21,7 @@ import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
-public class Solver4 {
+public class Solver6 {
 
 	private Map<SkeletonPatt, List<IloNumVar>> variables;
 	private IloCplex cplex;
@@ -30,7 +32,7 @@ public class Solver4 {
 	IloNumExpr obj;
 	List<SkeletonPatt> result = new ArrayList<>();
 
-	public Solver4(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
+	public Solver6(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
 
 		this.cplex = new IloCplex();
 		expr = cplex.constant(0);
@@ -38,7 +40,8 @@ public class Solver4 {
 		this.variables = new HashMap<SkeletonPatt, List<IloNumVar>>();
 		this.g = skeletonPatt;
 		this.numAvailableProcessors = maxParDegree;
-		addVariables(g);
+		
+		addVars(g);
 		addConstraints(g);
 		addObjective();
 		String modelName = "C:\\Users\\me\\Desktop\\out\\cplexModel1" + skeletonPatt.hashCode()
@@ -46,7 +49,7 @@ public class Solver4 {
 		System.out.println(g + "modelName " + modelName);
 		cplex.exportModel(modelName);
 
-		cplex.setOut(null);
+//		cplex.setOut(null);
 	}
 
 	private void addConstraints(SkeletonPatt p) throws IloException {
@@ -61,9 +64,14 @@ public class Solver4 {
 		cplex.addLe(expr, numAvailableProcessors);
 
 	}
-
+	
+	private void addVars(SkeletonPatt v) {
+		varCreator.accept(v);
+		addVariables(v);
+	}
 	// create variables for all nodes
 	private void addVariables(SkeletonPatt p) {
+		
 		for (SkeletonPatt v : p.getChildren()) {
 			varCreator.accept(v);
 			if (v instanceof FarmPatt) {
@@ -77,12 +85,15 @@ public class Solver4 {
 	}
 
 	private void addPipeConstraints(SkeletonPatt p) throws IloException {
-
+		List<IloNumVar> pipeVars = variables.get(p);
+		IloNumVar pipeParDegree = pipeVars.get(1);
+		IloNumExpr pStages = cplex.constant(0);
 		try {
 			for (SkeletonPatt v : p.getChildren()) {
 				List<IloNumVar> vars = variables.get(v);		
-
+				pStages = cplex.sum(pStages, vars.get(1));
 				if (v instanceof FarmPatt) {
+					
 					expr = cplex.sum(expr, vars.get(1));
 					constraints.add(cplex.addLe(vars.get(1), v.getIdealParDegree()));
 					constraints.add(cplex.addGe(cplex.prod(vars.get(0), vars.get(1)),v.getIdealServiceTime() * v.getIdealParDegree()));
@@ -96,14 +107,17 @@ public class Solver4 {
 					expr = cplex.sum(expr, vars.get(1));
 				}
 			}
-
+			cplex.addEq(pipeParDegree, pStages);
+			cplex.addLe(pipeParDegree, numAvailableProcessors);
 		} catch (IloException e) {
 			throw e;
 		}
 	}
 
 	private void addCompConstraints(SkeletonPatt p) throws IloException {
-
+		List<IloNumVar> compVars = variables.get(p);
+		
+//		cplex.addEq(compVars.get(1), 1);
 		try {
 			for (SkeletonPatt v : p.getChildren()) {
 				List<IloNumVar> vars = variables.get(v);
@@ -128,20 +142,10 @@ public class Solver4 {
 
 	private void addFarmConstraints(SkeletonPatt p, boolean reusable) throws IloException {
 
-//				List<IloNumVar> vars = variables.get(p);
-//				if(reusable) {
-//					constraints.add(cplex.addLe(vars.get(1), numAvailableProcessors));
-//
-//				}else {
-//					expr = cplex.sum(expr, vars.get(1));
-//				}
-//				
-//				SkeletonPatt stage = p.getChildren().get(0);
-//				constraints.add(cplex.addLe( vars.get(1), p.getIdealParDegree()));
-//				constraints.add(cplex.addGe(cplex.prod(vars.get(0), vars.get(1)), p.getIdealServiceTime()*p.getIdealParDegree()));
 		try {
 			for (SkeletonPatt v : p.getChildren()) {
 				List<IloNumVar> vars = variables.get(v);
+//				cplex.eq(vars.get(1), variables.get(p).get(1));
 				if(reusable) {
 					constraints.add(cplex.addLe(vars.get(1), numAvailableProcessors));
 
@@ -150,8 +154,8 @@ public class Solver4 {
 					if(!reusable) {
 						expr = cplex.sum(expr, vars.get(1));
 //						constraints.add(cplex.addLe(variables.get(p).get(1) , numAvailableProcessors);
-						}
-//					constraints.add(cplex.addLe(variables.get(p).get(1), vars.get(1)));
+					}
+					constraints.add(cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors));
 					constraints.add(cplex.addLe(vars.get(1), v.getIdealParDegree()));
 					constraints.add(cplex.addGe(cplex.prod(vars.get(0), vars.get(1)),v.getIdealServiceTime() * v.getIdealParDegree()));
 					addFarmConstraints(v, reusable);
@@ -159,9 +163,11 @@ public class Solver4 {
 				} else if (v instanceof CompPatt) {
 					addCompConstraints(v);
 				} else if (v instanceof PipePatt) {
+					constraints.add(cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors));
+
 					addPipeConstraints(v);
 				}else if (v instanceof SeqPatt) {
-//					constraints.add(cplex.addEq(vars.get(1), 1));
+					constraints.add(cplex.addEq(vars.get(1), 1));
 //					expr = cplex.sum(expr, vars.get(1));
 				}
 			}
@@ -208,15 +214,15 @@ public class Solver4 {
 	}
 
 	public void getSolutions(SkeletonPatt p) throws IloException {
-		if (p instanceof FarmPatt) {
+		if (p instanceof FarmPatt ) {
 			List<IloNumVar> vars = variables.get(p);
 //			System.out.println(p);
-//				System.out.println(" parDeg " +cplex.getValue(vars.get(1)));
-//			System.out.println("objective " + cplex.getObjective().toString());
-//				
-//			System.out.println("model " + cplex.getModel().toString());
-//				
-//			System.out.println("alg " + cplex.getParameterSet().toString());
+				System.out.println(" parDeg " +cplex.getValue(vars.get(1)));
+			System.out.println("objective " + cplex.getObjective().toString());
+				
+			System.out.println("model " + cplex.getModel().toString());
+				
+			System.out.println("alg " + cplex.getParameterSet().toString());
 			double value = cplex.getValue(vars.get(0));
 			int parDegree = (int) cplex.getValue(vars.get(1));
 			p.setOptServiceTime(value);
@@ -244,7 +250,7 @@ public class Solver4 {
 			tsi = cplex.numVar(1, (s.getIdealServiceTime() * s.getIdealParDegree()), "tsi");
 			n = cplex.intVar(1, numAvailableProcessors, "n");
 		} catch (IloException e) {
-			System.out.println(e.getMessage());
+			System.out.println("Error "+ e.getMessage());
 		}
 		List<IloNumVar> vars = new ArrayList<IloNumVar>();
 		vars.add(tsi);

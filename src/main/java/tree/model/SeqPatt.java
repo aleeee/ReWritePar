@@ -29,11 +29,13 @@ public class SeqPatt implements SkeletonPatt {
 	public SeqPatt(double serviceTime) {
 		this.idealServiceTime=serviceTime;
 		this.idealParDegree=1;
+		this.optimizedTs=serviceTime;
 	}
 	public SeqPatt(double serviceTime, String lable) {
 		this.idealServiceTime = serviceTime;
 		this.lable=lable;
 		this.idealParDegree=1;
+		this.optimizedTs=serviceTime;
 	}
 
 	@Override
