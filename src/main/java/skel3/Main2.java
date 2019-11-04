@@ -36,6 +36,7 @@ import solver.Solver3;
 import solver.Solver4;
 import solver.Solver5;
 import solver.Solver6;
+import solver.Solver7;
 import tree.model.FarmPatt;
 import tree.model.SkeletonPatt;
 import visitor.TBuilder2;
@@ -71,7 +72,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 4);
+		dg.bfs(n, 6);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -81,7 +82,7 @@ public class Main2 {
 			continue;
 		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		Solver6 model = new Solver6(p, 16);
+		Solver7 model = new Solver7(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
@@ -120,7 +121,7 @@ public class Main2 {
 
 	}
 
-	 private static void renderHrefGraph(DiGraphGen3 dg)
+	 private static void renderHrefGraph(DiGraphGen4 dg)
 	 
 		        throws ExportException
 		    {	
@@ -146,7 +147,7 @@ public class Main2 {
 		            }
 		        };
 		        
-		        ComponentNameProvider<Edge> edgeLabelProvider = (Edge sk) -> {return sk.getRule() != null? sk.getRule().toString():
+		        ComponentNameProvider<DiGraphGen4.Edge> edgeLabelProvider = (DiGraphGen4.Edge sk) -> {return sk.getRule() != null? sk.getRule().toString():
 		        													"NO LABLE";}; 
 //		        GraphExporter<SkeletonPatt, Edge> exporter =
 //		            new DOTExporter<>(vertexIdProvider, vertexLabelProvider, null);
@@ -157,8 +158,8 @@ public class Main2 {
 //				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> {return e.getRule().toString();};
 //				ComponentAttributeProvider<Edge> edgeAttributeProvider = (Edge ee) ->
 //				{return null;};
-				  GraphExporter<SkeletonPatt, Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
-		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+				  GraphExporter<SkeletonPatt, DiGraphGen4.Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
+		        		new DOTExporter<SkeletonPatt, DiGraphGen4.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
 		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\ddd1.dot");;
 //				try {
@@ -177,7 +178,7 @@ public class Main2 {
 		        	Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
 					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-						.toFile(new File("C:\\Users\\me\\Desktop\\out\\s13.svg"));
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg.hashCode()+".svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

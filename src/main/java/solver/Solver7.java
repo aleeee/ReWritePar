@@ -21,7 +21,7 @@ import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
-public class Solver6 {
+public class Solver7 {
 
 	private Map<SkeletonPatt, List<IloNumVar>> variables;
 	private IloCplex cplex;
@@ -32,7 +32,7 @@ public class Solver6 {
 	IloNumExpr obj;
 	List<SkeletonPatt> result = new ArrayList<>();
 
-	public Solver6(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
+	public Solver7(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
 
 		this.cplex = new IloCplex();
 		expr = cplex.constant(0);
