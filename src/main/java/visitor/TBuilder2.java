@@ -41,12 +41,12 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitProgramPart(ProgramPartContext ctx) {
-		SeqPatt s = new SeqPatt();
+//		SeqPatt s = new SeqPatt();
 		ArrayList<SkeletonPatt> children = new ArrayList<>();
 		ctx.statement().forEach(p -> {children.add(visit(p));});
 		SkeletonPatt main = visit(ctx.mainExpr());
 		children.add(main);
-		s.setChildren(children);
+//		s.setChildren(children);
 //		System.out.println("main " + main);
 		return main;
 	}

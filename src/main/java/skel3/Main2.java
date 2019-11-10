@@ -31,12 +31,16 @@ import guru.nidi.graphviz.engine.GraphvizJdkEngine;
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
 import solver.Solver;
+import solver.Solver10;
+import solver.Solver11;
 import solver.Solver2;
 import solver.Solver3;
 import solver.Solver4;
 import solver.Solver5;
 import solver.Solver6;
 import solver.Solver7;
+import solver.Solver8;
+import solver.Solver9;
 import tree.model.FarmPatt;
 import tree.model.SkeletonPatt;
 import visitor.TBuilder2;
@@ -72,7 +76,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 6);
+		dg.bfs(n, 3);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -82,19 +86,21 @@ public class Main2 {
 			continue;
 		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		Solver7 model = new Solver7(p, 16);
+		Solver11 model = new Solver11(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
 		model.getSolutions();
 		model.cleanup();
-		p.calculateOptimalServiceTime();
+		
+//		p.calculateOptimalServiceTime();
 		p.getChildren().forEach(pp->System.out.println(pp));
 		System.out.println("after solve: " + p.print());
 		
 			}catch(Exception e) {
-				System.out.println("Error " + e.getMessage());
+				System.out.println("Error at solve" + e.getMessage());
 			}
+			
 		}
 		
 	

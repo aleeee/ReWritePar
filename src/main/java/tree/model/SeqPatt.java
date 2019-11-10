@@ -11,6 +11,10 @@ import util.ReWritingRules;
 import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
 	String lable;
@@ -19,12 +23,14 @@ public class SeqPatt implements SkeletonPatt {
 	ReWritingRules rule;
 	int depth;
 	int id;
-	int idealParDegree;
-	double idealServiceTime;
-	double optimizedTs;
+	final int idealParDegree;
+	final double idealServiceTime;
+	final double optimizedTs;
 	
-	public SeqPatt() {
+	public SeqPatt(SeqPatt s) {
 		this.idealParDegree=1;
+		this.idealServiceTime=s.getIdealServiceTime();
+		this.optimizedTs=s.getOptimizedTs();
 	}
 	public SeqPatt(double serviceTime) {
 		this.idealServiceTime=serviceTime;
@@ -108,7 +114,7 @@ public class SeqPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-		return lable;
+		return lable +" ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
 //		return lable +" , " +getServiceTime();
 	}
 
@@ -208,9 +214,9 @@ public class SeqPatt implements SkeletonPatt {
 	public double getOptimizedTs() {
 		return idealServiceTime;
 	}
-	public void setOptimizedTs(double optimizedTs) {
-		this.optimizedTs = optimizedTs;
-	}
+//	public void setOptimizedTs(double optimizedTs) {
+//		this.optimizedTs = optimizedTs;
+//	}
 	@Override
 	public double calculateOptimalServiceTime() {
 		return idealServiceTime;

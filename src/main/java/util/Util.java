@@ -192,7 +192,11 @@ public class Util {
 	public static SkeletonPatt clone(SkeletonPatt original) {
 		SkeletonPatt copy = null;
 		try {
-			copy = original.getClass().getDeclaredConstructor().newInstance();
+			if(original instanceof SeqPatt) {
+//				copy = original.getClass().getDeclaredConstructor().newInstance(Double.class);
+				copy = new SeqPatt((SeqPatt)original);
+			}else {
+			copy = original.getClass().getDeclaredConstructor().newInstance();}
 			copy.setChildren(original.getChildren());
 			copy.setLable(original.getLable());
 			copy.setDepth(original.getDepth());

@@ -112,7 +112,7 @@ public class PipePatt implements SkeletonPatt {
 	@Override
 	public String toString() {
 //		return " P ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null);
-		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null)  + "ts:: ["+getOptimizedTs()+"]";
+		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null)  + "ts:: ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
 	}
 	@Override
 	public int hashCode() {

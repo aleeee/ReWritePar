@@ -14,17 +14,19 @@ import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.concert.IloRange;
+import ilog.cp.IloCP;
 import ilog.cplex.IloCplex;
+import ilog.cplex.IloCplex.OptimalityTarget;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
-public class Solver7 {
+public class Solver8 {
 
 	private Map<SkeletonPatt, List<IloNumVar>> variables;
-	private IloCplex cplex;
+	private IloCP cplex;
 	private SkeletonPatt g;
 	private int numAvailableProcessors;
 //	List<IloRange> constraints = new ArrayList<IloRange>();
@@ -32,9 +34,9 @@ public class Solver7 {
 	IloNumExpr obj;
 	List<SkeletonPatt> result = new ArrayList<>();
 
-	public Solver7(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
+	public Solver8(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
 
-		this.cplex = new IloCplex();
+		this.cplex = new IloCP();
 		expr = cplex.constant(0);
 		obj = cplex.constant(0);
 		this.variables = new HashMap<SkeletonPatt, List<IloNumVar>>();
@@ -45,7 +47,7 @@ public class Solver7 {
 		addConstraints(g);
 		addObjective();
 		String modelName = "C:\\Users\\me\\Desktop\\out\\cplexModel1" + skeletonPatt.hashCode()
-				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".lp";
+				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".cpo";
 		System.out.println(g + "modelName " + modelName);
 		cplex.exportModel(modelName);
 
@@ -53,7 +55,7 @@ public class Solver7 {
 	}
 
 	private void addConstraints(SkeletonPatt p) throws IloException {
-
+		cplex.addLe(variables.get(p).get(1), numAvailableProcessors);
 		if (p instanceof PipePatt) {
 			addPipeConstraints(p);
 		} else if (p instanceof CompPatt) {
@@ -72,36 +74,33 @@ public class Solver7 {
 	}
 	// create variables for all nodes
 	private void addVariables(SkeletonPatt p) {
-		
+		if(p.getChildren() != null) {
 		for (SkeletonPatt v : p.getChildren()) {
 			varCreator.accept(v);
-			if (v instanceof FarmPatt) {
+			
 				addVariables(v);
-			} else if (v instanceof CompPatt) {
-				addVariables(v);
-			} else if (v instanceof PipePatt) {
-				addVariables(v);
-			}
+		}
+		
 		}
 	}
 
 	private void addPipeConstraints(SkeletonPatt p) throws IloException {
-		List<IloNumVar> pipeVars = variables.get(p);
-		IloNumVar pipeParDegree = pipeVars.get(1);
 		IloNumExpr pStages = cplex.constant(0);
 		try {
 			for (SkeletonPatt v : p.getChildren()) {
 				List<IloNumVar> vars = variables.get(v);		
 				
 				if (v instanceof FarmPatt) {
-					
+					cplex.addLe(vars.get(1), numAvailableProcessors);
 //					expr = cplex.sum(expr, vars.get(1));
 //					cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors);
-
+						pStages = cplex.sum(pStages, vars.get(1));
+//						pStages = cplex.sum(pStages,  cplex.prod(variables.get(v.getChildren().get(0)).get(1),vars.get(1)));
+					
 					cplex.addLe(vars.get(1), v.getIdealParDegree());
 					cplex.addGe(cplex.prod(vars.get(0), vars.get(1)),v.getIdealServiceTime() * v.getIdealParDegree());
 					addFarmConstraints(v, false);
-					pStages = cplex.sum(pStages, vars.get(1));
+					
 				} else if (v instanceof CompPatt) {
 //					expr = cplex.sum(expr, vars.get(1));
 					addCompConstraints(v);
@@ -117,6 +116,9 @@ public class Solver7 {
 				}
 			}
 			expr = cplex.sum(expr, pStages);
+			if(pStages.equals(cplex.constant(0))) {
+				System.out.println("pstages is 0" + pStages);
+			}
 			cplex.addEq(variables.get(p).get(1), pStages);
 			cplex.addLe(variables.get(p).get(1), numAvailableProcessors);
 		} catch (IloException e) {
@@ -157,23 +159,24 @@ public class Solver7 {
 			for (SkeletonPatt v : p.getChildren()) {
 				List<IloNumVar> vars = variables.get(v);
 //				cplex.eq(vars.get(1), variables.get(p).get(1));
-				if(reusable) {
+//				cplex.addLe(vars.get(1), numAvailableProcessors);
+				
 					cplex.addLe(vars.get(1), numAvailableProcessors);
 
-				}
-				if (v instanceof FarmPatt) {
-//					if(!reusable) {
-//						expr = cplex.sum(expr, vars.get(1));
-////						constraints.add(cplex.addLe(variables.get(p).get(1) , numAvailableProcessors);
-//					}
-					if(!reusable) {
-//						expr = cplex.sum(expr, cplex.prod(variables.get(p).get(1) ,vars.get(1)));
-					}
+				
+				if(!reusable) {
 					
-//					cplex.addLazyConstraint(
-					cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors);
+						expr = cplex.sum(expr, cplex.prod(variables.get(p).get(1) ,vars.get(1)));
+					}
+				if (v instanceof FarmPatt) {
+					
+					
+					
+//					cplex.addLe(vars.get(1), numAvailableProcessors);
+					
 					cplex.addLe(vars.get(1), v.getIdealParDegree());
 					cplex.addGe(cplex.prod(vars.get(0), vars.get(1)),v.getIdealServiceTime() * v.getIdealParDegree());
+//					cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors);
 					addFarmConstraints(v, reusable);
 
 				} else if (v instanceof CompPatt) {
@@ -185,7 +188,9 @@ public class Solver7 {
 					if(!reusable) {
 //						expr = cplex.sum(expr, cplex.prod(variables.get(p).get(1) ,vars.get(1)));
 					}
-//					cplex.addLazyConstraint(cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors));
+					
+							cplex.addLe(cplex.prod(variables.get(p).get(1) ,vars.get(1)), numAvailableProcessors);
+					
 //					IloNumExpr pStages =cplex.constant(0);
 //					for(SkeletonPatt s: v.getChildren()) {
 //						if(s instanceof SeqPatt || s instanceof CompPatt ) {
@@ -215,22 +220,20 @@ public class Solver7 {
 
 	private void addObjective(SkeletonPatt p) throws IloException {
 
-		if (p instanceof FarmPatt) {
+//		if (p instanceof FarmPatt) {
 			List<IloNumVar> vars = variables.get(p);
 
 			obj = cplex.sum(obj, vars.get(0));
-		}
-		if (p.getChildren() == null)
-			return;
+		if(p.getChildren() != null) {
 		for (SkeletonPatt c : p.getChildren()) {
 
 			addObjective(c);
 		}
-
+		}
 	}
 
 	public List<SkeletonPatt> getSolutions() throws IloException {
-
+		getSolutions(g);
 		for (SkeletonPatt v : g.getChildren()) {
 			if (v instanceof FarmPatt) {
 				getSolutions(v);
