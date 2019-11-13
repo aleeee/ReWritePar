@@ -33,6 +33,7 @@ import pattern.skel4.Skel4Parser;
 import solver.Solver;
 import solver.Solver10;
 import solver.Solver11;
+import solver.Solver12;
 import solver.Solver2;
 import solver.Solver3;
 import solver.Solver4;
@@ -76,7 +77,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 3);
+		dg.bfs(n, 5);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -86,7 +87,7 @@ public class Main2 {
 			continue;
 		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		Solver11 model = new Solver11(p, 16);
+		Solver12 model = new Solver12(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
