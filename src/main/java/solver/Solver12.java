@@ -92,7 +92,8 @@ public class Solver12 {
 				IloIntVar n_i = vars.get(1);
 				if (v instanceof FarmPatt) {
 					cplex.addLe(n_i, numAvailableProcessors);
-					pStages = cplex.sum(pStages,cplex.sum(cplex.prod(n_i,variables.get(v.getChildren().get(0)).get(1)),2));
+					pStages =addResources(v, pStages);
+//					pStages = cplex.sum(pStages,cplex.sum(cplex.prod(n_i,variables.get(v.getChildren().get(0)).get(1)),2));
 					cplex.addLe(n_i, v.getIdealParDegree());
 //					cplex.addGe(cplex.div(ts_i,n_i ), v.getIdealServiceTime()/v.getIdealParDegree());
 					cplex.addGe(cplex.prod(ts_i, n_i),v.getIdealServiceTime() * v.getIdealParDegree());
@@ -283,5 +284,29 @@ public class Solver12 {
 	public void cleanup() throws IloException {
 		cplex.clearModel();
 		cplex.end();
+	}
+	private IloNumExpr addResources(SkeletonPatt f, IloNumExpr pipe) throws IloException {
+		pipe = addResource(f, pipe);
+		return pipe;
+	}
+	private IloNumExpr addResource(SkeletonPatt farm,IloNumExpr pipeStages ) throws IloException {
+		
+		pipeStages = cplex.sum(pipeStages,cplex.sum(getFarmResources(farm),2));
+
+//		if( farmWorker instanceof FarmPatt)
+//			pipeStages=addResource(farmWorker, pipeStages);
+		return pipeStages;
+	}
+	private IloNumExpr getFarmResources(SkeletonPatt farm) throws IloException {
+		IloNumExpr farmResource = cplex.constant(1);
+		return getN(farm, farmResource);
+	}
+	private IloNumExpr getN(SkeletonPatt farm,IloNumExpr farmResources) throws IloException {
+		IloIntVar n = variables.get(farm).get(1);
+		SkeletonPatt farmWorker = farm.getChildren().get(0);
+		farmResources = cplex.prod(n, variables.get(farmWorker).get(1));
+		if( farmWorker instanceof FarmPatt)
+			farmResources=getN(farmWorker, farmResources);
+		return farmResources;
 	}
 }

@@ -23,14 +23,14 @@
 \maketitle
 
 \section{Grammar and Parser}
-I have a simple grammar just to accept limited number of pattern combinations and create a parse tree of it. I have used ANTLR (ANother Tool for Language Recognition)  to generate the parser . The parser creates a tree of the input program making the outer-most skeleton as root. for example , let's say we pass a file having the following code :
+The grammar defines basic constructs of patterns and it is used as an input to parser generator ANTLR(ANother Tool for Language Recognition). ANTLR generates a parser which translates input into a tree of skeletons. example input:
 
 \begin{lstlisting}[style=refactor, caption={example input program},label={code1}]
 a = Seq (10);
 b = Seq (20);
 main = Pipe(Farm(a),b);
 \end{lstlisting}
-The parser creates a tree with root Pipe pattern having two stages Farm and Sequential; Farm intrun will have one stage which is type of Sequential. After that i have used a breadth first search algorithm to construct a forest tree staring from the result of the parser. The tree construction is done by implementing rewriting rules at level of the skeletons;which means a tree can have multiple skeleton nodes and the visitor visits each node and creates a new tree from the result of the refactoring. 
+The parser creates a tree with root node Pipe skeleton having two stages Farm and Sequential; Farm stage will have one worker process which is type of Sequential. the resulting tree is passed to the refactoring process which is based on  breadth first search algorithm. the input tree is expanded into a forest of trees in the refactoring process. The tree expansion is done by implementing rewriting rules at level of the skeletons; a visitor based rewriter visits each skeleton node of a tree  and creates a new tree by applying rewriting rules. 
 
 here are the basic rewriting rules:
 
@@ -44,13 +44,9 @@ here are the basic rewriting rules:
 \item $Map(Comp(\Delta_1, \Delta_2 ))\xLongleftrightarrow[\text{Comp\_of\_map}]{\text{Map\_of\_Pipe}} Comp (Map(\Delta_1),Map(\Delta_2))$\\
 \end{itemize}
 
-\section{parser}
-ANTLR ( Another Tool For Language Recognition) is parser generator that translates  grammars to a parser/lexer in a target language, and the generated parser is used to construct skeleton tree.
 
-\begin{lstlisting}[caption={grammar}, label={grammar}]
-\end{lstlisting}
 \section{refactoring algorithm}
-it starts by visiting the root node and proceeds to the child nodes . each visiting operation generates a set of trees ; they indicate different rewriting options for a particular tree.each newly created tree is inserted into queue so that it'll be refactored by the visitor. i have used breadth first search algorithm in combination with visitor pattern for the tree expansion. at the end we have a forest tree of patterns.
+it starts by visiting the root node and proceeds to the child nodes . each visiting operation generates a set of trees ; they indicate different rewriting options for a particular pattern tree.each newly created tree is inserted into queue so that it'll be processed by the visitor. the algorithm is based on breadth-first search at the tree level and visitor pattern at the node level. 
 
 \begin{lstlisting}[caption={skeleton tree}, label={tree1}]
 	Skeleton {
