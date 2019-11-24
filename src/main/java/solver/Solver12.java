@@ -48,7 +48,7 @@ public class Solver12 {
 		addObjective();
 		String modelName = "C:\\Users\\me\\Desktop\\out\\cplexModel1" + skeletonPatt.hashCode()
 				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".cpo";
-		System.out.println(g + "modelName " + modelName);
+//		System.out.println(g + "modelName " + modelName);
 		cplex.exportModel(modelName);
 
 		cplex.setOut(null);
@@ -174,7 +174,8 @@ public class Solver12 {
 					addFarmConstraints(v, reusable);
 
 				} else if (v instanceof CompPatt) {
-					
+					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
+					expr = cplex.sum(expr, cplex.sum(cplex.prod(pd ,vars.get(1)),2));
 					addCompConstraints(v);
 				} else if (v instanceof PipePatt) {
 					
@@ -197,11 +198,16 @@ public class Solver12 {
 	}
 
 	private void addObjective(SkeletonPatt p) throws IloException {
-
-//		if (p instanceof FarmPatt) {
-			List<IloIntVar> vars = variables.get(p);
-			
-			obj =  cplex.sum(obj, vars.get(0));
+		List<IloIntVar> vars = variables.get(p);
+		if (p instanceof FarmPatt) {
+			if(p.getChildren().get(0) instanceof CompPatt) {
+//				cplex.addEq(vars.get(0) , cplex.div(variables.get(p.getChildren().get(0)).get(0),vars.get(1)));
+				obj = cplex.sum(obj, (cplex.div(variables.get(p.getChildren().get(0)).get(0),vars.get(1))));
+			}else {
+				obj =  cplex.sum(obj, vars.get(0));
+			}
+		}	else{	
+			obj =  cplex.sum(obj, vars.get(0));}
 		if(p.getChildren() != null) {
 		for (SkeletonPatt c : p.getChildren()) {
 

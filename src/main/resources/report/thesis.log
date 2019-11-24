@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6930 64-bit) (preloaded format=pdflatex 2019.7.23)  16 NOV 2019 21:09
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6930 64-bit) (preloaded format=pdflatex 2019.7.23)  24 NOV 2019 12:02
 entering extended mode
 **./thesis.tex
 (thesis.tex
@@ -469,28 +469,39 @@ Underfull \hbox (badness 10000) in paragraph at lines 44--45
  []
 
 [1]
-LaTeX Font Info:    Try loading font information for OML+cmr on input line 58.
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 55.
  ("C:\Users\me\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\omlcmr.fd"
 File: omlcmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <12> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 58.
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 55.
 
 [2] [3]
-Overfull \hbox (11.3752pt too wide) in paragraph at lines 103--116
-\OT1/cmtt/m/n/12 Pipeline Skeleton: the ideal parallelism degree is the number 
-of
+Overfull \hbox (19.0488pt too wide) in paragraph at lines 100--110
+\OT1/cmtt/m/n/12 Farm Skeleton: the ideal parallelism degree is computed by $[]
+$ and
+ []
+
+
+Overfull \hbox (38.01895pt too wide) in paragraph at lines 100--110
+\OT1/cmtt/m/n/12 the ideal service time is calculated using the formula: Max($\
+OML/cmm/m/it/12 T[]; T[]; []\OT1/cmr/m/n/12 )$ 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 100--110
+
  []
 
 [4] (thesis.aux) ) 
 Here is how much of TeX's memory you used:
- 7137 strings out of 492946
- 106336 string characters out of 3127598
- 212740 words of memory out of 3000000
- 10903 multiletter control sequences out of 15000+200000
+ 7136 strings out of 492946
+ 106327 string characters out of 3127598
+ 212732 words of memory out of 3000000
+ 10902 multiletter control sequences out of 15000+200000
  13089 words of font info for 51 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 48i,15n,42p,518b,1237s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 48i,15n,42p,791b,1237s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Users/me/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/pu
 blic/amsfonts/cm/cmbx12.pfb><C:/Users/me/AppData/Local/Programs/MiKTeX 2.9/font
 s/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/me/AppData/Local/Programs/MiKTeX
@@ -506,7 +517,7 @@ amsfonts/cm/cmr8.pfb><C:/Users/me/AppData/Local/Programs/MiKTeX 2.9/fonts/type1
 onts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/me/AppData/Local/Programs/Mi
 KTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt12.pfb><C:/Users/me/AppData/Local/P
 rograms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on thesis.pdf (5 pages, 140734 bytes).
+Output written on thesis.pdf (5 pages, 142003 bytes).
 PDF statistics:
  70 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

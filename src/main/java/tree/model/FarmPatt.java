@@ -116,8 +116,9 @@ public class FarmPatt implements SkeletonPatt {
 //		return "F "+(this.getChildren() != null? " ( " +this.getChildren().get(0).toString() +" ) ":null);
 
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null)
-				+ " n_id: " +getIdealParDegree() + " ts_id:  ["+getIdealServiceTime()+"]"
-				+ " opt_n: " +getOptParallelismDegree() + " opt_ts:  ["+getOptimizedTs()+"]";
+//				+ " n_id: " +getIdealParDegree() + " ts_id:  ["+getIdealServiceTime()+"]"
+				+ " nw: " +getOptParallelismDegree() ;
+				//+(getParent() == null?   " opt_ts:  ["+getOptimizedTs()+"]" : "");
 	}
 
 //	@Override
@@ -216,7 +217,7 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime;
+		return optimizedTs=getChildren().get(0).getOptServiceTime()/getOptParallelismDegree();
 	}
 
 	@Override

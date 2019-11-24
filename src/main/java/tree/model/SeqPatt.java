@@ -114,8 +114,8 @@ public class SeqPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-		return lable +" ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
-//		return lable +" , " +getServiceTime();
+//		return lable +" ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
+		return lable;
 	}
 
 	@Override

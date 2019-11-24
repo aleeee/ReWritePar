@@ -77,15 +77,15 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 5);
+		dg.bfs(n, 3);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
 		for(SkeletonPatt p: dg.g.vertexSet()) {
 			try {
-			if(p.getChildren().stream().noneMatch(sk-> sk instanceof FarmPatt))
-			continue;
-		System.out.println(p);
+//			if(p.getChildren().stream().noneMatch(sk-> sk instanceof FarmPatt))
+//			continue;
+//		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
 		Solver12 model = new Solver12(p, 16);
 		// Solve the model
@@ -95,7 +95,7 @@ public class Main2 {
 		model.cleanup();
 		
 //		p.calculateOptimalServiceTime();
-		p.getChildren().forEach(pp->System.out.println(pp));
+//		p.getChildren().forEach(pp->System.out.println(pp));
 		System.out.println("after solve: " + p.print());
 		
 			}catch(Exception e) {
@@ -150,7 +150,7 @@ public class Main2 {
 		        {
 		            public String getName(SkeletonPatt sk)
 		            {
-		                return sk.toString();
+		                return sk.print();
 		            }
 		        };
 		        
@@ -185,7 +185,7 @@ public class Main2 {
 		        	Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
 					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg.hashCode()+".svg"));
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg.hashCode()+"new.svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

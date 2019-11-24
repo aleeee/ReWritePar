@@ -56,8 +56,9 @@ public interface SkeletonPatt extends Serializable, Attribute{
 	double calculateOptimalServiceTime();
 	default String print(){
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) 
-				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "
-				+ " O_PD: "+getOptParallelismDegree()+ " O_TS::  ["+getOptServiceTime()+"] "								
+//				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "
+				+ (this instanceof FarmPatt? " nw: "+getOptParallelismDegree(): "")
+				+ " ts::  ["+String.format("%.2f",getOptServiceTime())+"] "								
 				;
 
 	};

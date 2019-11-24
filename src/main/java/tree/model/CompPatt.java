@@ -123,7 +123,9 @@ public class CompPatt implements SkeletonPatt {
 	public String toString() {
 //		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
 
-		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null ) +  "ts::+  ["+getOptimizedTs()+"]";
+		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")
+				+ " ) ":null );
+		//+  "ts::+  ["+getOptimizedTs()+"]";
 	}
 	@Override
 	public int hashCode() {
@@ -222,7 +224,7 @@ public class CompPatt implements SkeletonPatt {
 		this.optParDegree = optParDegree;
 	}
 	public double getOptServiceTime() {
-		return optServiceTime;
+		return optimizedTs=Util.getOptimalServiceTime(this);
 	}
 	public void setOptServiceTime(double optServiceTime) {
 		this.optServiceTime = optServiceTime;

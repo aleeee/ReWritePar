@@ -112,7 +112,8 @@ public class PipePatt implements SkeletonPatt {
 	@Override
 	public String toString() {
 //		return " P ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null);
-		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null)  + "ts:: ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
+		return getLable() +" ( "+ (this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "") + " ) ":null) ;
+				//+ "ts:: ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
 	}
 	@Override
 	public int hashCode() {
@@ -196,7 +197,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime;
+		return optimizedTs=Util.getOptimalServiceTime(this);
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
