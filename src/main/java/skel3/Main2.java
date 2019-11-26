@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -22,9 +23,9 @@ import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
 import org.jgrapht.io.JSONExporter;
-import graph.DiGraphGen3;
-import graph.DiGraphGen3.Edge;
+
 import graph.DiGraphGen4;
+import graph.DiGraphGen4.Edge;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizJdkEngine;
@@ -77,7 +78,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 3);
+		dg.bfs(n, 5);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -96,7 +97,7 @@ public class Main2 {
 		
 //		p.calculateOptimalServiceTime();
 //		p.getChildren().forEach(pp->System.out.println(pp));
-		System.out.println("after solve: " + p.print());
+		System.out.println( p.print() );
 		
 			}catch(Exception e) {
 				System.out.println("Error at solve" + e.getMessage());
@@ -104,7 +105,6 @@ public class Main2 {
 			
 		}
 		
-	
 //		renderHrefGraph(dg);
 //		exportJson(dg);
 //		try {
@@ -128,7 +128,7 @@ public class Main2 {
 
 	}
 
-	 private static void renderHrefGraph(DiGraphGen4 dg)
+	 private static void renderHrefGraph(DiGraphGen4 dg_)
 	 
 		        throws ExportException
 		    {	
@@ -176,7 +176,7 @@ public class Main2 {
 //					e1.printStackTrace();
 //				}
 		        
-		        exporter.exportGraph(dg.g, f);
+		        exporter.exportGraph(dg_.g, f);
 		        
 //		        System.out.println(writer.toString());
 		       
@@ -185,17 +185,17 @@ public class Main2 {
 		        	Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
 					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg.hashCode()+"new.svg"));
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg_.hashCode()+"new.svg"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		        // @example:render:end
 		    }
-	 private static void exportJson(DiGraphGen3 dg)  throws ExportException, IOException
+	 private static void exportJson(DiGraphGen4 dgJson)  throws ExportException, IOException
 		    {	
 		 AtomicInteger id = new AtomicInteger();
-		 dg.g.removeAllVertices( dg.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
+//		 dgJson.g.removeAllVertices( dgJson.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
 		       
 		       
 		        
@@ -215,7 +215,7 @@ public class Main2 {
 //				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(id.incrementAndGet());
 				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(e.getRule());
 
-				ComponentAttributeProvider<Edge> edgeAttributeProvider = new ComponentAttributeProvider<DiGraphGen3.Edge>() {
+				ComponentAttributeProvider<Edge> edgeAttributeProvider = new ComponentAttributeProvider<DiGraphGen4.Edge>() {
 					
 					@Override
 					public Map<String, Attribute> getComponentAttributes(Edge edge) {
@@ -232,8 +232,8 @@ public class Main2 {
 //		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
 //		        File f = 
-		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\jsonFul1_.json");
-		        exporter.exportGraph(dg.g, writer);
+		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\jsonFull1_.json");
+		        exporter.exportGraph(dgJson.g, writer);
 		        
 		       
 		        

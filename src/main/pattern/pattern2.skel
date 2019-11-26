@@ -1,5 +1,3 @@
 a = Seq (10);
 b = Seq (20);
-c = Seq(30);
-d = Seq(40);
-main = Pipe(Farm(c),a,d);
+main = Pipe(Farm(a),b);

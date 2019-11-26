@@ -94,7 +94,7 @@ public class Solver12 {
 					cplex.addLe(n_i, numAvailableProcessors);
 					pStages =addResources(v, pStages);
 //					pStages = cplex.sum(pStages,cplex.sum(cplex.prod(n_i,variables.get(v.getChildren().get(0)).get(1)),2));
-					cplex.addLe(n_i, v.getIdealParDegree());
+//					cplex.addLe(n_i, v.getIdealParDegree());
 //					cplex.addGe(cplex.div(ts_i,n_i ), v.getIdealServiceTime()/v.getIdealParDegree());
 					cplex.addGe(cplex.prod(ts_i, n_i),v.getIdealServiceTime() * v.getIdealParDegree());
 					addFarmConstraints(v, false);
@@ -123,7 +123,7 @@ public class Solver12 {
 	}
 
 	private void addCompConstraints(SkeletonPatt p) throws IloException {
-		List<IloIntVar> compVars = variables.get(p);
+//		List<IloIntVar> compVars = variables.get(p);
 		
 //		cplex.addEq(compVars.get(1), 1);
 		try {
@@ -134,7 +134,7 @@ public class Solver12 {
 				cplex.addLe(n_i, numAvailableProcessors);
 				if (v instanceof FarmPatt) {
 					cplex.addLe(cplex.sum(n_i,2), numAvailableProcessors);
-					cplex.addLe(n_i, v.getIdealParDegree());
+//					cplex.addLe(n_i, v.getIdealParDegree());
 //					cplex.addGe(cplex.div(ts_i, n_i), v.getIdealServiceTime()/v.getIdealParDegree());
 					cplex.addGe(cplex.prod(ts_i, n_i),v.getIdealServiceTime() * v.getIdealParDegree());
 					addFarmConstraints(v, true);
@@ -143,7 +143,7 @@ public class Solver12 {
 				} else if (v instanceof PipePatt) {
 					addPipeConstraints(v);
 				}else if (v instanceof SeqPatt) {
-					cplex.addEq(vars.get(1), 1);
+//					cplex.addEq(vars.get(1), 1);
 				}
 			}
 //		cplex.addEq(compVars.get(1), cplex.max(variables.get(p).get(1));
@@ -155,6 +155,8 @@ public class Solver12 {
 
 	private void addFarmConstraints(SkeletonPatt p, boolean reusable) throws IloException {
 		IloIntVar pd = variables.get(p).get(1);
+		cplex.addLe(pd, numAvailableProcessors-2);
+		cplex.addLe(pd, p.getIdealParDegree());
 		try {
 			for (SkeletonPatt v : p.getChildren()) {
 					List<IloIntVar> vars = variables.get(v);		
@@ -166,20 +168,21 @@ public class Solver12 {
 //						expr = cplex.sum(expr, n_i);
 //					}
 				if (v instanceof FarmPatt) {					
-					cplex.addLe(n_i, v.getIdealParDegree());
-					cplex.addLe(cplex.sum(n_i,2), numAvailableProcessors);
+//					cplex.addLe(n_i, v.getIdealParDegree());
+//					cplex.addLe(cplex.sum(n_i,2), numAvailableProcessors);
 //					cplex.addGe(cplex.div(ts_i, n_i), v.getIdealServiceTime()/v.getIdealParDegree());
 					cplex.addGe(cplex.prod(ts_i, n_i),v.getIdealServiceTime() * v.getIdealParDegree());
 					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
 					addFarmConstraints(v, reusable);
 
 				} else if (v instanceof CompPatt) {
-					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
-					expr = cplex.sum(expr, cplex.sum(cplex.prod(pd ,vars.get(1)),2));
+//					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
+//					expr = cplex.sum(expr, cplex.sum(cplex.prod(pd ,vars.get(1)),2));
+//					cplex.addGe(cplex.prod(ts_i, n_i),v.getIdealServiceTime() * v.getIdealParDegree());
 					addCompConstraints(v);
 				} else if (v instanceof PipePatt) {
 					
-					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
+//					cplex.addLe(cplex.sum(cplex.prod(pd ,vars.get(1)),2), numAvailableProcessors);
 					addPipeConstraints(v);
 				}else if (v instanceof SeqPatt) {
 					cplex.addEq(vars.get(1), 1);
@@ -199,15 +202,20 @@ public class Solver12 {
 
 	private void addObjective(SkeletonPatt p) throws IloException {
 		List<IloIntVar> vars = variables.get(p);
+		
 		if (p instanceof FarmPatt) {
-			if(p.getChildren().get(0) instanceof CompPatt) {
-//				cplex.addEq(vars.get(0) , cplex.div(variables.get(p.getChildren().get(0)).get(0),vars.get(1)));
-				obj = cplex.sum(obj, (cplex.div(variables.get(p.getChildren().get(0)).get(0),vars.get(1))));
-			}else {
+//			if(p.getChildren().get(0) instanceof CompPatt) {
+//				IloNumExpr ts = cplex.constant(p.getChildren().get(0).getIdealServiceTime());
+				double ts = p.getChildren().get(0).getIdealServiceTime();				
+//				System.out.println(p.getChildren().get(0).toString());
+//				System.out.println("ts " + cplex.div( (int)ts,vars.get(1)));
+				cplex.addEq(vars.get(0) , cplex.div( (int)ts,vars.get(1)));
+//				obj = cplex.sum(obj, (cplex.div(variables.get(p.getChildren().get(0)).get(0),vars.get(1))));
 				obj =  cplex.sum(obj, vars.get(0));
-			}
-		}	else{	
-			obj =  cplex.sum(obj, vars.get(0));}
+//			}else {
+//				obj =  cplex.sum(obj, vars.get(0));
+//			}
+		}	
 		if(p.getChildren() != null) {
 		for (SkeletonPatt c : p.getChildren()) {
 

@@ -10,7 +10,8 @@
 \usepackage{booktabs}
 \usepackage{extarrows}
 \usepackage[ruled,linesnumbered]{algorithm2e}
-
+\usepackage{enumitem}
+\setlist{nosep}
 \lstdefinestyle{refactor} {
     keywordstyle=\ttfamily\color{green}\ttfamily,
     stringstyle=\sffamily\color{black},
@@ -25,7 +26,7 @@
 \section{Grammar and Parser}
 The grammar defines basic constructs of patterns and it is used as an input to parser generator ANTLR(ANother Tool for Language Recognition). ANTLR is used to generate a parser which translates input into a parse tree of skeletons. example input:
 
-\begin{lstlisting}[style=refactor, caption={example input program},label={code1}]
+\begin{lstlisting}[style=refactor, caption={example input program},label={lst:code1}]
 a = Seq (10);
 b = Seq (20);
 main = Pipe(Farm(a),b);
@@ -98,15 +99,77 @@ line 10-14 is similar to above process except it works on the child nodes of the
 
 \section{Non functional parameters}
 in the refactoring procedure the algorithm considers that there are enough number of resources to realize all the tree of patterns so the performance metrics are ideal cases. optimization instead uses the available resources and tries to allocate them in a way that will result a better performance and this resource scheduling process is a complex task. IBM ILOG CP Optimizer is used to tackle this problem. ILOG CP Optimizer is a constraint programming based tool that enables to model and solve scheduling problems. 
-the model is comprised of an objective function and list of constraints . in this case the constraints are number of available resources and service time which means the number of resources allocated for each tree node and also the commutative resources assigned to them can not exceed the number of available resources. regarding the parallelism degree , it can not be more than the ideal one. thus the optimal parallelism is determined considering such constraints. the objective function is to minimize the service time , hence the solver gives the optimal parallelism degree that will result a minimum service time.
+the model is comprised of an objective function and list of constraints . in this case the constraints are number of available resources and service time which means the number of resources allocated for each tree node and also the commutative resources assigned to them can not exceed the number of available resources. regarding the parallelism degree , it can not be more than the ideal one. thus the optimal parallelism is determined considering such constraints. the objective function is to minimize the service time , hence the solver gives the optimal parallelism degree that will result a minimum service time.\\
 Here is how  parallelism degree and service times are computed for each kind of skeleton:
-\\
-	let \texttt{ Tscatter 	T\textsubscript{s}, 					Tcollector T\textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
-	$T_{\Delta}$ is service time of the stage or worker skeleton\\
-	Sequential Skeleton:	n = 1; Ts = ts\\
-	Farm Skeleton:	the ideal parallelism degree is computed by $\frac{T\textsubscript{e}}{T_{\Delta}}$ and the ideal service time is calculated using the formula:  {Max($T_e,T_c,\frac{T_\Delta}{n})$}\\
-	 Pipeline: {$T_s = Max(T_{si}) \forall i \in pipe stages$} \\
-     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_g)}}$}\\	
-	 
-However these formulas are used only to compute the ideal cases; whereas the optimal case is computed using the ILOG CP solver. 
+\begin{itemize} 
+\item	let \texttt{ Tscatter 	T\textsubscript{s}, 					Tcollector T  \textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
+\item	$T_{\Delta}$ is service time of the stage or worker skeleton\\
+\item	Sequential Skeleton:	n = 1; Ts = ts\\
+\item	Farm Skeleton:	the ideal parallelism degree is computed by $\frac{T\textsubscript{e}}{T_{\Delta}}$ and the ideal service time is calculated using the formula:  {Max($T_e,T_c,\frac{T_\Delta}{n})$}\\
+\item	 Pipeline: {$T_s = Max(T_{si}) \forall i \in pipe stages$} \\
+\item     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_g)}}$}\\	
+\end{itemize}	 
+the following is the list of nodes of the directed graph generated for an input Listing  ~\ref{lst:code1}.
+\tiny
+\texttt{
+\begin{itemize}
+\item pipe  ( [farm  ( [a] )  nw: 10, b] )  ts::  [20.00] 
+\item comp  ( [farm  ( [a] )  nw: 10, b] )  ts::  [21.00] 
+\item farm  ( [comp ( farm  ( a )  nw: 10, b ) ] )  nw: 11 ts::  [1.91] 
+\item comp  ( [a, b] )  ts::  [30.00] 
+\item comp  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1, b] )  ts::  [21.00] 
+\item comp  ( [farm  ( [a] )  nw: 10, farm  ( [b] )  nw: 10] )  ts::  [3.00] 
+\item pipe  ( [a, farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  ts::  [10.00] 
+\item farm  ( [pipe ( a, farm  ( farm  ( b )  nw: 10 )  nw: 1 ) ] )  nw: 6 ts::  [1.67] 
+\item comp  ( [a, farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  ts::  [12.00] 
+\item pipe  ( [farm  ( [a] )  nw: 5, farm  ( [farm  ( [b] )  nw: 5] )  nw: 1] )  ts::  [4.00] 
+\item pipe  ( [a, farm  ( [b] )  nw: 10] )  ts::  [10.00] 
+\item pipe  ( [a, farm  ( [farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  nw: 1] )  ts::  [10.00] 
+\item pipe  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1, b] )  ts::  [20.00] 
+\item farm  ( [comp ( farm  ( farm  ( a )  nw: 10 )  nw: 1, b ) ] )  nw: 11 ts::  [1.91] 
+\item comp  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1] )  nw: 1, b] )  ts::  [21.00] 
+\item comp  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1, farm  ( [b] )  nw: 10] )  ts::  [3.00] 
+\item farm  ( [pipe ( farm  ( a )  nw: 5, farm  ( farm  ( b )  nw: 5 )  nw: 1 ) ] )  nw: 1 ts::  [4.00] 
+\item comp  ( [farm  ( [a] )  nw: 10, farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  ts::  [3.00] 
+\item pipe  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1, farm  ( [farm  ( [b] )  nw: 5] )  nw: 1] )  ts::  [4.00] 
+\item pipe  ( [farm  ( [a] )  nw: 5, farm  ( [b] )  nw: 5] )  ts::  [4.00] 
+\item pipe  ( [farm  ( [a] )  nw: 5, farm  ( [farm  ( [farm  ( [b] )  nw: 5] )  nw: 1] )  nw: 1] )  ts::  [4.00] 
+\item farm  ( [comp ( farm  ( a )  nw: 10, farm  ( b )  nw: 10 ) ] )  nw: 2 ts::  [1.50] 
+\item comp  ( [a, farm  ( [b] )  nw: 10] )  ts::  [12.00] 
+\item farm  ( [farm  ( [comp ( a, b ) ] )  nw: 10] )  nw: 1 ts::  [3.00] 
+\item farm  ( [comp ( a, b ) ] )  nw: 11 ts::  [2.73] 
+\item farm  ( [farm  ( [farm  ( [comp ( a, b ) ] )  nw: 10] )  nw: 1] )  nw: 1 ts::  [3.00] 
+\item farm  ( [farm  ( [pipe ( a, b ) ] )  nw: 10] )  nw: 1 ts::  [2.00] 
+\item farm  ( [pipe ( a, b ) ] )  nw: 11 ts::  [1.82] 
+\item farm  ( [farm  ( [farm  ( [pipe ( a, b ) ] )  nw: 10] )  nw: 1] )  nw: 1 ts::  [2.00] 
+\item farm  ( [farm  ( [comp ( farm  ( a )  nw: 10, farm  ( b )  nw: 10 ) ] )  nw: 2] )  nw: 1 ts::  [1.50] 
+\item farm  ( [pipe ( farm  ( a )  nw: 5, farm  ( b )  nw: 5 ) ] )  nw: 1 ts::  [4.00] 
+\item farm  ( [farm  ( [pipe ( farm  ( a )  nw: 5, farm  ( b )  nw: 5 ) ] )  nw: 1] )  nw: 1 ts::  [4.00] 
+\item farm  ( [pipe ( farm  ( farm  ( a )  nw: 5 )  nw: 1, farm  ( farm  ( b )  nw: 5 )  nw: 1 ) ] )  nw: 1 ts::  [4.00] 
+\item comp  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1, farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  ts::  [3.00] 
+\item pipe  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1] )  nw: 1, farm  ( [farm  ( [b] )  nw: 5] )  nw: 1] )  ts::  [4.00] 
+\item pipe  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1, farm  ( [b] )  nw: 5] )  ts::  [4.00] 
+\item pipe  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1, farm  ( [farm  ( [farm  ( [b] )  nw: 5] )  nw: 1] )  nw: 1] )  ts::  [4.00] 
+\item farm  ( [comp ( farm  ( farm  ( a )  nw: 10 )  nw: 1, farm  ( b )  nw: 10 ) ] )  nw: 2 ts::  [1.50] 
+\item comp  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1] )  nw: 1, farm  ( [b] )  nw: 10] )  ts::  [3.00] 
+\item farm  ( [pipe ( farm  ( farm  ( a )  nw: 10 )  nw: 1, b ) ] )  nw: 11 ts::  [1.82] 
+\item pipe  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1] )  nw: 1, b] )  ts::  [20.00] 
+\item pipe  ( [a, b] )  ts::  [20.00] 
+\item farm  ( [comp ( a, farm  ( b )  nw: 10 ) ] )  nw: 6 ts::  [2.00] 
+\item farm  ( [farm  ( [comp ( a, farm  ( b )  nw: 10 ) ] )  nw: 11] )  nw: 1 ts::  [1.09] 
+\item farm  ( [pipe ( a, farm  ( b )  nw: 10 ) ] )  nw: 6 ts::  [1.67] 
+\item farm  ( [farm  ( [comp ( farm  ( a )  nw: 10, b ) ] )  nw: 7] )  nw: 1 ts::  [3.00] 
+\item farm  ( [pipe ( farm  ( a )  nw: 10, b ) ] )  nw: 11 ts::  [1.82] 
+\item farm  ( [comp ( farm  ( farm  ( a )  nw: 10 )  nw: 1, farm  ( farm  ( b )  nw: 10 )  nw: 1 ) ] )  nw: 2 ts::  [1.50] 
+\item comp  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1] )  nw: 1, farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  ts::  [3.00] 
+\item comp  ( [farm  ( [farm  ( [a] )  nw: 10] )  nw: 1, farm  ( [farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  nw: 1] )  ts::  [3.00] 
+\item farm  ( [comp ( farm  ( a )  nw: 10, farm  ( farm  ( b )  nw: 10 )  nw: 1 ) ] )  nw: 2 ts::  [1.50] 
+\item comp  ( [farm  ( [a] )  nw: 10, farm  ( [farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  nw: 1] )  ts::  [3.00] 
+\item farm  ( [comp ( a, farm  ( farm  ( b )  nw: 10 )  nw: 1 ) ] )  nw: 6 ts::  [2.00] 
+\item comp  ( [a, farm  ( [farm  ( [farm  ( [b] )  nw: 10] )  nw: 1] )  nw: 1] )  ts::  [12.00] 
+\item farm  ( [farm  ( [pipe ( a, farm  ( b )  nw: 10 ) ] )  nw: 10] )  nw: 1 ts::  [1.00] 
+\item farm  ( [pipe ( farm  ( farm  ( a )  nw: 5 )  nw: 1, farm  ( b )  nw: 5 ) ] )  nw: 1 ts::  [4.00] 
+\item pipe  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1] )  nw: 1, farm  ( [b] )  nw: 5] )  ts::  [4.00] 
+\item farm  ( [farm  ( [pipe ( farm  ( a )  nw: 10, b ) ] )  nw: 10] )  nw: 1 ts::  [2.00] 
+\end{itemize}}
 \end{document}

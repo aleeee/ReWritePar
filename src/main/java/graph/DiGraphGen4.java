@@ -35,10 +35,11 @@ public class DiGraphGen4 {
 	public static class Edge {
 		private SkeletonPatt vertex;
 		private ReWritingRules rule;
-
+		private SkeletonPatt to;
 		public Edge(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 			this.vertex = from;
 			this.rule = rule;
+			this.to=to;
 		}
 
 		public Edge(SkeletonPatt v, ReWritingRules c) {
@@ -53,6 +54,13 @@ public class DiGraphGen4 {
 		public ReWritingRules getRule() {
 			return rule;
 		}
+		
+
+		public SkeletonPatt getTo() {
+			return to;
+		}
+
+		
 
 		@Override
 		public String toString() {
