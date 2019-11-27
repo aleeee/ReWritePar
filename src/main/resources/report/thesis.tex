@@ -31,7 +31,7 @@ a = Seq (10);
 b = Seq (20);
 main = Pipe(Farm(a),b);
 \end{lstlisting}
-The parser creates a tree with root node Pipe skeleton having two stages Farm and Sequential; Farm stage will have one worker process which is type of Sequential. the resulting tree is passed to the refactoring process which is based on  breadth-first search algorithm. the input tree is expanded into a forest of trees in the refactoring process. The tree expansion is done by implementing rewriting rules at level of the skeletons; a visitor based rewriter visits each skeleton node of a tree  and creates a new tree by applying rewriting rules. 
+The parser creates a tree with root node Pipe skeleton having two stages Farm and Sequential; Farm stage will have one worker process which is type of Sequential. the resulting tree is passed to the refactoring process that expands it into a forest of trees . The tree expansion is done by implementing rewriting rules at level of the skeletons; a visitor based rewriter visits each skeleton node of a tree  and creates a new tree by applying rewriting rules. 
 
 here are the basic rewriting rules:
 
@@ -47,8 +47,7 @@ here are the basic rewriting rules:
 
 
 \section{refactoring algorithm}
-The parser generates a tree structure with only a single node of type a tree which has skeleton patterns as its child nodes, this tree is fed into a refactoring algorithm which expands it into a tree of trees.The algorithm starting from the input tree performs tree expansion by implementing rewriting rules. the first tree is transformed into different trees and these trees are inserted as child nodes.the algorithm is based on breadth-first search and on the tree expansion process newly created trees are inserted into the queue . the algorithm is based on breadth-first search at the tree level and visitor pattern at the node level, which means trees are refactored in their insertion order and the refactoring process is done using the visitor pattern at nodes level. 
-The visitor visits each nodes of a tree and generates new trees replacing the the visited node with it's alternate rewriting options. These new trees are inserted into queue of the algorithm and are processed in their insertion order. This process continues until the queue is empty and the new trees has height maxHeight (a tree can be inserted in queue only if it has height less than maxHeight). The tree is represented as adjacency list meaning a node can have n adjacent nodes which are it's alternative representations. The algorithm tries to explore all the possible options to represent a pattern tree in different combinations of patterns with out considering the performance metrics. 
+The parser generates a tree structure with only a single node of type a tree which has skeleton patterns as its child nodes, this tree is fed into a refactoring algorithm which expands it into a tree of trees.The algorithm starting from the input it performs tree expansion by implementing rewriting rules. the first tree is transformed into different trees and they are added into the tree of trees structure and also into the queue to be rewritten into further alternate representations. the algorithm is based on breadth-first search at the tree level and visitor pattern at the node level, which means trees are refactored in their insertion order and the refactoring process is done using the visitor pattern at nodes level.  This process continues until the queue is empty and the new tree has a height maxHeight (a tree can be inserted in queue only if it has height less than maxHeight).  The algorithm tries to explore all the possible options to represent a pattern tree in different combinations of patterns with out considering the performance metrics and finally resource scheduling is done to allocate resources in optimal way.
 
 \begin{lstlisting}[caption={skeleton tree}, label={tree1}]
 	Skeleton {
@@ -99,8 +98,12 @@ line 10-14 is similar to above process except it works on the child nodes of the
 
 \section{Non functional parameters}
 in the refactoring procedure the algorithm considers that there are enough number of resources to realize all the tree of patterns so the performance metrics are ideal cases. optimization instead uses the available resources and tries to allocate them in a way that will result a better performance and this resource scheduling process is a complex task. IBM ILOG CP Optimizer is used to tackle this problem. ILOG CP Optimizer is a constraint programming based tool that enables to model and solve scheduling problems. 
-the model is comprised of an objective function and list of constraints . in this case the constraints are number of available resources and service time which means the number of resources allocated for each tree node and also the commutative resources assigned to them can not exceed the number of available resources. regarding the parallelism degree , it can not be more than the ideal one. thus the optimal parallelism is determined considering such constraints. the objective function is to minimize the service time , hence the solver gives the optimal parallelism degree that will result a minimum service time.\\
+the model is comprised of an objective function and list of constraints . in this case the constraints are number of available resources and service time which means the number of resources allocated for each tree node and also the commutative resources assigned to them can not exceed the number of available resources. regarding the parallelism degree , it can not be more than the ideal one. thus the optimal parallelism is determined considering such constraints. the objective function is to minimize the service time , hence the solver gives the optimal parallelism degree that will result a minimum service time.Creating a 
+perfect Model for the optimizer is somehow difficult task and it's work in progress. i have included a sample result at the end of this document. 
+
+
 Here is how  parallelism degree and service times are computed for each kind of skeleton:
+
 \begin{itemize} 
 \item	let \texttt{ Tscatter 	T\textsubscript{s}, 					Tcollector T  \textsubscript{c} ,Temitter T\textsubscript{e}, Tgather T\textsubscript{g}=1\\
 \item	$T_{\Delta}$ is service time of the stage or worker skeleton\\
@@ -109,7 +112,7 @@ Here is how  parallelism degree and service times are computed for each kind of 
 \item	 Pipeline: {$T_s = Max(T_{si}) \forall i \in pipe stages$} \\
 \item     Map Skeleton:  n = $\sqrt{\frac{T_{\Delta}}{max(T_s, T_g)}}$}\\	
 \end{itemize}	 
-the following is the list of nodes of the directed graph generated for an input Listing  ~\ref{lst:code1}.
+The following is the list of nodes of the directed graph generated for an input Listing  ~\ref{lst:code1}.
 \tiny
 \texttt{
 \begin{itemize}
@@ -172,4 +175,5 @@ the following is the list of nodes of the directed graph generated for an input 
 \item pipe  ( [farm  ( [farm  ( [farm  ( [a] )  nw: 5] )  nw: 1] )  nw: 1, farm  ( [b] )  nw: 5] )  ts::  [4.00] 
 \item farm  ( [farm  ( [pipe ( farm  ( a )  nw: 10, b ) ] )  nw: 10] )  nw: 1 ts::  [2.00] 
 \end{itemize}}
+
 \end{document}
