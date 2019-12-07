@@ -24,6 +24,7 @@ import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
 import org.jgrapht.io.JSONExporter;
 
+import cpo.CPOSolver;
 import graph.DiGraphGen4;
 import graph.DiGraphGen4.Edge;
 import guru.nidi.graphviz.engine.Format;
@@ -35,6 +36,7 @@ import solver.Solver;
 import solver.Solver10;
 import solver.Solver11;
 import solver.Solver12;
+import solver.Solver13;
 import solver.Solver2;
 import solver.Solver3;
 import solver.Solver4;
@@ -78,7 +80,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 5);
+		dg.bfs(n, 4);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -88,7 +90,7 @@ public class Main2 {
 //			continue;
 //		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		Solver12 model = new Solver12(p, 16);
+		CPOSolver model = new CPOSolver(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
