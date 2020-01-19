@@ -350,26 +350,21 @@ public class Ref2 {
 	public static MapPatt refactor(MapPatt map) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 //		mapelim map(D)!D
-		SkeletonPatt p = map.getChildren().get(0);
+		SkeletonPatt p = Util.clone(map.getChildren().get(0));
+//		SkeletonPatt p = map.getChildren().get(0);
 
 		ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
 
-		SkeletonPatt newP = null;
-		try {
-			newP = p.getClass().getDeclaredConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e1) {
-			e1.printStackTrace();
-		}
+		
 		if (p.getChildren() != null)
 			sc.addAll(p.getChildren());
 //		newP.setParent(parent);
-		newP.setDepth(p.getDepth());
-		newP.setChildren(sc);
-		newP.setReWritingRule(ReWritingRules.MAP_ELIM);
-		newP.calculateIdealServiceTime();
-		newP.setReWriteNodes(false);
-		patterns.add(newP);
+		p.setDepth(p.getDepth());
+		p.setChildren(sc);
+		p.setReWritingRule(ReWritingRules.MAP_ELIM);
+		p.calculateIdealServiceTime();
+		p.setReWriteNodes(false);
+		patterns.add(p);
 		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
 		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
 

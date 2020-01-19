@@ -1,0 +1,12 @@
+2019-09-19 21:19:10,850 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 15984 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-19 21:19:10,855 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-19 21:19:11,401 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.891 seconds (JVM running for 1.576)
+2019-09-19 21:24:19,280 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 2172 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-19 21:24:19,287 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-19 21:24:19,799 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.791 seconds (JVM running for 1.315)
+2019-09-19 21:32:51,100 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 6392 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-19 21:32:51,103 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-19 21:32:51,574 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.756 seconds (JVM running for 1.281)
+2019-09-19 21:35:31,921 INFO org.springframework.boot.StartupInfoLogger [main] Starting ReWriterApp2 v0.1.1 on LAPTOP-HTGTRC2F with PID 23500 (D:\T\rewriterpar\target\ReWritePar-0.1.1.jar started by me in D:\T\rewriterpar)
+2019-09-19 21:35:31,924 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-09-19 21:35:32,410 INFO org.springframework.boot.StartupInfoLogger [main] Started ReWriterApp2 in 0.752 seconds (JVM running for 1.268)

@@ -25,6 +25,7 @@ import org.jgrapht.io.GraphExporter;
 import org.jgrapht.io.JSONExporter;
 
 import cpo.CPOSolver;
+import cpo.CPOSolver2;
 import graph.DiGraphGen4;
 import graph.DiGraphGen4.Edge;
 import guru.nidi.graphviz.engine.Format;
@@ -90,7 +91,7 @@ public class Main2 {
 //			continue;
 //		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		CPOSolver model = new CPOSolver(p, 16);
+		CPOSolver2 model = new CPOSolver2(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution

@@ -109,7 +109,8 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public String toString() {
-		return lable +" ( "+( this.getChildren() != null? this.getChildren().get(0).toString() +" ) " :null) + "n: " +getIdealParDegree() + "ts::" +getIdealServiceTime();	}
+		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null)+ " nw: " +getOptParallelismDegree() ;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -216,7 +217,7 @@ public class MapPatt  implements SkeletonPatt {
 		this.optParDegree = optParDegree;
 	}
 	public double getOptimizedTs() {
-		return optimizedTs;
+		return optimizedTs=getChildren().get(0).getOptServiceTime()/getOptParallelismDegree();
 	}
 	public void setOptimizedTs(double optimizedTs) {
 		this.optimizedTs = optimizedTs;

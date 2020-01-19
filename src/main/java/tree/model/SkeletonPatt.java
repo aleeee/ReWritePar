@@ -57,7 +57,7 @@ public interface SkeletonPatt extends Serializable, Attribute{
 	default String print(){
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) 
 //				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "
-				+ (this instanceof FarmPatt? " nw: "+getOptParallelismDegree(): "")
+				+ ((this instanceof FarmPatt || this instanceof MapPatt)? " nw: "+getOptParallelismDegree(): "")
 				+ " ts::  ["+String.format("%.2f",getOptServiceTime())+"] "								
 				;
 

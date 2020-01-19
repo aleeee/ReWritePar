@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.lang.model.util.Elements.Origin;
-
 import com.google.common.collect.Sets;
+
+import cpo.CPOSolver;
+import cpo.CPOSolver2;
 import graph.DiGraphGen2;
 import graph.DiGraphGen3;
+import ilog.concert.IloException;
 import pattern.skel4.Skel4Parser.AssignmentContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
@@ -23,6 +25,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class Util {
+	enum SkeletonType {F,P, S, C, M};
 	static int n = 256;
 
 	public static SkeletonPatt getType(AssignmentContext ctx) {
@@ -126,8 +129,12 @@ public class Util {
 	 * @return
 	 */
 	public static double getOptimalServiceTime(MapPatt pat) {
+//		SkeletonPatt mapWorker = pat.getChildren().get(0);
+//		return mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree();
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
-		return mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree();
+		mapWorker.calculateOptimalServiceTime();
+		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree());
+	
 	}
 
 	/**
@@ -141,7 +148,6 @@ public class Util {
 	 */
 	public static Set<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-		Set<SkeletonPatt> optimalPattern = new LinkedHashSet<SkeletonPatt>();
 		for (SkeletonPatt p : node.getPatterns()) {
 			ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
 
@@ -170,8 +176,26 @@ public class Util {
 //			if(newP.getChildren() != null) {
 //			int depth = getMaxDepth(newP);
 ////			System.out.println("depth: : #@ " +depth + "  " + newP);
+			}
+//			CPOSolver model;
+//			try {
+//				newP.calculateIdealServiceTime();
+//				model = new CPOSolver(newP, 16);
+//				model.solveIt();
+//			// Print the solution
+//			model.getSolutions();
+//			newP.calculateOptimalServiceTime();
+//			model.cleanup();
+//			} catch (IloException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
 //			}
-		}
+//			// Solve the model
+//			
+//		}
+//		Set<SkeletonPatt> best = new HashSet<SkeletonPatt>();
+//		best.add(patterns.stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
+//		return best;
 		return patterns;
 //		optimalPattern.add(patterns.stream().min(Comparator.comparing(SkeletonPatt::getIdealServiceTime)).get());
 //		return optimalPattern;
@@ -210,5 +234,30 @@ public class Util {
 			System.exit(1);
 			return null;
 		}
+	}
+	public static double getCost(SkeletonPatt p) {
+		CPOSolver2 model;
+		try {
+			p.calculateIdealServiceTime();
+			model = new CPOSolver2(p, 16);
+			model.solveIt();
+			model.getSolutions();
+			p.calculateOptimalServiceTime();
+			model.cleanup();
+		} catch (IloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return p.getOptServiceTime();
+	}
+	public static <T> boolean detectLoop(SkeletonPatt pat, T s) {
+//		System.out.println("detecting...." + pat);
+		if (pat == null  || pat.getParent() == null) 
+			return false;
+		
+		if(pat.getParent().getClass() == s) {
+			return true;
+		}
+		return detectLoop(pat.getParent(),s);
 	}
 }
