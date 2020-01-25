@@ -239,7 +239,7 @@ public class Util {
 		CPOSolver2 model;
 		try {
 			p.calculateIdealServiceTime();
-			model = new CPOSolver2(p, 16);
+			model = new CPOSolver2(p, 32);
 			model.solveIt();
 			model.getSolutions();
 			p.calculateOptimalServiceTime();

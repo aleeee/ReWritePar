@@ -202,6 +202,7 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
+		idealServiceTime=Util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 

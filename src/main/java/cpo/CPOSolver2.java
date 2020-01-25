@@ -46,7 +46,7 @@ public class CPOSolver2 {
 		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\cpoModel1" + skeletonPatt.hashCode()
 				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".cpo";
 //		System.out.println(g + "modelName " + modelName);
-//		cplex.exportModel(modelName);
+		cplex.exportModel(modelName);
 
 		cplex.setOut(null);
 	}

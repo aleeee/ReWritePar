@@ -1,6 +1,15 @@
 package util;
 
 public enum ReWritingRules {
-	FARM_INTRO, FARM_ELIM, PIPE_INTRO, PIPE_ELIM
-	,PIPE_ASSOC,PIPE_DIST, MAP_DIST, MAP_ELIM, PIPE_OF_MAP, MAP_OF_PIPE,MAP_OF_COMP; 
+	FARM_INTRO("FI"), FARM_ELIM("FE"), PIPE_INTRO("PI"), PIPE_ELIM("PE")
+	,PIPE_ASSOC("PA"),PIPE_DIST("PD"), MAP_DIST("MD"), MAP_ELIM("ME"), PIPE_OF_MAP("PM"), MAP_OF_PIPE("MP"),MAP_OF_COMP("MC"); 
+	
+	private final String rule;
+	private ReWritingRules(String rule) {
+		this.rule =rule;
+	}
+	public String getRule() {
+		return rule;
+	}
+	
 }

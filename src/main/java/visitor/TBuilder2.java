@@ -78,9 +78,10 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 				System.exit(-1);
 				return null;
 			}else{
-				SeqPatt s= (SeqPatt) variables.get(ctx.varName.getText());
+//				SeqPatt s= (SeqPatt) variables.get(ctx.varName.getText());
 //				s.setLable(ctx.varName.getText());
-				return s;
+				return variables.get(ctx.varName.getText());
+//				return s;
 			}
 		}else{
 			return super.visitPatternExpr(ctx);

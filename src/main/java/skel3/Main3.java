@@ -109,7 +109,7 @@ public class Main3 {
 			
 		}
 		
-		renderHrefGraph(dg);
+//		renderHrefGraph(dg);
 //		exportJson(dg);
 //		try {
 //			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));

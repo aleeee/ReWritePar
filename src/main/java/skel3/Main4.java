@@ -8,9 +8,12 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.io.Attribute;
 import org.jgrapht.io.ComponentAttributeProvider;
 import org.jgrapht.io.ComponentNameProvider;
@@ -69,51 +73,66 @@ public class Main4 {
 //		bfs.bfs(n);
 //		MCTS2 mcts = new MCTS2();
 //		mcts.selectAction(n);
-		List<ForkJoinTask<Edge>> forks = new ArrayList<ForkJoinTask<Edge>>();
+//		List<ForkJoinTask<List<Edge>>> forks = new ArrayList<ForkJoinTask<List<Edge>>>();
 		long startTime = System.currentTimeMillis();
-
-		
-		for(int i =0; i< 10; i++) {
-			forks.add(new  SimulatedAnnealing(n, 5).fork());
-		}
-		
-		
-//		ForkJoinPool.commonPool().invoke(forks);	
-		List<Edge> results = new ArrayList<Edge>();
-		for(ForkJoinTask<Edge> task: forks )
-			results.add(task.join());
-		 long stopTime = (System.currentTimeMillis() - startTime) ;
-		 System.out.println(stopTime);
-		System.out.println(results);
+//
+//		
+//		for(int i =0; i< 10; i++) {
+//			forks.add(new  SimulatedAnnealing(n, 5).fork());
+//		}
+//		
+//		
+//		
+//		List<List<Edge>> results = new ArrayList<List<Edge>>();
+//		for(ForkJoinTask<List<Edge>> task: forks )
+//			results.add(task.join());
+	
+//		System.out.println("results > "+results);
 		SimulatedAnnealing dg = new  SimulatedAnnealing(n, 5);
-		dg.expandAndSearch();
+		try {
+		List<Edge> solutionpath = dg.expandAndSearch();
+		System.out.println(solutionpath);
+//		if(solutionpath.size() > 2)renderHrefGraph(dg);
+		}
+		catch(Exception e ) {
+			System.out.println(e.getMessage());
+//			renderHrefGraph(dg);
+		}
+		ArrayList<SkeletonPatt> list = new ArrayList<SkeletonPatt>(dg.getG().vertexSet());
+		Collections.shuffle(list);
+		Optional<SkeletonPatt> best = list.stream().findAny();//.min(Comparator.comparing(SkeletonPatt::getOptServiceTime));
+//		best.ifPresent(b->{ System.out.println("main> " +b);
+////							System.out.println(DijkstraShortestPath.findPathBetween(dg.getG(), n, b).getEdgeList());
+//							System.out.println("main edges > "+dg.getG().getAllEdges(n, b));});
+		 long stopTime = (System.currentTimeMillis() - startTime) ;
+		 System.out.println("stoping> " +stopTime);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
-		for(SkeletonPatt p: dg.g.vertexSet()) {
-			try {
+//		for(SkeletonPatt p: dg.g.vertexSet()) {
+//			try {
 //			if(p.getChildren().stream().noneMatch(sk-> sk instanceof FarmPatt))
 //			continue;
 //		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		CPOSolver2 model = new CPOSolver2(p, 16);
+//		CPOSolver2 model = new CPOSolver2(p, 16);
 		// Solve the model
-		model.solveIt();
+//		model.solveIt();
 		// Print the solution
-		model.getSolutions();
-		model.cleanup();
+//		model.getSolutions();
+//		model.cleanup();
 		
 //		p.calculateOptimalServiceTime();
 //		p.getChildren().forEach(pp->System.out.println(pp));
-		System.out.println( p.print() );
+////		System.out.println( p.print() );
+//		
+//			}catch(Exception e) {
+//				System.out.println("Error at solve" + e.getMessage());
+//			}
+//			
+//		}
 		
-			}catch(Exception e) {
-				System.out.println("Error at solve" + e.getMessage());
-			}
-			
-		}
-		
-		renderHrefGraph(dg);
+//		renderHrefGraph(dg);
 //		exportJson(dg);
 //		try {
 //			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));

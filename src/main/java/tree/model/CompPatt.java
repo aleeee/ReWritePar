@@ -197,6 +197,7 @@ public class CompPatt implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
+		idealServiceTime=Util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 
