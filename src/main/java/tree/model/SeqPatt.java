@@ -36,6 +36,7 @@ public class SeqPatt implements SkeletonPatt {
 		this.idealServiceTime=serviceTime;
 		this.idealParDegree=1;
 		this.optimizedTs=serviceTime;
+		this.lable = "seq";
 	}
 	public SeqPatt(double serviceTime, String lable) {
 		this.idealServiceTime = serviceTime;

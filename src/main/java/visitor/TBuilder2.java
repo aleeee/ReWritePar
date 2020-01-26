@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import pattern.skel4.Skel4BaseVisitor;
@@ -65,7 +66,13 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitAssignment(AssignmentContext ctx) {
-		variables.put(ctx.varName.getText(),Util.getType(ctx));
+		SkeletonPatt v =Util.getType(ctx);
+		if(v instanceof SeqPatt) {
+			variables.put(ctx.varName.getText(), v);
+		}else {
+			variables.put(ctx.varName.getText(), super.visitAssignment(ctx));
+		}
+		
 		return super.visitAssignment(ctx);
 	}
 
@@ -149,7 +156,12 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitStages(StagesContext ctx) {
 		SeqPatt stages = new SeqPatt(0);
 		ArrayList<SkeletonPatt> children = new ArrayList<>();
-		ctx.expr.forEach(e -> {children.add(visit(e));});
+//		ctx.expr.forEach(e -> {children.add(visit(e));});
+		
+		for(PatternExprContext exp: ctx.expr) {
+			SkeletonPatt stage = visit(exp);
+			children.add(stage);
+		}
 		stages.setChildren(children);
 		return stages;
 	}

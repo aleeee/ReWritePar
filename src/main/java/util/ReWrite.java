@@ -371,9 +371,9 @@ public class ReWrite {
 
 		if (map.getChildren().get(0) instanceof CompPatt) {
 			CompPatt compPat = new CompPatt();
-
+			CompPatt c = (CompPatt) Util.clone(map.getChildren().get(0));
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
-			for (SkeletonPatt sk : map.getChildren().get(0).getChildren()) {
+			for (SkeletonPatt sk : c.getChildren()) {
 				MapPatt m = new MapPatt();
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);
@@ -388,9 +388,9 @@ public class ReWrite {
 			patterns.add(compPat);
 		} else if (map.getChildren().get(0) instanceof PipePatt) {
 			PipePatt pipe = new PipePatt();
-
+			PipePatt pi = (PipePatt) Util.clone(map.getChildren().get(0));
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
-			for (SkeletonPatt sk : map.getChildren().get(0).getChildren()) {
+			for (SkeletonPatt sk :pi.getChildren()) {
 				MapPatt m = new MapPatt();
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(sk);

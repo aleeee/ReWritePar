@@ -32,7 +32,7 @@ public class Util {
 		String type = ctx.expr.sType.getText();
 		switch (type) {
 		case "Seq":
-			SeqPatt s = new SeqPatt(Integer.parseInt(ctx.expr.sequence().ts.getText()),ctx.varName.getText());
+			SeqPatt s = new SeqPatt(Integer.parseInt(ctx.expr.sequence().ts.getText()),(ctx.varName.getText() != null? ctx.varName.getText(): "seq"));
 			return s;
 
 		case "Comp":
@@ -95,12 +95,17 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(FarmPatt pat) {
+		try {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
 		farmWorker.calculateIdealServiceTime();
 		int parallelismDegree = (int) (farmWorker.getIdealServiceTime()/Constants.TEmitter);
 		pat.setIdealParDegree(parallelismDegree);
 		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree());
-	}
+		}catch (Exception e) {
+			System.out.println(e.getMessage() );
+			return 0;
+		}
+		}
 	/**
 	 * calculate optimized ts
 	 * @param pat
@@ -236,6 +241,7 @@ public class Util {
 		}
 	}
 	public static double getCost(SkeletonPatt p) {
+		if(p instanceof SeqPatt) return p.getIdealServiceTime();
 		CPOSolver2 model;
 		try {
 			p.calculateIdealServiceTime();

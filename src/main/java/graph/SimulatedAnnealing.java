@@ -2,8 +2,11 @@ package graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -11,6 +14,7 @@ import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.io.ExportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,49 +68,51 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 	}
 
 	public List<Edge> expandAndSearch() {
-		double temprature = 9;
+		double temprature = 19;
 		double maxIteration = 20;
 		double coolingRate = 0.97;
 		
-		s.setId(intId.getAndIncrement());
-		g.addVertex(s);
-		s.refactor(rw);
-		List<SkeletonPatt> initialSolutions = new ArrayList<SkeletonPatt>(s.getPatterns());
-		SkeletonPatt currentSolution = Util.clone(initialSolutions.stream().filter(ss -> Util.getHeight(ss) < maxHieght).findAny().get());
-		SkeletonPatt bestSolution = Util.clone(currentSolution);
+//		s.setId(intId.getAndIncrement());
+//		g.addVertex(s);
+//		s.refactor(rw);
+		Set<SkeletonPatt> solutionPool = new HashSet<>();
+		
+//		List<SkeletonPatt> initialSolutions = new ArrayList<SkeletonPatt>(s.getPatterns());
+//		solutionPool.addAll(initialSolutions);
+//		SkeletonPatt currentSolution = Util.clone(initialSolutions.stream().filter(ss -> Util.getHeight(ss) < maxHieght).findAny().get());
+	
+		SkeletonPatt bestSolution = Util.clone(s);
+		SkeletonPatt currentSolution = Util.clone(s);
 		double currentCost = Util.getCost(currentSolution);
 		double bestCost = Util.getCost(bestSolution);
 		int x=0;
 //		bestSolution.print();
 //		System.out.println(bestSolution);
-		this.add(s, currentSolution, currentSolution.getRule());
+//		this.add(s, currentSolution, currentSolution.getRule());
 //		this.add(s, bestSolution, bestSolution.getRule());
 		//list to hold generated solutions but not selected for best or current solution
 		//they are going to be considered in the random selection
-		List<SkeletonPatt> solutionPool = new ArrayList<SkeletonPatt>();
+		
+		solutionPool.add(bestSolution);
 		while (x++ < maxIteration && temprature > 0.1 ) {
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
 			currentSolution.refactor(rw);
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
+			solutions.forEach(newPattern -> Util.getCost(newPattern));
 			for(SkeletonPatt sol: solutions)
 					this.add(currentSolution, sol, sol.getRule());
 			SkeletonPatt newSolution = Util.clone(solutions.stream().filter(m -> Util.getHeight(m) < maxHieght).findAny().get());
 			//add the discarded solutions into pool for later consideration
-			solutionPool.addAll(solutions.stream().filter(sol -> !sol.equals(newSolution)).collect(Collectors.toList()));
+			solutionPool.addAll(solutions);
 //			this.add(currentSolution, newSolution, newSolution.getRule());
 //			System.out.println(bestSolution);
 			double newCost = Util.getCost(newSolution);
-			if(newCost < currentCost ) {
+			if(newCost <= currentCost  ) {
 //				newSolution.print();
 				currentSolution = newSolution;
 				currentCost = newCost;
 				
-				if(newCost < bestCost) {
+				if(newCost < bestCost || (newCost <= bestCost && Util.getHeight(newSolution) < Util.getHeight(bestSolution))) {
 					bestSolution = newSolution;
 					bestCost=newCost;
 
@@ -114,9 +120,10 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 				}
 			}else {
 				if(Math.exp((newCost - currentCost)/temprature) > Math.random()){
-					solutionPool.add(newSolution);
-					currentSolution = solutionPool.get(ThreadLocalRandom.current().nextInt(solutionPool.size()));
+					currentSolution=solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size())).findAny().get();
+//					currentSolution = Collections.shuffle(new ArrayList<solutionPool).stream().get(ThreadLocalRandom.current().nextInt(solutionPool.size()));
 //					newSolution.print();
+					solutionPool.add(newSolution);
 				}
 			}
 			temprature *= coolingRate;
@@ -125,13 +132,19 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 		System.out.println("best " + bestSolution.print());
 //		bestSolution.print();
 		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList();
-//		System.out.println("eddges");
-//		System.out.println(paths.size());
+		System.out.println("input> " +s);
+//		solutionPool.forEach(ss -> System.out.println(s + " > "+ss + " TS > "+ ss.getOptServiceTime() + " OTS> " + ss.calculateOptimalServiceTime() + " cpo >" + Util.getCost(ss)));
 		if(paths.isEmpty()) {
 			System.out.println("no edge> "+g.vertexSet().size());
 			System.out.println("bestSolution" + bestSolution);
 //			return null;
 		}
+//		try {
+//			DiGraphUtil.renderHrefGraph(g);
+//		} catch (ExportException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return paths;
 	}
 

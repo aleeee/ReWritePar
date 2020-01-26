@@ -63,7 +63,7 @@ public class AppStarter {
 		for(List<Edge> edge: results) {
 			StringJoiner path = new StringJoiner(",","(",")");
 			edge.stream().map(Edge::getRule).forEach(r -> path.add(r.getRule()));
-			System.out.println(path.toString());
+//			System.out.println(path.toString());
 			stringPaths.merge(path);
 		}
 		System.out.println("end");

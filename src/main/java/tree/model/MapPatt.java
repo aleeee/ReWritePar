@@ -195,7 +195,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime;
+		return optServiceTime =Util.getOptimalServiceTime(this);
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
