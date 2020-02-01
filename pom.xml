@@ -90,7 +90,7 @@
 			<systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\lib\cplex.jar</systemPath>
 		</dependency>
 
-	<dependency>
+		<dependency>
 			<groupId>cplex</groupId>
 			<artifactId>cplex</artifactId>
 			<version>12.9</version>
@@ -105,7 +105,7 @@
 			<layout>default</layout>
 			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
 			<snapshots>
-<!-- 				<enabled>false</enabled> -->
+				<!-- <enabled>false</enabled> -->
 			</snapshots>
 		</repository>
 	</repositories>
@@ -163,16 +163,16 @@
 			<!-- <goal>shade</goal> -->
 			<!-- </goals> -->
 			<!-- <configuration> -->
-			<!--  <transformers> -->
-			<!--  <transformer> -->
-			<!--  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
+			<!-- <transformers> -->
+			<!-- <transformer> -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
 			<!-- <manifestEntries> -->
 			<!-- <mainClass>starter.AppStarter</mainClass> -->
-			<!--  <Main-Class>starter.AppStarter</Main-Class> -->
+			<!-- <Main-Class>starter.AppStarter</Main-Class> -->
 			<!-- <Build-Number>1.0</Build-Number> -->
 			<!-- </manifestEntries> -->
-			<!--  </transformer> -->
-			<!--  </transformers> -->
+			<!-- </transformer> -->
+			<!-- </transformers> -->
 			<!-- </configuration> -->
 			<!-- </execution> -->
 			<!-- </executions> -->
@@ -198,16 +198,16 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<repositories>
-		<repository>
-			<id>central</id>
-			<name>Maven cplex repo</name>
-			<layout>default</layout>
-			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
-			<snapshots>
-<!-- 				<enabled>false</enabled> -->
-			</snapshots>
-		</repository>
-	</repositories>
+						<repository>
+							<id>central</id>
+							<name>Maven cplex repo</name>
+							<layout>default</layout>
+							<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
+							<snapshots>
+								<!-- <enabled>false</enabled> -->
+							</snapshots>
+						</repository>
+					</repositories>
 				</configuration>
 			</plugin>
 
