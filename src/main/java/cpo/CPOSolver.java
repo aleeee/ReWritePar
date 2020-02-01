@@ -5,18 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import ilog.concert.IloConstraint;
 import ilog.concert.IloException;
 import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
-import ilog.concert.IloRange;
 import ilog.cp.IloCP;
-import ilog.cplex.IloCplex;
-import ilog.cplex.IloCplex.OptimalityTarget;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.PipePatt;

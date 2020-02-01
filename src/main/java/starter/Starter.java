@@ -71,7 +71,7 @@ public class Starter extends RecursiveTask<List<List<Edge>>> {
 		List<ForkJoinTask<List<Edge>>> forks = new ArrayList<ForkJoinTask<List<Edge>>>();
 		long startTime = System.currentTimeMillis();
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
 			forks.add(new SimulatedAnnealing(n, 6).fork());
 		}
 
