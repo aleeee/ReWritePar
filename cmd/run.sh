@@ -1,0 +1,1 @@
+java -Djava.library.path=C:\\Program /Files\\IBM\\ILOG\\CPLEX_Studio_Community129\\cpoptimizer\\lib\\ILOG.CP.jar ..\\targer\\ReWritePar-0.1.1-jar-with-dependencies.jar
