@@ -1,0 +1,30 @@
+java -Djava.library.path=C:\\Program /Files\\IBM\\ILOG\\CPLEX_Studio_Community129\\cpoptimizer\\lib\\ILOG.CP.jar ..\\targer\\ReWritePar-0.1.1-jar-with-dependencies.jar
+
+
+
+
+
+ java -Djava.library.path=/mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar -classpath /mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/bin/x64_win64 -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in
+ 
+  java -Djava.library.path=/mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/bin/x64_win64 -classpath /mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in
+  
+    java -Djava.library.path=/mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cpoptimizer\bin\x64_win64 -classpath /mnt/c/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cpoptimizer/lib/ILOG.CP.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in
+	
+	  java -Djava.library.path=C:/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/bin/x64_win64 -classpath C:/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar
+
+	  java -Djava.library.path=C:/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar
+
+
+C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\bin\x64_win64
+C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\bin\x64_win64
+
+C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cpoptimizer\bin\x64_win64
+C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cpoptimizer\lib\x64_windows_vs2017
+
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=12.9 -Dpackaging=jar -Dfile=C:/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar
+
+$ mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+
+ /opt/ibm/ILOG/CPLEX_Studio1210
+ 
+ mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=cplex.jar

@@ -79,7 +79,7 @@ public class AppStarter {
 	}
 	
 	public static void main(String[] args) {
-		 new AppStarter("C:\\Users\\me\\Desktop\\in");
+		 new AppStarter(args[0]);
 		
 	}
 			

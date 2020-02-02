@@ -85,30 +85,30 @@
 		<dependency>
 			<groupId>cplex</groupId>
 			<artifactId>cplex</artifactId>
-			<version>12.9</version>
-			<scope>system</scope>
-			<systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\lib\cplex.jar</systemPath>
+			<version>1210</version>
+<!-- 			<scope>system</scope> -->
+<!-- 			<systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\lib\cplex.jar</systemPath> -->
 		</dependency>
 
-		<dependency>
-			<groupId>cplex</groupId>
-			<artifactId>cplex</artifactId>
-			<version>12.9</version>
-			<scope>system</scope>
-			<systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cpoptimizer\lib\ILOG.CP.jar</systemPath>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>cplex</groupId> -->
+<!-- 			<artifactId>cplex</artifactId> -->
+<!-- 			<version>12.9</version> -->
+<!-- 			<scope>system</scope> -->
+<!-- 			<systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cpoptimizer\lib\ILOG.CP.jar</systemPath> -->
+<!-- 		</dependency> -->
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>Maven cplex repo</name>
-			<layout>default</layout>
-			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
-			<snapshots>
-				<!-- <enabled>false</enabled> -->
-			</snapshots>
-		</repository>
-	</repositories>
+<!-- 	<repositories> -->
+<!-- 		<repository> -->
+<!-- 			<id>central</id> -->
+<!-- 			<name>Maven cplex repo</name> -->
+<!-- 			<layout>default</layout> -->
+<!-- 			<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 			</snapshots> -->
+<!-- 		</repository> -->
+<!-- 	</repositories> -->
 	<build>
 
 		<plugins>
@@ -197,17 +197,17 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<repositories>
-						<repository>
-							<id>central</id>
-							<name>Maven cplex repo</name>
-							<layout>default</layout>
-							<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
-							<snapshots>
-								<!-- <enabled>false</enabled> -->
-							</snapshots>
-						</repository>
-					</repositories>
+<!-- 					<repositories> -->
+<!-- 						<repository> -->
+<!-- 							<id>central</id> -->
+<!-- 							<name>Maven cplex repo</name> -->
+<!-- 							<layout>default</layout> -->
+<!-- 							<url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url> -->
+<!-- 							<snapshots> -->
+<!-- 								<enabled>false</enabled> -->
+<!-- 							</snapshots> -->
+<!-- 						</repository> -->
+<!-- 					</repositories> -->
 				</configuration>
 			</plugin>
 
