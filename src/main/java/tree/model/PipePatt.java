@@ -1,10 +1,19 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.io.AttributeType;
 
+import cpo.SolverModel;
+import ilog.concert.IloException;
+import ilog.concert.IloIntVar;
+import ilog.concert.IloNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
@@ -25,7 +34,7 @@ public class PipePatt implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
-	double optimizedTs;
+//	double optimizedTs;
 	
 	public PipePatt() {
 		this.lable= "pipe";
@@ -158,14 +167,14 @@ public class PipePatt implements SkeletonPatt {
 		return depth;
 	}
 	
-	@Override
-	public String getValue() {
-		return this.toString();
-	}
-	@Override
-	public AttributeType getType() {
-		return AttributeType.STRING;
-	}
+//	@Override
+//	public String getValue() {
+//		return this.toString();
+//	}
+//	@Override
+//	public AttributeType getType() {
+//		return AttributeType.STRING;
+//	}
 	public int getId() {
 		return id;
 	}
@@ -198,7 +207,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return optimizedTs=Util.getOptimalServiceTime(this);
+		return optServiceTime=Util.getOptimalServiceTime(this);
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
@@ -209,15 +218,69 @@ public class PipePatt implements SkeletonPatt {
 	public void setOptParallelismDegree(int p) {
 		this.optParDegree=p;
 	}
-	public double getOptimizedTs() {
-		return optimizedTs=Util.getOptimalServiceTime(this);
-	}
-	public void setOptimizedTs(double optimizedTs) {
-		this.optimizedTs = optimizedTs;
-	}
+	
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optimizedTs = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = Util.getOptimalServiceTime(this);
 	}
-	
+	@Override
+	public int getNumberOfResources() {
+		return this.children.stream().mapToInt(c -> c.getNumberOfResources()).sum();
+	}
+	@Override
+	public void addConstraint(SolverModel model) throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		
+		List<IloNumVar> vars = variables.get(this);	
+		List<IloIntVar> pipeStages = new ArrayList<>();	
+		IloIntVar n_i = (IloIntVar) vars.get(1);
+		IloNumExpr pStages = cplex.constant(0);
+		cplex.addLe(n_i, model.getNumAvailableProcessors());		
+		
+		
+		for (SkeletonPatt v : children) {
+			
+			List<IloNumVar> vv = variables.get(v);	
+			if (v instanceof FarmPatt || v instanceof MapPatt) { 
+				pStages = cplex.sum(pStages,cplex.sum(vv.get(1),2));
+			}else {
+				pStages = cplex.sum(pStages,vv.get(1));
+			}
+			
+
+		}
+
+		cplex.addEq(vars.get(1), pStages);
+		cplex.addLe(vars.get(1), model.getNumAvailableProcessors());
+		for (SkeletonPatt stage : children) {
+			stage.addConstraint(model);
+		}
+		
+		}
+
+	@Override
+	public SolverModel addObjective(SolverModel model) throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		
+		List<IloNumVar> vars = variables.get(this);
+		IloIntVar pd = (IloIntVar) vars.get(1);
+		
+		obj =  cplex.sum(obj, vars.get(0));
+		pd_obj = cplex.sum(pd_obj,pd);
+		model.setCplex(cplex);
+		model.setObj(obj);
+		model.setPd_obj(pd_obj);
+		if(children != null) {
+		for (SkeletonPatt c : children) {
+			model = c.addObjective(model);
+		}
+	}
+		return model;
+	}
 }

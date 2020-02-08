@@ -1,10 +1,20 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.io.AttributeType;
 
+import cpo.SolverModel;
+import ilog.concert.IloException;
+import ilog.concert.IloIntExpr;
+import ilog.concert.IloIntVar;
+import ilog.concert.IloNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
@@ -25,7 +35,6 @@ public class CompPatt implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
-	double optimizedTs;
 	
 	public CompPatt() {
 		this.lable = "comp";
@@ -170,14 +179,14 @@ public class CompPatt implements SkeletonPatt {
 		return depth;
 	}
 	
-	@Override
-	public String getValue() {
-		return null;
-	}
-	@Override
-	public AttributeType getType() {
-		return AttributeType.STRING;
-	}
+//	@Override
+//	public String getValue() {
+//		return null;
+//	}
+//	@Override
+//	public AttributeType getType() {
+//		return AttributeType.STRING;
+//	}
 	
 	public int getId() {
 		return id;
@@ -215,7 +224,7 @@ public class CompPatt implements SkeletonPatt {
 	}
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optimizedTs = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = Util.getOptimalServiceTime(this);
 		
 	}
 	public int getOptParDegree() {
@@ -224,21 +233,69 @@ public class CompPatt implements SkeletonPatt {
 	public void setOptParDegree(int optParDegree) {
 		this.optParDegree = optParDegree;
 	}
-	public double getOptServiceTime() {
-		return optimizedTs=Util.getOptimalServiceTime(this);
-	}
-	public void setOptServiceTime(double optServiceTime) {
-		this.optServiceTime = optServiceTime;
-	}
-	public double getOptimizedTs() {
-		return optimizedTs=Util.getOptimalServiceTime(this);
-	}
-	public void setOptimizedTs(double optimizedTs) {
-		this.optimizedTs = optimizedTs;
-	}
+	
+	
 	public void setRule(ReWritingRules rule) {
 		this.rule = rule;
 	}
-	
+	@Override
+	public double getOptServiceTime() {
+		return this.optServiceTime = Util.getOptimalServiceTime(this);
+		
+	}
+	@Override
+	public void setOptServiceTime(double ts) {
+	   this.optServiceTime = Util.getOptimalServiceTime(this);
+		
+		
+	}
+	@Override
+	public int getNumberOfResources() {
+		return this.children.stream().mapToInt(c -> c.getNumberOfResources()).max().getAsInt();
+
+	}
+	@Override
+	public void addConstraint(SolverModel model) throws IloException {
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		
+		List<IloNumVar> vars = variables.get(this);	
+		List<IloIntVar> stageVars = new ArrayList<>();	
+		IloIntVar n_i = (IloIntVar) vars.get(1);
+		cplex.addLe(n_i, model.getNumAvailableProcessors());		
+		
+		for (SkeletonPatt v : children) {
+			stageVars.add((IloIntVar) variables.get(v).get(1));
+		}
+		cplex.addEq(n_i, cplex.max(stageVars.stream().collect(Collectors.toList())));
+		for (SkeletonPatt stage : children) {
+			stage.addConstraint(model);
+		}
+		
+		}
+
+	@Override
+	public SolverModel addObjective(SolverModel model) throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		List<IloNumVar> vars = variables.get(this);
+		IloIntVar pd = (IloIntVar) vars.get(1);
+		
+		obj =  cplex.sum(obj, vars.get(0));
+		pd_obj = cplex.sum(pd_obj,pd);
+		model.setCplex(cplex);
+		model.setObj(obj);
+		model.setPd_obj(pd_obj);
+		if(children != null) {
+		for (SkeletonPatt c : children) {
+			model = c.addObjective(model);
+		}
+		
+		return model;
+	}
+		return model;
+	}
 	
 }

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pattern.skel4.Skel4BaseVisitor;
 import pattern.skel4.Skel4Parser.AssignmentContext;
@@ -31,6 +33,7 @@ import tree.model.SkeletonPatt;
 import util.Util;
 
 public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
+	Logger log = LoggerFactory.getLogger(getClass());
 	Map<String,SkeletonPatt> variables = new HashMap<>();
 
 	@Override
@@ -81,7 +84,7 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 		if(ctx.varName != null){			
 			if(variables.get(ctx.varName.getText()) == null){
 				variables.entrySet().forEach(e -> {System.out.println(e.getKey() + " " +e.getValue());});
-				System.out.println("Error undefined variable " + ctx.varName.getText() );
+				log.error("Error undefined variable " + ctx.varName.getText() );
 				System.exit(-1);
 				return null;
 			}else{
@@ -116,7 +119,7 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 		CompPatt comp = new CompPatt("comp",0);
 		comp.setChildren(visit(ctx.stages()).getChildren());
 		if(comp.getChildren() == null || comp.getChildren().size() < 2) {
-			System.out.println("Error Comp stages must not be less than 2");
+			log.error("Error Comp stages must not be less than 2");
 			System.exit(1);}
 		return comp;
 	}
@@ -126,7 +129,7 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 		PipePatt pipe = new PipePatt("pipe",0);
 		pipe.setChildren(visit(ctx.stages()).getChildren());
 		if(pipe.getChildren() == null || pipe.getChildren().size() < 2) {
-			System.out.println("Error Pipe stages must not be less than 2");
+			log.error("Error Pipe stages must not be less than 2");
 			System.exit(1);}
 		return pipe;
 	}

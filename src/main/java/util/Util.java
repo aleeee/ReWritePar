@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Sets;
 
-import cpo.CPOSolver;
 import cpo.CPOSolver2;
+import cpo.CPOSolverV;
 import graph.DiGraphGen2;
 import graph.DiGraphGen3;
 import ilog.concert.IloException;
@@ -25,6 +28,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class Util {
+	final static Logger log = LoggerFactory.getLogger(Util.class);
 	enum SkeletonType {F,P, S, C, M};
 	static int n = 256;
 
@@ -102,7 +106,7 @@ public class Util {
 		pat.setIdealParDegree(parallelismDegree);
 		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree());
 		}catch (Exception e) {
-			System.out.println(e.getMessage() );
+			log.error(e.getMessage() );
 			return 0;
 		}
 		}
@@ -230,29 +234,42 @@ public class Util {
 			copy.setLable(original.getLable());
 			copy.setDepth(original.getDepth());
 			copy.setReWritingRule(original.getRule());
-			copy.setPatterns(original.getPatterns());
+//			copy.setPatterns(original.getPatterns());
 			copy.setIdealServiceTime(original.getIdealServiceTime());
 			copy.calculateIdealServiceTime();
 			return copy;
 		} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-			e1.printStackTrace();
+			log.error("Error copying object " + e1.getMessage());
 			System.exit(1);
 			return null;
 		}
 	}
+	static int sum=0;
+	public static int getNumberOfResources(SkeletonPatt pat) {
+		 sum =+pat.getOptParallelismDegree();
+		
+		if( pat.getChildren() ==null) 
+			return sum;
+		
+		for(SkeletonPatt sk: pat.getChildren()) {			
+			   sum +=  getNumberOfResources(sk);
+		}
+		return sum;
+	}
+	
 	public static double getCost(SkeletonPatt p) {
 		if(p instanceof SeqPatt) return p.getIdealServiceTime();
-		CPOSolver2 model;
+//		CPOSolver2 model;
+		CPOSolverV model;
 		try {
 			p.calculateIdealServiceTime();
-			model = new CPOSolver2(p, 32);
+			model = new CPOSolverV(p, 16);
 			model.solveIt();
-			model.getSolutions();
+			model.getSolutions(p);
 			p.calculateOptimalServiceTime();
 			model.cleanup();
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error at cpo solver " + e.getMessage());
 		}
 		return p.getOptServiceTime();
 	}

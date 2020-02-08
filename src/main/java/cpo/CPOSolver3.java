@@ -18,11 +18,11 @@ import ilog.cp.IloCP;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
-import tree.model.PipePatt;	 
+import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
-public class CPOSolver2 {
+public class CPOSolver3 {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	private Map<SkeletonPatt, List<IloNumVar>> variables;
@@ -35,7 +35,7 @@ public class CPOSolver2 {
 	IloNumExpr objTs;
 	List<SkeletonPatt> result = new ArrayList<>();
 
-	public CPOSolver2(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
+	public CPOSolver3(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
 
 		this.cplex = new IloCP();
 		expr = cplex.constant(0);

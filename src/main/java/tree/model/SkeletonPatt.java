@@ -2,19 +2,26 @@ package tree.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.io.Attribute;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import cpo.SolverModel;
+import ilog.concert.IloException;
+import ilog.concert.IloNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import visitor.NodeVisitor;
 
 
 
-public interface SkeletonPatt extends Serializable, Attribute{
+public interface SkeletonPatt extends Serializable{
 	
 	@JsonIgnore
 	public ArrayList<SkeletonPatt> getChildren();
@@ -54,13 +61,17 @@ public interface SkeletonPatt extends Serializable, Attribute{
 	int getIdealParDegree();
 	void calculateIdealServiceTime();
 	double calculateOptimalServiceTime();
+	int getNumberOfResources();
+	void addConstraint(SolverModel model) throws IloException;
+	SolverModel addObjective(SolverModel model) throws IloException;
+
 	default String print(){
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) 
 //				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "
-				+ ((this instanceof FarmPatt || this instanceof MapPatt)? " nw: "+getOptParallelismDegree(): "")
+				+ ((this instanceof FarmPatt || this instanceof MapPatt)? " nw: "+(getOptParallelismDegree() > 0? getOptParallelismDegree(): 1): "")
 				+ " ts::  ["+String.format("%.2f",getOptServiceTime())+"] "								
 				;
 
-	};
+	}
 	
 }

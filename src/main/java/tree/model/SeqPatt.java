@@ -2,18 +2,24 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.io.AttributeType;
 
+import cpo.SolverModel;
+import ilog.concert.IloException;
+import ilog.concert.IloIntVar;
+import ilog.concert.IloNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
@@ -30,7 +36,7 @@ public class SeqPatt implements SkeletonPatt {
 	public SeqPatt(SeqPatt s) {
 		this.idealParDegree=1;
 		this.idealServiceTime=s.getIdealServiceTime();
-		this.optimizedTs=s.getOptimizedTs();
+		this.optimizedTs=s.getIdealServiceTime();
 	}
 	public SeqPatt(double serviceTime) {
 		this.idealServiceTime=serviceTime;
@@ -165,14 +171,14 @@ public class SeqPatt implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-	@Override
-	public String getValue() {
-		return this.toString();
-	}
-	@Override
-	public AttributeType getType() {
-		return AttributeType.STRING;
-	}
+//	@Override
+//	public String getValue() {
+//		return this.toString();
+//	}
+//	@Override
+//	public AttributeType getType() {
+//		return AttributeType.STRING;
+//	}
 	public int getId() {
 		return id;
 	}
@@ -212,15 +218,36 @@ public class SeqPatt implements SkeletonPatt {
 	public void setOptParallelismDegree(int p) {
 		
 	}
-	public double getOptimizedTs() {
-		return idealServiceTime;
-	}
-//	public void setOptimizedTs(double optimizedTs) {
-//		this.optimizedTs = optimizedTs;
-//	}
+	
 	@Override
 	public double calculateOptimalServiceTime() {
 		return idealServiceTime;
+	}
+	@Override
+	public int getNumberOfResources() {
+		return 1;
+		
+	}
+	@Override
+	public void addConstraint(SolverModel model)
+			throws IloException {
+		model.getCplex().addEq(model.getVariables().get(this).get(1), 1);
+		
+	}
+	@Override
+	public SolverModel addObjective(SolverModel model) throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		List<IloNumVar> vars = model.getVariables().get(this);
+		IloIntVar pd = (IloIntVar) vars.get(1);
+		obj =  cplex.sum(obj, vars.get(0));
+		pd_obj = cplex.sum(pd_obj,pd);
+		
+		model.setCplex(cplex);
+		model.setObj(obj);
+		model.setPd_obj(pd_obj);
+		return model;
 	}
 	
 	

@@ -1,10 +1,18 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.io.AttributeType;
 
+import cpo.SolverModel;
+import ilog.concert.IloException;
+import ilog.concert.IloIntVar;
+import ilog.concert.IloNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
@@ -24,7 +32,6 @@ public class MapPatt  implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
-	double optimizedTs;
 	
 	public MapPatt() {
 		this.lable= "map";
@@ -154,14 +161,14 @@ public class MapPatt  implements SkeletonPatt {
 		return depth;
 	}
 
-	@Override
-	public String getValue() {
-		return this.toString();
-	}
-	@Override
-	public AttributeType getType() {
-		return AttributeType.STRING;
-	}
+//	@Override
+//	public String getValue() {
+//		return this.toString();
+//	}
+//	@Override
+//	public AttributeType getType() {
+//		return AttributeType.STRING;
+//	}
 	
 	public int getId() {
 		return id;
@@ -208,21 +215,51 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optimizedTs = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = Util.getOptimalServiceTime(this);
 		
 	}
-	public int getOptParDegree() {
-		return optParDegree;
-	}
-	public void setOptParDegree(int optParDegree) {
-		this.optParDegree = optParDegree;
-	}
-	public double getOptimizedTs() {
-		return optimizedTs=getChildren().get(0).getOptServiceTime()/getOptParallelismDegree();
-	}
-	public void setOptimizedTs(double optimizedTs) {
-		this.optimizedTs = optimizedTs;
+	
+	@Override
+	public int getNumberOfResources() {
+		return (this.optParDegree*this.children.get(0).getNumberOfResources()) + 2;
 	}
 	
+
+	@Override
+	public void addConstraint(SolverModel model)
+			throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		List<IloNumVar> fVars = variables.get(this);
+		IloIntVar pd = (IloIntVar) fVars.get(1);
+		cplex.addLe(pd, model.getNumAvailableProcessors()-2);
+		cplex.addLe(pd, this.idealParDegree);
+		
+		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
+		
+		this.children.get(0).addConstraint(model);
+		
+	
+	}
+	@Override
+	public SolverModel addObjective(SolverModel model) throws IloException {
+		IloNumExpr obj = model.getObj();
+		IloNumExpr pd_obj = model.getPd_obj();
+		IloCP cplex = model.getCplex();
+		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
+		List<IloNumVar> vars = variables.get(this);
+		IloIntVar pd = (IloIntVar) vars.get(1);
+		double ts = this.children.get(0).getIdealServiceTime();			
+		cplex.addEq(vars.get(0) , cplex.div( (int)ts,pd));
+		obj =  cplex.sum(obj, vars.get(0));
+		pd_obj = cplex.sum(pd_obj,vars.get(1));
+		model.setCplex(cplex);
+		model.setObj(obj);
+		model.setPd_obj(pd_obj);
+		model = this.children.get(0).addObjective(model);			
+		return model;
+	}
 	
 }

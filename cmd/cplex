@@ -23,8 +23,32 @@ C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cpoptimizer\lib\x64_windows_
 
 mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=12.9 -Dpackaging=jar -Dfile=C:/Program\ Files/IBM/ILOG/CPLEX_Studio_Community129/cplex/lib/cplex.jar
 
-$ mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+ mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+  mvn install:install-file -DgroupId=ilog.concert -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+
 
  /opt/ibm/ILOG/CPLEX_Studio1210
  
  mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=cplex.jar
+  java -Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio1210/opl/bin/x86-64_linux -classpath /opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in
+
+x86-64_linux
+
+    java -Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/bin/x86-64_linux -classpath /opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in
+<Class-Path>/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar</Class-Path>
+
+<dependency> <!-- from in project maven repository -->
+            <groupId>ilog.concert</groupId>
+            <artifactId>cplex</artifactId>
+            <version>1263</version>
+            <scope>compile</scope>
+        </dependency>
+		
+		
+		
+
+install cplex into local maven
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+mvn install:install-file -DgroupId=ilog.concert -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+
+java -Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio1210/opl/bin/x86-64_linux  -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in   

@@ -17,6 +17,8 @@ import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
 import org.jgrapht.io.JSONExporter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
@@ -24,7 +26,7 @@ import guru.nidi.graphviz.engine.GraphvizJdkEngine;
 import tree.model.SkeletonPatt;
 
 public class DiGraphUtil {
-
+	static Logger log = LoggerFactory.getLogger(DiGraphUtil.class);
 	public static void renderHrefGraph(Graph<SkeletonPatt, Edge> g)
 
 			throws ExportException {
@@ -37,17 +39,19 @@ public class DiGraphUtil {
 
 			@Override
 			public String getName(SkeletonPatt component) {
-				// TODO Auto-generated method stub
+				log.debug("vertexIdProvider > "+ component);
 				return String.valueOf(component.toString().hashCode());
 			}
 		};
 		ComponentNameProvider<SkeletonPatt> vertexLabelProvider = new ComponentNameProvider<SkeletonPatt>() {
 			public String getName(SkeletonPatt sk) {
+				log.debug("vertexLabelProvider > "+ sk);
 				return sk.print();
 			}
 		};
 
 		ComponentNameProvider<Edge> edgeLabelProvider = (Edge sk) -> {
+			log.debug("edgeLabelProvider > "+ sk);
 			return sk.getRule() != null ? sk.getRule().toString() : "NO LABLE";
 		};
 //		        GraphExporter<SkeletonPatt, Edge> exporter =
@@ -64,8 +68,7 @@ public class DiGraphUtil {
 														// edgeAttributeProvider);
 				new DOTExporter<SkeletonPatt, Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		Writer writer = new StringWriter();
-		File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\cpo\\ddd1.dot");
-		;
+		File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\cpo\\ddd1"+System.currentTimeMillis()+".dot");
 //				try {
 //					writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\d1.dot");
 //				} catch (IOException e1) {
@@ -82,15 +85,14 @@ public class DiGraphUtil {
 			Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
 			Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-					.toFile(new File("C:\\Users\\me\\Desktop\\out\\cpo\\" + g.hashCode() + "new.svg"));
+					.toFile(new File("C:\\Users\\me\\Desktop\\out\\cpo\\" + g.hashCode() +System.currentTimeMillis()+ "new.svg"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("error at graph generation > "+ e.getMessage());
 		}
 		// @example:render:end
 	}
 
-	private static void exportJson(Graph<SkeletonPatt, Edge> g) throws ExportException, IOException {
+	public static void exportJson(Graph<SkeletonPatt, Edge> g) throws ExportException, IOException {
 		AtomicInteger id = new AtomicInteger();
 //		 dgJson.g.removeAllVertices( dgJson.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
 
@@ -128,7 +130,7 @@ public class DiGraphUtil {
 //		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		Writer writer = new StringWriter();
 //		        File f = 
-		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\jsonFull1_.json");
+		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\jsonFull2_.json");
 		exporter.exportGraph(g, writer);
 
 	}

@@ -1,7 +1,6 @@
 package starter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
@@ -9,32 +8,31 @@ import java.util.concurrent.RecursiveTask;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import graph.Edge;
 import graph.SimulatedAnnealing;
-import pattern.skel4.Skel4Lexer;
-import pattern.skel4.Skel4Parser;
 import tree.model.SkeletonPatt;
-import visitor.TBuilder2;
 
 public class Starter extends RecursiveTask<List<List<Edge>>> {
-
+	Logger log = LoggerFactory.getLogger(getClass());
+	
 	private static final long serialVersionUID = 1L;
-	private File file;
 	private SkeletonPatt inputPattern;
-
+	private int maxNumOfSim;
+	private int simAnnealingMaxIter;
+	private String outputDir;
 	public Starter(File file) {
-		this.file = file;
 	}
-	public  Starter(SkeletonPatt input) {
+	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, String outputDir) {
 		this.inputPattern =input;
+		this.maxNumOfSim=maxNumberOfSimulation;
+		this.simAnnealingMaxIter=simulatedAnnealingMaxIter;
+		this.outputDir=outputDir;
 	}
 	@Override
 	protected List<List<Edge>> compute() {
-		System.out.println("parsing: " + inputPattern);
 
 //		Skel4Lexer lexer = null;
 //		try {
@@ -63,53 +61,48 @@ public class Starter extends RecursiveTask<List<List<Edge>>> {
 //		System.out.println("results > " + results);
 ////		return results.stream().flatMap(List::stream).collect(Collectors.toList());
 //		
-		return forkJoinSim(inputPattern);
+		return forkJoinSim(inputPattern,outputDir);
 //		return ParallelStreamSim(inputPattern);
 //		return seqSim(inputPattern);
 	}
-	private List<List<Edge>> forkJoinSim(SkeletonPatt n){
+	private List<List<Edge>> forkJoinSim(SkeletonPatt n,String outputDir){
 		List<ForkJoinTask<List<Edge>>> forks = new ArrayList<ForkJoinTask<List<Edge>>>();
-		long startTime = System.currentTimeMillis();
 
-		for (int i = 0; i < 10; i++) {
-			forks.add(new SimulatedAnnealing(n, 6).fork());
+		for (int i = 0; i < maxNumOfSim; i++) {
+			forks.add(new SimulatedAnnealing(n, 6, simAnnealingMaxIter,outputDir).fork());
 		}
 
 		List<List<Edge>> results = new ArrayList<List<Edge>>();
 		for (ForkJoinTask<List<Edge>> task : forks)
-			results.add(task.join());
-		long stopTime = (System.currentTimeMillis() - startTime);
-		System.out.println("stoping> " + stopTime);
-		System.out.println("results > " + results);
-//		return results.stream().flatMap(List::stream).collect(Collectors.toList());
+			results.add(task .join());
 		return results;
 	}
-	private List<Edge> ParallelStreamSim(SkeletonPatt n){
-		
-		long startTime = System.currentTimeMillis();
-		
-		SimulatedAnnealing sa = new SimulatedAnnealing(n, 5);
-		List<List<Edge>> results = new ArrayList<List<Edge>>();
-		List<Integer> simRange =IntStream.range(0, 20).boxed().collect(Collectors.toList());
-		simRange.parallelStream().forEach( i ->  results.add(new SimulatedAnnealing(n, 5).compute()));
-		
-		long stopTime = (System.currentTimeMillis() - startTime);
-		System.out.println("stoping> " + stopTime);
-		System.out.println("results > " + results);
-		return results.stream().flatMap(List::stream).collect(Collectors.toList());
-	}
-        private List<Edge> seqSim(SkeletonPatt n){
-		
-		long startTime = System.currentTimeMillis();
-		
-		SimulatedAnnealing sa = new SimulatedAnnealing(n, 5);
-		List<List<Edge>> results = new ArrayList<List<Edge>>();
-		IntStream.range(0, 20).forEachOrdered( i ->  results.add(sa.expandAndSearch()));
-		
-		long stopTime = (System.currentTimeMillis() - startTime);
-		System.out.println("stoping> " + stopTime);
-		System.out.println("results > " + results);
-		return results.stream().flatMap(List::stream).collect(Collectors.toList());
-	}
+//	private List<Edge> ParallelStreamSim(SkeletonPatt n){
+//		
+//		long startTime = System.currentTimeMillis();
+//		
+//		new SimulatedAnnealing(n, 5,simAnnealingMaxIter);
+//		List<List<Edge>> results = new ArrayList<List<Edge>>();
+//		List<Integer> simRange =IntStream.range(0, 20).boxed().collect(Collectors.toList());
+//		simRange.parallelStream().forEach( i ->  results.add(new SimulatedAnnealing(n, 5,simAnnealingMaxIter).compute()));
+//		
+//		long stopTime = (System.currentTimeMillis() - startTime);
+//		System.out.println("stoping> " + stopTime);
+//		System.out.println("results > " + results);
+//		return results.stream().flatMap(List::stream).collect(Collectors.toList());
+//	}
+//        private List<Edge> seqSim(SkeletonPatt n){
+//		
+//		long startTime = System.currentTimeMillis();
+//		
+//		SimulatedAnnealing sa = new SimulatedAnnealing(n, 5,simAnnealingMaxIter);
+//		List<List<Edge>> results = new ArrayList<List<Edge>>();
+//		IntStream.range(0, 20).forEachOrdered( i ->  results.add(sa.expandAndSearch()));
+//		
+//		long stopTime = (System.currentTimeMillis() - startTime);
+//		System.out.println("stoping> " + stopTime);
+//		System.out.println("results > " + results);
+//		return results.stream().flatMap(List::stream).collect(Collectors.toList());
+//	}
 
 }

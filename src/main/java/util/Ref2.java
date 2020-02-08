@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import graph.DiGraphGen3;
 import rewriter.RW;
 import tree.model.CompPatt;
@@ -17,6 +20,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class Ref2 {
+	final static Logger log = LoggerFactory.getLogger(Ref2.class);
 	private static RW reWriter = new RW();
 
 	/**
@@ -89,7 +93,7 @@ public class Ref2 {
 					skel.setParent(comp);
 				skel.refactor(reWriter);
 				for (SkeletonPatt p : skel.getPatterns()) {
-					System.out.println("creating tree "+ p +" with " + p.getPatterns());
+					log.debug("creating tree "+ p +" with " + p.getPatterns());
 					patterns.addAll(Util.createTreeNode(comp, skel));
 				}
 			}
