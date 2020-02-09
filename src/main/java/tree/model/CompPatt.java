@@ -136,6 +136,7 @@ public class CompPatt implements SkeletonPatt {
 				+ " ) ":null );
 		//+  "ts::+  ["+getOptimizedTs()+"]";
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -163,11 +164,6 @@ public class CompPatt implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
-//		if(rule == null) {
-//			if(other.rule != null)
-//				return false;
-//		}else if(!rule.equals(other.rule))
-//			return false;
 		return true;
 	}
 	@Override
@@ -188,12 +184,7 @@ public class CompPatt implements SkeletonPatt {
 //		return AttributeType.STRING;
 //	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 	@Override
 	public void setIdealServiceTime(double ts) {
 		this.idealServiceTime = ts;		
@@ -296,6 +287,15 @@ public class CompPatt implements SkeletonPatt {
 		return model;
 	}
 		return model;
+	}
+	@Override
+	public int getId() {
+		return this.id;
+	}
+	@Override
+	public void setId(int id) {
+		this.id=id;
+		
 	}
 	
 }

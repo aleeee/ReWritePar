@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import graph.Edge;
 import graph.SimulatedAnnealing;
+import graph.SimulatedAnnealing2;
 import tree.model.SkeletonPatt;
 
 public class Starter extends RecursiveTask<List<List<Edge>>> {
@@ -69,7 +70,7 @@ public class Starter extends RecursiveTask<List<List<Edge>>> {
 		List<ForkJoinTask<List<Edge>>> forks = new ArrayList<ForkJoinTask<List<Edge>>>();
 
 		for (int i = 0; i < maxNumOfSim; i++) {
-			forks.add(new SimulatedAnnealing(n, 6, simAnnealingMaxIter,outputDir).fork());
+			forks.add(new SimulatedAnnealing2(n, 6, simAnnealingMaxIter,outputDir).fork());
 		}
 
 		List<List<Edge>> results = new ArrayList<List<Edge>>();

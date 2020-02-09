@@ -38,7 +38,7 @@ import tree.model.SkeletonPatt;
 import util.ReWritingRules;
 import util.Util;
 
-public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
+public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = 1L;
@@ -51,7 +51,7 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 	StringJoiner solutionList;
 	private String outputDir;
 	
-	public SimulatedAnnealing(SkeletonPatt p, int maxHieght, int simAnnealingMaxIter, String outputDir) {
+	public SimulatedAnnealing2(SkeletonPatt p, int maxHieght, int simAnnealingMaxIter, String outputDir) {
 		this.s=p;
 		this.maxHieght =maxHieght;
 		g= new DefaultDirectedGraph<>(Edge.class);
@@ -59,8 +59,7 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 		intId= new AtomicInteger();
 		this.maxIteration = simAnnealingMaxIter;
 		solutionList= new StringJoiner("\n");
-		solutionList.add("$$$$$$$$$$$$$$$$$$--------start--------$$$$$$$$$$$$$$$$$$$");
-//		solutionList.add("$$$----input ------>  "+s + "\t--$$");
+		solutionList.add("////--------start--------////////");
 		this.outputDir=outputDir;
 		
 	}
@@ -93,9 +92,9 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 		double temprature = 19;
 		double coolingRate = 0.97;
 		
-		s.setId(intId.getAndIncrement());
-		Util.getCost(s);
-		g.addVertex(s);
+//		s.setId(intId.getAndIncrement());
+//		Util.getCost(s);
+//		g.addVertex(s);
 //		s.refactor(rw);
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
 //		List<SkeletonPatt> initialSolutions = new ArrayList<SkeletonPatt>(s.getPatterns());
@@ -174,11 +173,11 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 		}
 		log.info("Da best : " + bestSolution + " id: "+ bestSolution.getId()  );
 		log.info("start : " + s.print() + " id: "+ s.getId()  );
-		final int bb = bestSolution.getId();
-		final SkeletonPatt fffff = bestSolution;
-		
-//		DijkstraShortestPath<SkeletonPatt, Edge> eeee = new DijkstraShortestPath<SkeletonPatt, Edge>(g);
-		
+//		final int bb = bestSolution.getId();
+//		final SkeletonPatt fffff = bestSolution;
+//		
+////		DijkstraShortestPath<SkeletonPatt, Edge> eeee = new DijkstraShortestPath<SkeletonPatt, Edge>(g);
+//		
 		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null ? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList(): null;
 //		solutionPool.forEach(ss -> System.out.println(s + " > "+ss + " TS > "+ ss.getOptServiceTime() + " OTS> " + ss.calculateOptimalServiceTime() + " cpo >" + Util.getCost(ss)));
 		if(paths == null || paths.isEmpty()) {
@@ -197,9 +196,9 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 			System.out.println("falseeee");
 			g.addVertex(s);
 		}
-		Set<Edge> st = g.outgoingEdgesOf(s);
-		GraphPath<SkeletonPatt, Edge> newSearchResults = DijkstraShortestPath.findPathBetween(g, s, bestSolution);
-//try {
+//		Set<Edge> st = g.outgoingEdgesOf(s);
+//		GraphPath<SkeletonPatt, Edge> newSearchResults = DijkstraShortestPath.findPathBetween(g, s, bestSolution);
+////try {
 //			DiGraphUtil.renderHrefGraph(g);
 ////			DiGraphUtil2.exportJson(g);
 //		} catch (ExportException e) {
@@ -207,7 +206,7 @@ public class SimulatedAnnealing extends RecursiveTask<List<Edge>> {
 //			e.printStackTrace();
 //		}
 		solutionList.add("best: " +bestSolution + "\t ts: " + bestSolution.getOptServiceTime());
-		solutionList.add("$$$$$$$$$$$$$$$$$$--------end--------$$$$$$$$$$$$$$$$$$$\n");
+		solutionList.add("//////--------end--------/////\n");
 		try(FileWriter writer= new FileWriter(new File(outputDir + "/solutions_"+s.hashCode()+".txt"), true)){
 			writer.write(solutionList.toString());
 			writer.close();}

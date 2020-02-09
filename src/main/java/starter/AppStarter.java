@@ -27,7 +27,7 @@ import tree.model.SkeletonPatt;
 import visitor.TBuilder2;
 
 public class AppStarter {
-	final static Logger log = LoggerFactory.getLogger(AppStarter.class);
+	final  Logger log = LoggerFactory.getLogger(AppStarter.class);
 	List<File> inputCodes;
 	List<SkeletonPatt> inputs;
 
@@ -52,20 +52,19 @@ public class AppStarter {
 			log.error("Error while parsing input " + e.getMessage());
 			System.exit(-1);
 		}
-		
+
 		List<ForkJoinTask<List<List<Edge>>>> forks = new ArrayList<>();
 
 		List<List<Edge>> results = new ArrayList<>();
 
-
 		for (SkeletonPatt p : inputs) {
-			try(FileWriter writer= new FileWriter(new File(outputDir + "/solutions_"+p.hashCode()+".txt"), false)){
-			writer.write("////------input----->  " + p + "------------/////");
-			writer.close();}
-			catch (IOException e) {
-				log.error("Error creating solution list file {}" , e.getMessage());
+			try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + p.hashCode() + ".txt"))) {
+				writer.write("////------input----->  " + p + "------------/////");
+				writer.close();
+			} catch (IOException e) {
+				log.error("Error creating solution list file {}", e.getMessage());
 			}
-			forks.add(new Starter(p,maxNumberOfSimulation, simulatedAnnealingMaxIter,outputDir).fork());
+			forks.add(new Starter(p, maxNumberOfSimulation, simulatedAnnealingMaxIter, outputDir).fork());
 		}
 
 		for (ForkJoinTask<List<List<Edge>>> task : forks)
@@ -77,18 +76,18 @@ public class AppStarter {
 			edge.stream().map(Edge::getRule).forEach(r -> path.add(r.getRule()));
 			stringPaths.merge(path);
 		}
-		log.info("paths  {}", stringPaths );
-		try(FileWriter writer= new FileWriter(new File(outputDir + "/paths.csv"))){
-		writer.write(stringPaths.toString());
-		writer.close();
+		log.info("paths  {}", stringPaths);
+		try (FileWriter writer = new FileWriter(new File(outputDir + "/paths.csv"))) {
+			writer.write(stringPaths.toString());
+			writer.close();
 		} catch (IOException e) {
-			log.error("Error Writing to file " + e.getMessage() );
+			log.error("Error Writing to file " + e.getMessage());
 			System.exit(-1);
 		}
-		 long stopTime = (System.currentTimeMillis() - startTime) ;
-		
+		long stopTime = (System.currentTimeMillis() - startTime);
+
 		log.info("Finished: process takes " + stopTime + " milliseconds");
-		
+
 	}
 
 	private List<File> readAllInputCodesInFolder(String folderPath) throws IOException {
@@ -99,22 +98,24 @@ public class AppStarter {
 	}
 
 	public static void main(String[] args) {
-		log.info("Starting with input args : " + args);
-		if(args.length < 4) {
-			log.error("use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim " );
+		System.setProperty("reWriter.logging.path", args[1]+"logs/");
+		System.out.println("Starting with input args : " + args);
+		if (args.length < 4) {
+			System.err.println(
+					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim ");
 			System.exit(0);
 		}
-		try {
-		String inputDir = args[0];
-		String outputDir = args[1];
-		int simulatedAnnealingMaxIter = Integer.parseInt(args[2]);
-		int maxNumberOfSimulation = Integer.parseInt(args[3]);
+//		try {
+			String inputDir = args[0];
+			String outputDir = args[1];
+			int simulatedAnnealingMaxIter = Integer.parseInt(args[2]);
+			int maxNumberOfSimulation = Integer.parseInt(args[3]);
 			
-		new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation);
-		}catch(Exception e) {
-			log.error("Error  " + e.getMessage());
-			System.exit(0);
-		}
+			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation);
+//		} catch (Exception e) {
+//			log.error("Error  " + e.getMessage());
+//			System.exit(0);
+//		}
 	}
-
+   
 }

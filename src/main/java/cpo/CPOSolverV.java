@@ -97,6 +97,7 @@ public class CPOSolverV {
 
 	public void getSolutions(SkeletonPatt p) throws IloException {
 //		if (p instanceof FarmPatt || p instanceof MapPatt) {
+		try {
 			List<IloNumVar> vars = variables.get(p);
 			double value = cplex.getValue(vars.get(0));
 			int parDegree = (int) cplex.getValue(vars.get(1));
@@ -112,6 +113,9 @@ public class CPOSolverV {
 			return;
 		for (SkeletonPatt d : p.getChildren()) {
 			getSolutions(d);
+		}
+		}catch(Exception e) {
+			log.error("Error inside getSolution "+e.getMessage());
 		}
 
 	}
