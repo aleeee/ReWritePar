@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import graph.Edge;
-import graph.SimulatedAnnealing;
 import graph.SimulatedAnnealing2;
 import tree.model.SkeletonPatt;
 
@@ -24,13 +23,15 @@ public class Starter extends RecursiveTask<List<List<Edge>>> {
 	private int maxNumOfSim;
 	private int simAnnealingMaxIter;
 	private String outputDir;
+	private int maxNumberOfResources;
 	public Starter(File file) {
 	}
-	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, String outputDir) {
+	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, String outputDir, int maxNumberOfResources) {
 		this.inputPattern =input;
 		this.maxNumOfSim=maxNumberOfSimulation;
 		this.simAnnealingMaxIter=simulatedAnnealingMaxIter;
 		this.outputDir=outputDir;
+		this.maxNumberOfResources=maxNumberOfResources;
 	}
 	@Override
 	protected List<List<Edge>> compute() {
@@ -62,15 +63,15 @@ public class Starter extends RecursiveTask<List<List<Edge>>> {
 //		System.out.println("results > " + results);
 ////		return results.stream().flatMap(List::stream).collect(Collectors.toList());
 //		
-		return forkJoinSim(inputPattern,outputDir);
+		return forkJoinSim(inputPattern,outputDir,maxNumberOfResources);
 //		return ParallelStreamSim(inputPattern);
 //		return seqSim(inputPattern);
 	}
-	private List<List<Edge>> forkJoinSim(SkeletonPatt n,String outputDir){
+	private List<List<Edge>> forkJoinSim(SkeletonPatt n,String outputDir,int maxNumberOfResources){
 		List<ForkJoinTask<List<Edge>>> forks = new ArrayList<ForkJoinTask<List<Edge>>>();
 
 		for (int i = 0; i < maxNumOfSim; i++) {
-			forks.add(new SimulatedAnnealing2(n, 6, simAnnealingMaxIter,outputDir).fork());
+			forks.add(new SimulatedAnnealing2(n, 6, simAnnealingMaxIter,outputDir,maxNumberOfResources).fork());
 		}
 
 		List<List<Edge>> results = new ArrayList<List<Edge>>();

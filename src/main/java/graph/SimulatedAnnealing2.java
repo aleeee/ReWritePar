@@ -43,46 +43,51 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 
 	private static final long serialVersionUID = 1L;
 	private SkeletonPatt s;
-	RW rw ;
-	private  Graph<SkeletonPatt, Edge> g; 	
-	AtomicInteger intId ;
+	RW rw;
+	private Graph<SkeletonPatt, Edge> g;
+	AtomicInteger intId;
 	private int maxHieght;
 	private int maxIteration;
 	StringJoiner solutionList;
 	private String outputDir;
-	
-	public SimulatedAnnealing2(SkeletonPatt p, int maxHieght, int simAnnealingMaxIter, String outputDir) {
-		this.s=p;
-		this.maxHieght =maxHieght;
-		g= new DefaultDirectedGraph<>(Edge.class);
-		rw= new RW();
-		intId= new AtomicInteger();
+	StringJoiner bestSolutionList;
+	private int maxNumberOfResources;
+
+	public SimulatedAnnealing2(SkeletonPatt p, int maxHieght, int simAnnealingMaxIter, String outputDir,int maxNumberOfResources) {
+		this.s = p;
+		this.maxHieght = maxHieght;
+		g = new DefaultDirectedGraph<>(Edge.class);
+		rw = new RW();
+		intId = new AtomicInteger();
 		this.maxIteration = simAnnealingMaxIter;
-		solutionList= new StringJoiner("\n");
+		solutionList = new StringJoiner("\n");
+		bestSolutionList = new StringJoiner("\n");
 		solutionList.add("////--------start--------////////");
-		this.outputDir=outputDir;
-		
+		this.outputDir = outputDir;
+		this.maxNumberOfResources=maxNumberOfResources;
 	}
-	
 
 	/**
 	 * Add an edge to the graph
 	 */
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		try {
-			
-		if(!g.containsVertex(from)) {
-			from.setId(intId.getAndIncrement());
-			g.addVertex(from);}
-		if(!g.containsVertex(to)) {
-			to.setId(intId.getAndIncrement());
-			g.addVertex(to);}
-		g.addEdge(from, to, new Edge(from, to, rule));
-		}catch(Exception e) {
-			log.error("ERR "+g.vertexSet().size());
+
+			if (!g.containsVertex(from)) {
+				from.setId(intId.getAndIncrement());
+				g.addVertex(from);
+			}
+			if (!g.containsVertex(to)) {
+				to.setId(intId.getAndIncrement());
+				g.addVertex(to);
+			}
+			g.addEdge(from, to, new Edge(from, to, rule));
+		} catch (Exception e) {
+			log.error("ERR " + g.vertexSet().size());
 			throw e;
 		}
 	}
+
 	@Override
 	public List<Edge> compute() {
 		return expandAndSearch();
@@ -91,111 +96,73 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 	public List<Edge> expandAndSearch() {
 		double temprature = 19;
 		double coolingRate = 0.97;
-		
-//		s.setId(intId.getAndIncrement());
-//		Util.getCost(s);
-//		g.addVertex(s);
-//		s.refactor(rw);
+
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
-//		List<SkeletonPatt> initialSolutions = new ArrayList<SkeletonPatt>(s.getPatterns());
-//		solutionPool.addAll(initialSolutions);
-//		SkeletonPatt currentSolution = Util.clone(initialSolutions.stream().filter(ss -> Util.getHeight(ss) < maxHieght).findAny().get());
-//		s.setId(intId.incrementAndGet());
 		SkeletonPatt bestSolution = Util.clone(s);
-//		bestSolution.setId(intId.incrementAndGet());
 		SkeletonPatt currentSolution = Util.clone(s);
-//		currentSolution.setId(intId.incrementAndGet());
-		double currentCost = Util.getCost(currentSolution);
-		double bestCost = Util.getCost(bestSolution);
-		int x=0;
-//		this.g.addVertex(s);
-//		this.g.addVertex(bestSolution);
-//		bestSolution.print();
-//		System.out.println(bestSolution);
-//		this.add(s, currentSolution, currentSolution.getRule());
-//		this.add(s, bestSolution, bestSolution.getRule());
-		//list to hold generated solutions but not selected for best or current solution
-		//they are going to be considered in the random selection
-		
-//		solutionPool.add(bestSolution);
+		double currentCost = Util.getCost(currentSolution,maxNumberOfResources);
+		double bestCost = Util.getCost(bestSolution,maxNumberOfResources);
+		int x = 0;
 		currentSolution.refactor(rw);
-		SkeletonPatt first =currentSolution.getPatterns().iterator().next();
+		SkeletonPatt first = currentSolution.getPatterns().iterator().next();
 		this.add(s, currentSolution.getPatterns().iterator().next(), first.getRule());
-		currentSolution= Util.clone(first);
-		while (x++ < maxIteration && temprature > 0.1 ) {
+		currentSolution = Util.clone(first);
+		while (x++ < maxIteration && temprature > 0.1) {
 
 			currentSolution.refactor(rw);
-//			currentSolution.setId(intId.incrementAndGet());
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
-//			solutions.forEach(newPattern -> );
-			for(SkeletonPatt sol: solutions) {
-				Util.getCost(sol);
-//					sol.setId(intId.incrementAndGet());
-					this.add(currentSolution, sol, sol.getRule());
-					}
-			SkeletonPatt newSolution = Util.clone(solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get());
-//			newSolution.setId(intId.incrementAndGet());
-			//add the discarded solutions into pool for later consideration
+			for (SkeletonPatt sol : solutions) {
+				Util.getCost(sol,maxNumberOfResources);
+				this.add(currentSolution, sol, sol.getRule());
+			}
+			SkeletonPatt newSolution = Util.clone(
+					solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get());
 			solutionPool.addAll(solutions.stream().filter(s -> !s.equals(newSolution)).collect(Collectors.toList()));
-//			this.add(currentSolution, newSolution, newSolution.getRule());
-			log.debug("best " +bestSolution.toString());
-			double newCost = Util.getCost(newSolution);
-			if(newCost <= currentCost  ) {
+			log.debug("best " + bestSolution.toString());
+			double newCost = Util.getCost(newSolution,maxNumberOfResources);
+			if (newCost <= currentCost) {
 //				newSolution.print();
 				currentSolution = Util.clone(newSolution);
 //				currentSolution.setId(intId.incrementAndGet());
 				currentCost = newCost;
-				log.debug("currentCost " +currentSolution.toString());
-				if(newCost < bestCost || (newCost == bestCost && newSolution.getNumberOfResources() < bestSolution.getNumberOfResources())) {
+				log.debug("currentCost " + currentSolution.toString());
+				if (newCost < bestCost || (newCost == bestCost
+						&& newSolution.getNumberOfResources() < bestSolution.getNumberOfResources())) {
 					bestSolution = Util.clone(newSolution);
 //					bestSolution.setId(intId.incrementAndGet());
-					bestCost=newCost;
+					bestCost = newCost;
 					this.add(currentSolution, bestSolution, bestSolution.getRule());
 //					newSolution.print();
 				}
-			}else {
-				if(Math.exp((newCost - currentCost)/temprature) > Math.random()){
-					currentSolution=solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size())).findAny().get();
+			} else {
+				if (Math.exp((newCost - currentCost) / temprature) > Math.random()) {
+					currentSolution = solutionPool.isEmpty() ? newSolution
+							: solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size()))
+									.findAny().get();
 //					currentSolution = Collections.shuffle(new ArrayList<solutionPool).stream().get(ThreadLocalRandom.current().nextInt(solutionPool.size()));
 //					newSolution.print();
 					solutionPool.add(newSolution);
 				}
 			}
-			log.info("best " + bestSolution + "\t"+Util.getCost(bestSolution)+ "\t"+bestSolution.getNumberOfResources() + " id: "+ bestSolution.getId());
+			log.debug("best " + bestSolution + "\t" + Util.getCost(bestSolution,maxNumberOfResources));
 //			log.info("best_ " + bestSolution );
-			log.info("current " + currentSolution + "\t"+ Util.getCost(currentSolution)+ "\t"+ +currentSolution.getNumberOfResources() + " id: "+ currentSolution.getId() );
+			log.info("iteration: "+x +" -> "+ currentSolution + "\t" + Util.getCost(currentSolution,maxNumberOfResources));
 //			log.info("current_ " + currentSolution );
-			log.info("new  " + newSolution+ "\t"+Util.getCost(newSolution) + "\t"+newSolution.getNumberOfResources() + " id: "+ newSolution.getId() );
+			log.debug("new  " + newSolution + "\t" + Util.getCost(newSolution,maxNumberOfResources));
 //			log.info("new_  " + newSolution);
 			temprature *= coolingRate;
-			solutionList.add(newSolution+ "\t ts: "+newSolution.getOptServiceTime());
+			solutionList.add(newSolution + "\t ts: " + newSolution.getOptServiceTime());
 
 		}
-		log.info("Da best : " + bestSolution + " id: "+ bestSolution.getId()  );
-		log.info("start : " + s.print() + " id: "+ s.getId()  );
-//		final int bb = bestSolution.getId();
-//		final SkeletonPatt fffff = bestSolution;
-//		
-////		DijkstraShortestPath<SkeletonPatt, Edge> eeee = new DijkstraShortestPath<SkeletonPatt, Edge>(g);
-//		
-		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null ? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList(): null;
-//		solutionPool.forEach(ss -> System.out.println(s + " > "+ss + " TS > "+ ss.getOptServiceTime() + " OTS> " + ss.calculateOptimalServiceTime() + " cpo >" + Util.getCost(ss)));
-		if(paths == null || paths.isEmpty()) {
+		log.info(" best : " + bestSolution.print());
+		bestSolutionList.add("\n" + bestSolution.print());
+		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null
+				? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList()
+				: null;
+		if (paths == null || paths.isEmpty()) {
 			log.warn("no edge to the best solution: " + bestSolution);
-//			try {
-//			DiGraphUtil.renderHrefGraph(g);
-//		} catch (ExportException e) {
-//			log.error("Error while exporting graph" + e.getMessage());
-//		}
-//			return null;
 		}
-		if(!g.containsVertex(bestSolution)) {
-			System.out.println(false);
-			g.addVertex(bestSolution);
-		}else if(!g.containsVertex(s)){
-			System.out.println("falseeee");
-			g.addVertex(s);
-		}
+
 //		Set<Edge> st = g.outgoingEdgesOf(s);
 //		GraphPath<SkeletonPatt, Edge> newSearchResults = DijkstraShortestPath.findPathBetween(g, s, bestSolution);
 ////try {
@@ -205,27 +172,30 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		solutionList.add("best: " +bestSolution + "\t ts: " + bestSolution.getOptServiceTime());
+		solutionList.add("best: " + bestSolution + "\t ts: " + bestSolution.getOptServiceTime());
 		solutionList.add("//////--------end--------/////\n");
-		try(FileWriter writer= new FileWriter(new File(outputDir + "/solutions_"+s.hashCode()+".txt"), true)){
+		try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + s.hashCode() + ".txt"), true)) {
 			writer.write(solutionList.toString());
-			writer.close();}
-		catch (IOException e) {
-				log.error("Error creating solution list file {}" , e.getMessage());
-			}
-//		
-		
+			writer.close();
+		} catch (IOException e) {
+			log.error("Error creating solution list file {}", e.getMessage());
+		}
+		try (FileWriter writer = new FileWriter(new File(outputDir + "/bestSolutions_" + s.hashCode() + ".txt"),
+				true)) {
+			writer.write(bestSolutionList.toString());
+			writer.close();
+		} catch (IOException e) {
+			log.error("Error creating solution list file {}", e.getMessage());
+		}
 		return paths;
 	}
-
 
 	public Graph<SkeletonPatt, Edge> getG() {
 		return g;
 	}
 
-
 	public void setG(Graph<SkeletonPatt, Edge> g) {
 		this.g = g;
 	}
-	
+
 }

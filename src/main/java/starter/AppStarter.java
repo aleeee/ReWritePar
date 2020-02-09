@@ -31,7 +31,7 @@ public class AppStarter {
 	List<File> inputCodes;
 	List<SkeletonPatt> inputs;
 
-	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation) {
+	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources) {
 		long startTime = System.currentTimeMillis();
 		log.info("input " + folderPath);
 		try {
@@ -58,13 +58,19 @@ public class AppStarter {
 		List<List<Edge>> results = new ArrayList<>();
 
 		for (SkeletonPatt p : inputs) {
-			try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + p.hashCode() + ".txt"))) {
-				writer.write("////------input----->  " + p + "------------/////");
+			try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + p.hashCode() + ".txt"),true)) {
+				writer.write("////------input----->  " + p + "------------/////\n");
 				writer.close();
 			} catch (IOException e) {
 				log.error("Error creating solution list file {}", e.getMessage());
 			}
-			forks.add(new Starter(p, maxNumberOfSimulation, simulatedAnnealingMaxIter, outputDir).fork());
+			try (FileWriter writer1 = new FileWriter(new File(outputDir + "/bestSolutions_" + p.hashCode() + ".txt"),true)) {
+				writer1.write("////------input----->  " + p + "------------/////\n");
+				writer1.close();
+			} catch (IOException e) {
+				log.error("Error creating solution list file {}", e.getMessage());
+			}
+			forks.add(new Starter(p, maxNumberOfSimulation, simulatedAnnealingMaxIter, outputDir,maxNumberOfResources).fork());
 		}
 
 		for (ForkJoinTask<List<List<Edge>>> task : forks)
@@ -77,9 +83,9 @@ public class AppStarter {
 			stringPaths.merge(path);
 		}
 		log.info("paths  {}", stringPaths);
-		try (FileWriter writer = new FileWriter(new File(outputDir + "/paths.csv"))) {
-			writer.write(stringPaths.toString());
-			writer.close();
+		try (FileWriter writer2 = new FileWriter(new File(outputDir + "/paths.txt"),true)) {
+			writer2.write(stringPaths.toString());
+			writer2.close();
 		} catch (IOException e) {
 			log.error("Error Writing to file " + e.getMessage());
 			System.exit(-1);
@@ -100,7 +106,7 @@ public class AppStarter {
 	public static void main(String[] args) {
 		System.setProperty("reWriter.logging.path", args[1]+"logs/");
 		System.out.println("Starting with input args : " + args);
-		if (args.length < 4) {
+		if (args.length < 5) {
 			System.err.println(
 					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim ");
 			System.exit(0);
@@ -110,8 +116,8 @@ public class AppStarter {
 			String outputDir = args[1];
 			int simulatedAnnealingMaxIter = Integer.parseInt(args[2]);
 			int maxNumberOfSimulation = Integer.parseInt(args[3]);
-			
-			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation);
+			int maxNumberOfResources = Integer.parseInt(args[4]);
+			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources);
 //		} catch (Exception e) {
 //			log.error("Error  " + e.getMessage());
 //			System.exit(0);

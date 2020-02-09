@@ -30,7 +30,7 @@ import tree.model.SkeletonPatt;
 public class Util {
 	final static Logger log = LoggerFactory.getLogger(Util.class);
 	enum SkeletonType {F,P, S, C, M};
-	static int n = 256;
+//	static int n = 256;
 
 	public static SkeletonPatt getType(AssignmentContext ctx) {
 		String type = ctx.expr.sType.getText();
@@ -257,19 +257,19 @@ public class Util {
 		return sum;
 	}
 	
-	public static double getCost(SkeletonPatt p) {
+	public static double getCost(SkeletonPatt p,int maxNumberOfResources) {
 		if(p instanceof SeqPatt) return p.getIdealServiceTime();
 //		CPOSolver2 model;
 		CPOSolverV model;
 		try {
 			p.calculateIdealServiceTime();
-			model = new CPOSolverV(p, 16);
+			model = new CPOSolverV(p, maxNumberOfResources);
 			model.solveIt();
 			model.getSolutions(p);
 			p.calculateOptimalServiceTime();
 			model.cleanup();
 		} catch (IloException e) {
-			log.error("Error at cpo solver " + e.getMessage());
+			log.warn("No solution " + e.getMessage());
 		}
 		return p.getOptServiceTime();
 	}
