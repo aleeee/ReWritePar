@@ -155,7 +155,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 
 		}
 		log.info(" best : " + bestSolution.print());
-		bestSolutionList.add("\n" + bestSolution.print());
+		bestSolutionList.add("\n" + bestSolution.print() +";" + bestSolution.getNumberOfResources()+ ";" +bestSolution.getOptServiceTime());
 		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null
 				? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList()
 				: null;

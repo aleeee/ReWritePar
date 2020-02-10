@@ -108,7 +108,7 @@ public class AppStarter {
 		System.out.println("Starting with input args : " + args);
 		if (args.length < 5) {
 			System.err.println(
-					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim ");
+					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources");
 			System.exit(0);
 		}
 //		try {
