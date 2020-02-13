@@ -10,6 +10,7 @@ import org.jgrapht.io.AttributeType;
 
 import cpo.SolverModel;
 import ilog.concert.IloException;
+import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
@@ -35,7 +36,7 @@ public class PipePatt implements SkeletonPatt {
 	int optParDegree;
 	double optServiceTime;
 //	double optimizedTs;
-	
+	int numResource;
 	public PipePatt() {
 		this.lable= "pipe";
 	}
@@ -225,37 +226,39 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public int getNumberOfResources() {
-		return this.children.stream().mapToInt(c -> c.getNumberOfResources()).sum();
+		 return this.numResource=this.children.stream().mapToInt(c -> c.getNumberOfResources()).sum();
+	}
+	@Override
+	public void setNumberOfResources(int r) {
+		this.numResource=r;
 	}
 	@Override
 	public void addConstraint(SolverModel model) throws IloException {
-		IloNumExpr obj = model.getObj();
-		IloNumExpr pd_obj = model.getPd_obj();
 		IloCP cplex = model.getCplex();
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		
 		List<IloNumVar> vars = variables.get(this);	
-		List<IloIntVar> pipeStages = new ArrayList<>();	
 		IloIntVar n_i = (IloIntVar) vars.get(1);
 		IloNumExpr pStages = cplex.constant(0);
 		cplex.addLe(n_i, model.getNumAvailableProcessors());		
-		
-		
+		IloIntExpr res= model.getResourcesVars().get(this);
+		cplex.addEq(res, n_i);
 		for (SkeletonPatt v : children) {
 			
 			List<IloNumVar> vv = variables.get(v);	
-			if (v instanceof FarmPatt || v instanceof MapPatt) { 
-				pStages = cplex.sum(pStages,cplex.sum(vv.get(1),2));
-			}else {
-				pStages = cplex.sum(pStages,vv.get(1));
-			}
-			
-
+//			if (v instanceof FarmPatt || v instanceof MapPatt) { 
+//				pStages = cplex.sum(pStages,cplex.sum(vv.get(1),2));
+//			}else {
+				pStages = cplex.sum(pStages,((IloIntExpr) model.getResourcesVars().get(v)));
+//			}
 		}
 
 		cplex.addEq(vars.get(1), pStages);
+		cplex.addEq(res, pStages);
 		cplex.addLe(vars.get(1), model.getNumAvailableProcessors());
+		cplex.addLe(res, model.getNumAvailableProcessors());
 		for (SkeletonPatt stage : children) {
+			model.setCplex(cplex);
 			stage.addConstraint(model);
 		}
 		

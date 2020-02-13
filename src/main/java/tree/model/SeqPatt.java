@@ -32,6 +32,7 @@ public class SeqPatt implements SkeletonPatt {
 	final int idealParDegree;
 	final double idealServiceTime;
 	final double optimizedTs;
+     int numResource=1;
 	
 	public SeqPatt(SeqPatt s) {
 		this.idealParDegree=1;
@@ -225,13 +226,18 @@ public class SeqPatt implements SkeletonPatt {
 	}
 	@Override
 	public int getNumberOfResources() {
-		return 1;
+		return  this.numResource=1;
 		
+	}
+	@Override
+	public void setNumberOfResources(int r) {
+		this.numResource=r;
 	}
 	@Override
 	public void addConstraint(SolverModel model)
 			throws IloException {
 		model.getCplex().addEq(model.getVariables().get(this).get(1), 1);
+		model.getCplex().addEq(model.getResourcesVars().get(this), 1);
 		
 	}
 	@Override

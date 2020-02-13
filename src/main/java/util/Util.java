@@ -257,7 +257,7 @@ public class Util {
 		return sum;
 	}
 	
-	public static double getCost(SkeletonPatt p,int maxNumberOfResources) {
+	public  synchronized static double getCost(SkeletonPatt p,int maxNumberOfResources) {
 		if(p instanceof SeqPatt) return p.getIdealServiceTime();
 //		CPOSolver2 model;
 		CPOSolverV model;

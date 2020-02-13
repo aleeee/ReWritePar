@@ -1,6 +1,8 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +37,7 @@ public class CompPatt implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
+	private int numResource;
 	
 	public CompPatt() {
 		this.lable = "comp";
@@ -242,8 +245,12 @@ public class CompPatt implements SkeletonPatt {
 	}
 	@Override
 	public int getNumberOfResources() {
-		return this.children.stream().mapToInt(c -> c.getNumberOfResources()).max().getAsInt();
+		 return this.numResource=this.children.stream().mapToInt(c -> c.getNumberOfResources()).max().getAsInt();
 
+	}
+	@Override
+	public void setNumberOfResources(int r) {
+		this.numResource=r;
 	}
 	@Override
 	public void addConstraint(SolverModel model) throws IloException {
@@ -251,15 +258,27 @@ public class CompPatt implements SkeletonPatt {
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		
 		List<IloNumVar> vars = variables.get(this);	
-		List<IloIntVar> stageVars = new ArrayList<>();	
+//		List<IloIntVar> stageVars = new ArrayList<>();	
+		List<IloNumVar> stageVars = new ArrayList<>();	
 		IloIntVar n_i = (IloIntVar) vars.get(1);
-		cplex.addLe(n_i, model.getNumAvailableProcessors());		
-		
+		cplex.addLe(n_i, model.getNumAvailableProcessors());	
+		IloIntExpr res= model.getResourcesVars().get(this);
+		cplex.addEq(res, n_i);
+		Collection<IloIntExpr> sv=new ArrayList<IloIntExpr>();
 		for (SkeletonPatt v : children) {
-			stageVars.add((IloIntVar) variables.get(v).get(1));
+//			if(v instanceof FarmPatt || v instanceof MapPatt) {
+//				IloIntExpr nw =    cplex.sum((IloIntVar)variables.get(v).get(1), 2);
+////				stageVars.addAll( (Collection<? extends IloNumVar>) nw);
+//				sv.add(nw);
+//			}
+//			else {
+				sv.add((IloIntExpr) model.getResourcesVars().get(v));
+//			}
 		}
-		cplex.addEq(n_i, cplex.max(stageVars.stream().collect(Collectors.toList())));
+		cplex.addEq(n_i, cplex.max(sv.stream().collect(Collectors.toList())));
+		cplex.addLe(res, model.getNumAvailableProcessors());
 		for (SkeletonPatt stage : children) {
+			model.setCplex(cplex);
 			stage.addConstraint(model);
 		}
 		

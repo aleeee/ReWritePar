@@ -146,16 +146,23 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 			}
 			log.debug("best " + bestSolution + "\t" + Util.getCost(bestSolution,maxNumberOfResources));
 //			log.info("best_ " + bestSolution );
-			log.info("iteration: "+x +" -> "+ currentSolution + "\t" + Util.getCost(currentSolution,maxNumberOfResources));
+			
+			Util.getCost(currentSolution,maxNumberOfResources);
+			if (currentSolution.getNumberOfResources() > maxNumberOfResources || currentSolution.getNumberOfResources() <1) {
+				currentSolution.getChildren().forEach(c -> {
+					System.out.println(c.getNumberOfResources());
+					System.out.println(c.getOptParallelismDegree());});
+			}
+			log.info("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
 //			log.info("current_ " + currentSolution );
 			log.debug("new  " + newSolution + "\t" + Util.getCost(newSolution,maxNumberOfResources));
 //			log.info("new_  " + newSolution);
 			temprature *= coolingRate;
-			solutionList.add(newSolution + "\t ts: " + newSolution.getOptServiceTime());
+			solutionList.add(newSolution + "\t ts: " + newSolution.getOptServiceTime() +"\t res: " + newSolution.getNumberOfResources());
 
 		}
 		log.info(" best : " + bestSolution.print());
-		bestSolutionList.add("\n" + bestSolution.print() +";" + bestSolution.getNumberOfResources()+ ";" +bestSolution.getOptServiceTime());
+		bestSolutionList.add("\n" + bestSolution.print() +";\t res: " + bestSolution.getNumberOfResources()+ ";\ts: " +bestSolution.getOptServiceTime());
 		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null
 				? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList()
 				: null;

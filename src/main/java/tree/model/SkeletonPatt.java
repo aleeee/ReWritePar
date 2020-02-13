@@ -62,6 +62,7 @@ public interface SkeletonPatt extends Serializable{
 	void calculateIdealServiceTime();
 	double calculateOptimalServiceTime();
 	int getNumberOfResources();
+	void setNumberOfResources(int r);
 	void addConstraint(SolverModel model) throws IloException;
 	SolverModel addObjective(SolverModel model) throws IloException;
 

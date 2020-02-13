@@ -3,6 +3,7 @@ package cpo;
 import java.util.List;
 import java.util.Map;
 
+import ilog.concert.IloIntExpr;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.cp.IloCP;
@@ -16,15 +17,16 @@ public class SolverModel {
 	private IloNumExpr obj;
 	private IloNumExpr pd_obj;
 	
-	
+	Map<SkeletonPatt, IloIntExpr> resourcesVars;
 	
 	public SolverModel(IloCP cplex, Map<SkeletonPatt, List<IloNumVar>> variables, int numAvailableProcessors,
-			IloNumExpr obj, IloNumExpr pd_obj) {
+			IloNumExpr obj, IloNumExpr pd_obj, Map<SkeletonPatt, IloIntExpr> resourcesVars) {
 		this.variables = variables;
 		this.cplex = cplex;
 		this.numAvailableProcessors = numAvailableProcessors;
 		this.obj = obj;
 		this.pd_obj = pd_obj;
+		this.resourcesVars=resourcesVars;
 	}
 	public Map<SkeletonPatt, List<IloNumVar>> getVariables() {
 		return variables;
@@ -61,6 +63,12 @@ public class SolverModel {
 	}
 	public void setPd_obj(IloNumExpr pd_obj) {
 		this.pd_obj = pd_obj;
+	}
+	public Map<SkeletonPatt, IloIntExpr> getResourcesVars() {
+		return resourcesVars;
+	}
+	public void setResourcesVars(Map<SkeletonPatt, IloIntExpr> resourcesVars) {
+		this.resourcesVars = resourcesVars;
 	}
 	
 	

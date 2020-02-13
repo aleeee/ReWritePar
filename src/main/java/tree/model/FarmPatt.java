@@ -38,6 +38,7 @@ public class FarmPatt implements SkeletonPatt {
 	double idealServiceTime;
 	double optServiceTime;
 //	double optimizedTs;
+	int numResources;
 	
 	public FarmPatt() {
 		this.lable= "farm";
@@ -252,24 +253,40 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public int getNumberOfResources() {
-		return (this.optParallelismDegree *this.children.get(0).getNumberOfResources()) +2;
+		 return this.numResources=(this.optParallelismDegree *this.children.get(0).getNumberOfResources()) +2;
 	}
+
+	@Override
+	public void setNumberOfResources(int r) {
+		this.numResources=r;
+	}
+
+
 
 	@Override
 	public void addConstraint(SolverModel model)
 			throws IloException {
-		IloNumExpr obj = model.getObj();
-		IloNumExpr pd_obj = model.getPd_obj();
 		IloCP cplex = model.getCplex();
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
-		
+		SkeletonPatt childNode=this.children.get(0);
 		List<IloNumVar> fVars = variables.get(this);
 		IloIntVar pd = (IloIntVar) fVars.get(1);
-		cplex.addLe(pd, model.getNumAvailableProcessors()-2);
+		cplex.addLe(pd, model.getNumAvailableProcessors());
 		cplex.addLe(pd, this.idealParDegree);
-		
-		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
-		
+		cplex.addGe(pd,1);
+//		IloIntExpr c= cplex.constant(2);
+//		IloIntExpr nw =  cplex.diff(pd,c);
+//		IloIntVar workerPd = (IloIntVar) variables.get(childNode).get(1);
+		IloIntExpr res= model.getResourcesVars().get(this);
+//		cplex.addEq(res, cplex.sum(pd,2));
+		IloIntExpr childRes= model.getResourcesVars().get(this.children.get(0));
+		cplex.addEq(res, cplex.sum(cplex.prod(childRes, pd),2));
+//		if(childNode instanceof FarmPatt || childNode instanceof MapPatt)
+//			workerPd = cplex.sum(workerPd,2);
+//		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
+//		cplex.addLe(cplex.prod((nw) ,childRes), model.getNumAvailableProcessors());
+		cplex.addLe(cplex.sum(cplex.prod((pd) ,childRes),2), model.getNumAvailableProcessors());
+		cplex.addLe(res,model.getNumAvailableProcessors());
 		this.children.get(0).addConstraint(model);
 		
 	
@@ -283,10 +300,11 @@ public class FarmPatt implements SkeletonPatt {
 		
 		List<IloNumVar> vars = variables.get(this);
 		IloIntVar pd = (IloIntVar) vars.get(1);
+//		IloIntExpr nw =  cplex.diff(pd,2);
 		double ts = this.children.get(0).getIdealServiceTime();			
-		cplex.addEq(vars.get(0) , cplex.div( (int)ts,pd));
+		cplex.addEq(vars.get(0) , cplex.div((int)ts,pd));
 		obj =  cplex.sum(obj, vars.get(0));
-		pd_obj = cplex.sum(pd_obj,vars.get(1));
+		pd_obj = cplex.sum(pd_obj,pd);
 		model.setCplex(cplex);
 		model.setObj(obj);
 		model.setPd_obj(pd_obj);

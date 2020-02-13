@@ -9,6 +9,7 @@ import org.jgrapht.io.AttributeType;
 
 import cpo.SolverModel;
 import ilog.concert.IloException;
+import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
@@ -32,7 +33,7 @@ public class MapPatt  implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
-	
+	int numResource;
 	public MapPatt() {
 		this.lable= "map";
 	}
@@ -221,24 +222,31 @@ public class MapPatt  implements SkeletonPatt {
 	
 	@Override
 	public int getNumberOfResources() {
-		return (this.optParDegree*this.children.get(0).getNumberOfResources()) + 2;
+		return this.numResource=(this.optParDegree*this.children.get(0).getNumberOfResources()) + 2;
 	}
 	
-
+	@Override
+	public void setNumberOfResources(int r) {
+		this.numResource=r;
+	}
 	@Override
 	public void addConstraint(SolverModel model)
 			throws IloException {
-		IloNumExpr obj = model.getObj();
-		IloNumExpr pd_obj = model.getPd_obj();
 		IloCP cplex = model.getCplex();
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		List<IloNumVar> fVars = variables.get(this);
 		IloIntVar pd = (IloIntVar) fVars.get(1);
-		cplex.addLe(pd, model.getNumAvailableProcessors()-2);
+		cplex.addLe(pd, model.getNumAvailableProcessors());
 		cplex.addLe(pd, this.idealParDegree);
-		
-		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
-		
+//		IloIntExpr c = cplex.constant(2);
+//		IloIntExpr nw =  cplex.diff(pd,c);
+		IloIntExpr res= model.getResourcesVars().get(this);
+//		cplex.addEq(res, cplex.sum(pd,2));
+		IloIntExpr childRes= model.getResourcesVars().get(this.children.get(0));
+		cplex.addEq(res, cplex.sum(cplex.prod(childRes, pd),2));
+//		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
+		cplex.addLe(cplex.sum(cplex.prod(pd ,childRes),2), model.getNumAvailableProcessors());
+		cplex.addLe(res, model.getNumAvailableProcessors());
 		this.children.get(0).addConstraint(model);
 		
 	
@@ -251,10 +259,11 @@ public class MapPatt  implements SkeletonPatt {
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		List<IloNumVar> vars = variables.get(this);
 		IloIntVar pd = (IloIntVar) vars.get(1);
+//		IloIntExpr nw =  cplex.diff(pd,2);
 		double ts = this.children.get(0).getIdealServiceTime();			
 		cplex.addEq(vars.get(0) , cplex.div( (int)ts,pd));
 		obj =  cplex.sum(obj, vars.get(0));
-		pd_obj = cplex.sum(pd_obj,vars.get(1));
+		pd_obj = cplex.sum(pd_obj,pd);
 		model.setCplex(cplex);
 		model.setObj(obj);
 		model.setPd_obj(pd_obj);

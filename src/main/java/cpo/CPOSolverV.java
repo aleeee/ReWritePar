@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.enterprise.inject.Instance;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.cp.IloCP;
+import ilog.cp.IloCPEngine;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
@@ -26,6 +29,7 @@ public class CPOSolverV {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	public Map<SkeletonPatt, List<IloNumVar>> variables;
+	public Map<SkeletonPatt, IloIntExpr> resourcesVars;
 	public IloCP cplex;
 	private SkeletonPatt g;
 	private int numAvailableProcessors;
@@ -42,9 +46,10 @@ public class CPOSolverV {
 		this.obj = cplex.constant(0);
 		this.pd_obj= cplex.constant(0);
 		this.variables = new HashMap<SkeletonPatt, List<IloNumVar>>();
+		this.resourcesVars = new HashMap<SkeletonPatt, IloIntExpr>();
 		this.g = skeletonPatt;
 		this.numAvailableProcessors = maxParDegree;
-		this.model = new SolverModel(cplex, variables, numAvailableProcessors, obj, pd_obj);
+		this.model = new SolverModel(cplex, variables, numAvailableProcessors, obj, pd_obj,resourcesVars);
 		
 		addVars(g);
 		addConstraints(g);
@@ -53,7 +58,7 @@ public class CPOSolverV {
 				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".cpo";
 //		System.out.println(g + "modelName " + modelName);
 //		cplex.exportModel(modelName);
-
+		
 		cplex.setOut(null);
 	}
 
@@ -101,8 +106,12 @@ public class CPOSolverV {
 			List<IloNumVar> vars = variables.get(p);
 			double value = cplex.getValue(vars.get(0));
 			int parDegree = (int) cplex.getValue(vars.get(1));
+//			int numRes = (int) cplex.getValue(resourcesVars.get(p));
+//			if((p instanceof FarmPatt || p instanceof MapPatt))
+//				parDegree = parDegree-2;
 			p.setOptServiceTime(value);
 			p.setOptParallelismDegree((int) parDegree);
+//			p.setNumberOfResources(numRes);
 			if (value >= 0.5) {
 				result.add(p);
 			}else {
@@ -115,7 +124,7 @@ public class CPOSolverV {
 			getSolutions(d);
 		}
 		}catch(Exception e) {
-			log.error("Error inside getSolution "+e.getMessage());
+			log.error("Error  getSolution "+p +"\t"+e.getMessage());
 		}
 
 	}
@@ -127,6 +136,7 @@ public class CPOSolverV {
 	Consumer<SkeletonPatt> varCreator = s -> {
 		IloNumVar tsi = null;
 		IloIntVar n = null;
+		IloIntExpr r = null;
 		try {
 			int ts_i = (int) s.getIdealServiceTime();
 			int n_i = s.getIdealParDegree() ==0? 1: s.getIdealParDegree();
@@ -136,14 +146,21 @@ public class CPOSolverV {
 //				n = cplex.intVar(1, numAvailableProcessors, "n");
 			}else {
 			n = cplex.intVar(1, numAvailableProcessors, "n");}
+//			if(s instanceof FarmPatt || s  instanceof MapPatt) {
+//				r = cplex.sum(n, 2);
+//			}else {
+				r = cplex.intVar(1,numAvailableProcessors);
+//			}
 		} catch (IloException e) {
 			log.error("Error at var creation"+ e.getMessage());
 		}
 		List<IloNumVar> vars = new ArrayList<IloNumVar>();
-		vars.add(tsi);
+		
+		vars.add( tsi);
 		vars.add(n);
-
-		variables.put(s, vars);
+		
+        variables.put(s,vars);
+		resourcesVars.put(s,r);
 	};
 
 	public void cleanup() throws IloException {
