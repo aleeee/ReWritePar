@@ -70,6 +70,12 @@ public class AppStarter {
 			} catch (IOException e) {
 				log.error("Error creating solution list file {}", e.getMessage());
 			}
+			try (FileWriter writer = new FileWriter(new File(outputDir + "/path_ts_resources" + p.hashCode() + ".txt"),true)) {
+				writer.write("////------input----->  " + p + "------------/////\n");
+				writer.close();
+			} catch (IOException e) {
+				log.error("Error creating solution list file {}", e.getMessage());
+			}
 			forks.add(new Starter(p, maxNumberOfSimulation, simulatedAnnealingMaxIter, outputDir,maxNumberOfResources).fork());
 		}
 
@@ -104,13 +110,14 @@ public class AppStarter {
 	}
 
 	public static void main(String[] args) {
-		System.setProperty("reWriter.logging.path", args[1]+"logs/");
-		System.out.println("Starting with input args : " + args);
 		if (args.length < 5) {
 			System.err.println(
 					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources");
 			System.exit(0);
 		}
+		System.setProperty("reWriter.logging.path", args[1]+"logs/");
+		System.out.println("Starting with input args : " + args);
+	
 //		try {
 			String inputDir = args[0];
 			String outputDir = args[1];

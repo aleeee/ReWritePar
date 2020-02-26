@@ -1,21 +1,20 @@
-package util;
+package rewriter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-import rewriter.RW;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
 import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
+import util.ReWritingRules;
+import util.Util;
 
-public class ReWrite {
+public class Refactor {
 	private static RW reWriter = new RW();
 
 	/**
@@ -206,19 +205,11 @@ public class ReWrite {
 		}
 		// pipe elim
 		CompPatt comp = new CompPatt();
-		FarmPatt farm = new FarmPatt();
-		ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) pipe.getChildren().stream()
-				.map(pn -> Util.clone(pn)).collect(Collectors.toList());
-		ArrayList<SkeletonPatt> farmWorker = new  ArrayList<>();
-//		comp.setChildren(pipe.getChildren());
-		comp.setChildren(compStages);
+		comp.setChildren(pipe.getChildren());
 		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
 		comp.calculateIdealServiceTime();
 		comp.setReWriteNodes(false);
-//		farmWorker.add(comp);
-//		farm.setChildren(farmWorker);
-//		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-//		comp.setDepth(pipe.getDepth());
+		comp.setDepth(pipe.getDepth());
 		patterns.add(comp);
 
 		// pipeassoc pipe(D1; pipe(D2;D3)) = pipe(pipe(D1;D2);D3)

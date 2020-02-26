@@ -65,7 +65,7 @@ public interface SkeletonPatt extends Serializable{
 	void setNumberOfResources(int r);
 	void addConstraint(SolverModel model) throws IloException;
 	SolverModel addObjective(SolverModel model) throws IloException;
-
+//	SkeletonPatt reWrite();
 	default String print(){
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null) 
 //				+ " I_PD: " +getIdealParDegree() + " I_TS::  ["+getIdealServiceTime()+"] "

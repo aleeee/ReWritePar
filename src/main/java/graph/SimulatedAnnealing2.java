@@ -37,7 +37,7 @@ import rewriter.RW;
 import tree.model.SkeletonPatt;
 import util.ReWritingRules;
 import util.Util;
-
+import static java.util.stream.Collectors.joining;
 public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -49,6 +49,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 	private int maxHieght;
 	private int maxIteration;
 	StringJoiner solutionList;
+	StringJoiner solutionsandpaths;
 	private String outputDir;
 	StringJoiner bestSolutionList;
 	private int maxNumberOfResources;
@@ -61,6 +62,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 		intId = new AtomicInteger();
 		this.maxIteration = simAnnealingMaxIter;
 		solutionList = new StringJoiner("\n");
+		solutionsandpaths = new StringJoiner("\n");
 		bestSolutionList = new StringJoiner("\n");
 		solutionList.add("////--------start--------////////");
 		this.outputDir = outputDir;
@@ -95,7 +97,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 
 	public List<Edge> expandAndSearch() {
 		double temprature = 19;
-		double coolingRate = 0.97;
+		double coolingRate = 0.6;
 
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
 		SkeletonPatt bestSolution = Util.clone(s);
@@ -158,11 +160,12 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 			log.debug("new  " + newSolution + "\t" + Util.getCost(newSolution,maxNumberOfResources));
 //			log.info("new_  " + newSolution);
 			temprature *= coolingRate;
-			solutionList.add(newSolution + "\t ts: " + newSolution.getOptServiceTime() +"\t res: " + newSolution.getNumberOfResources());
+			solutionList.add(newSolution + "   ;  " + newSolution.getOptServiceTime() +"  ; " + newSolution.getNumberOfResources());
 
 		}
 		log.info(" best : " + bestSolution.print());
-		bestSolutionList.add("\n" + bestSolution.print() +";\t res: " + bestSolution.getNumberOfResources()+ ";\ts: " +bestSolution.getOptServiceTime());
+		if(bestSolution.getNumberOfResources()<= maxNumberOfResources)
+		bestSolutionList.add("\n" + bestSolution.print() +";\t"   +bestSolution.getOptServiceTime()+  ";\t  "+bestSolution.getNumberOfResources());
 		List<Edge> paths = DijkstraShortestPath.findPathBetween(g, s, bestSolution) != null
 				? DijkstraShortestPath.findPathBetween(g, s, bestSolution).getEdgeList()
 				: null;
@@ -179,6 +182,9 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+//		StringJoiner stringPaths = new StringJoiner("\n");
+		if(bestSolution.getNumberOfResources()<= maxNumberOfResources)
+		solutionsandpaths.add(paths.stream().map(e -> e.getRule().getRule()).collect(joining("->"))+"  ,\t"+bestSolution.getNumberOfResources() + "  ,\t" +bestSolution.getOptServiceTime()+"\n");
 		solutionList.add("best: " + bestSolution + "\t ts: " + bestSolution.getOptServiceTime());
 		solutionList.add("//////--------end--------/////\n");
 		try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + s.hashCode() + ".txt"), true)) {
@@ -190,6 +196,13 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 		try (FileWriter writer = new FileWriter(new File(outputDir + "/bestSolutions_" + s.hashCode() + ".txt"),
 				true)) {
 			writer.write(bestSolutionList.toString());
+			writer.close();
+		} catch (IOException e) {
+			log.error("Error creating solution list file {}", e.getMessage());
+		}
+		try (FileWriter writer = new FileWriter(new File(outputDir + "/path_ts_resources" + s.hashCode() + ".txt"),
+				true)) {
+			writer.write(solutionsandpaths.toString());
 			writer.close();
 		} catch (IOException e) {
 			log.error("Error creating solution list file {}", e.getMessage());
