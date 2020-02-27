@@ -2,6 +2,7 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import ilog.concert.IloNumVar;
 import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
+import util.Util;
 import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
@@ -38,6 +40,8 @@ public class SeqPatt implements SkeletonPatt {
 		this.idealParDegree=1;
 		this.idealServiceTime=s.getIdealServiceTime();
 		this.optimizedTs=s.getIdealServiceTime();
+		this.lable=s.getLable();
+		
 	}
 	public SeqPatt(double serviceTime) {
 		this.idealServiceTime=serviceTime;
@@ -256,5 +260,26 @@ public class SeqPatt implements SkeletonPatt {
 		return model;
 	}
 	
+	@Override
+	public SkeletonPatt reWrite() {
+		refactor();
+		return this;
+	}
 	
+	private SeqPatt refactor() {
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
+		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
+		SkeletonPatt s = Util.clone(this);
+		fc.add(s);
+		// farm intro
+		FarmPatt farm = new FarmPatt();
+		farm.setChildren(fc);
+		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+		farm.calculateIdealServiceTime();
+		patterns.add(farm);
+		setPatterns(patterns);
+		if (getParent() != null)
+			setPatterns(Util.createTreeNode(getParent(), this));
+		return this;
+	}
 }

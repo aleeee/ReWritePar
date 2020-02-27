@@ -163,11 +163,12 @@ public class Util {
 			SkeletonPatt newP = null;
 			try {
 				newP = parent.getClass().getDeclaredConstructor().newInstance();
-			} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-				e1.printStackTrace();
+			} catch ( Exception e1) {
+				log.error("Error init object " + e1.getMessage());
 			}
 
-			sc.addAll(parent.getChildren());
+//			sc.addAll(parent.getChildren());
+			sc.addAll(parent.getChildren().stream().map(o -> clone(o)).collect(Collectors.toList()));
 //			newP.setParent(parent);
 //			newP.setLable(parent.getLable());
 			newP.setDepth(p.getDepth());
@@ -226,23 +227,23 @@ public class Util {
 		SkeletonPatt copy = null;
 		try {
 			if(original instanceof SeqPatt) {
-//				copy = original.getClass().getDeclaredConstructor().newInstance(Double.class);
 				copy = new SeqPatt((SeqPatt)original);
 			}else {
-			copy = original.getClass().getDeclaredConstructor().newInstance();}
-			copy.setChildren(original.getChildren());
+			copy = original.getClass().getDeclaredConstructor().newInstance();
+		
+			copy.setChildren((ArrayList<SkeletonPatt>) original.getChildren().stream().map(o -> clone(o)).collect(Collectors.toList()));
 			copy.setLable(original.getLable());
-			copy.setDepth(original.getDepth());
+			}
 			copy.setReWritingRule(original.getRule());
-//			copy.setPatterns(original.getPatterns());
 			copy.setIdealServiceTime(original.getIdealServiceTime());
 			copy.calculateIdealServiceTime();
 			return copy;
-		} catch (  InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+		} catch (Exception e1) {
 			log.error("Error copying object " + e1.getMessage());
 			System.exit(1);
-			return null;
+			return original;
 		}
+	
 	}
 	static int sum=0;
 	public static int getNumberOfResources(SkeletonPatt pat) {

@@ -1,6 +1,7 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -269,6 +270,63 @@ public class MapPatt  implements SkeletonPatt {
 		model.setPd_obj(pd_obj);
 		model = this.children.get(0).addObjective(model);			
 		return model;
+	}
+	@Override
+	public SkeletonPatt reWrite() {
+		refactor();
+		return this;
+	}
+	
+	private MapPatt refactor() {
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
+//		mapelim map(D)!D
+		SkeletonPatt p = Util.clone(getChildren().get(0));
+
+		p.setReWritingRule(ReWritingRules.MAP_ELIM);
+		p.calculateIdealServiceTime();
+		patterns.add(p);
+		
+		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
+		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
+
+		if (getChildren().get(0) instanceof CompPatt) {
+			CompPatt compPat = new CompPatt();
+			CompPatt c = (CompPatt) Util.clone(getChildren().get(0));
+			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
+			for (SkeletonPatt sk : c.getChildren()) {
+				MapPatt m = new MapPatt();
+				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+				mNodes.add(Util.clone(sk));
+				m.setChildren(mNodes);
+				m.calculateIdealServiceTime();
+				nodes.add(m);
+			}
+			compPat.setChildren(nodes);
+			compPat.calculateIdealServiceTime();
+			compPat.setReWritingRule(ReWritingRules.MAP_DIST);
+			patterns.add(compPat);
+		} else if (getChildren().get(0) instanceof PipePatt) {
+			PipePatt pipe = new PipePatt();
+			PipePatt pi = (PipePatt) Util.clone(getChildren().get(0));
+			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
+			for (SkeletonPatt sk :pi.getChildren()) {
+				MapPatt m = new MapPatt();
+				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+				mNodes.add(Util.clone(sk));
+				m.setChildren(mNodes);
+				m.calculateIdealServiceTime();
+				nodes.add(m);
+			}
+			pipe.setChildren(nodes);
+			pipe.calculateIdealServiceTime();
+			pipe.setReWritingRule(ReWritingRules.PIPE_OF_MAP);
+			patterns.add(pipe);
+		}
+		setPatterns(patterns);
+		if (getParent() != null)
+			setPatterns(Util.createTreeNode(getParent(), this));
+		calculateIdealServiceTime();
+		return this;
 	}
 	
 }

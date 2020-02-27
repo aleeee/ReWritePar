@@ -1,9 +1,11 @@
 package tree.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.io.AttributeType;
 
@@ -314,6 +316,35 @@ public class FarmPatt implements SkeletonPatt {
 		
 		return model;
 	}
+
+	@Override
+	public SkeletonPatt reWrite() {
+		refactor();
+		return this;
+	}
 	
-	
+	private FarmPatt refactor() {
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
+		// farm elim
+		SkeletonPatt c = Util.clone(getChildren().get(0));
+		
+		c.setReWritingRule(ReWritingRules.FARM_ELIM);
+		c.calculateIdealServiceTime();
+		patterns.add(c);
+
+		SkeletonPatt stage = getChildren().get(0);
+		stage.setParent(this);
+		stage.reWrite();
+		
+		patterns.addAll(stage.getPatterns().stream().filter(p -> !p.getRule().equals(ReWritingRules.FARM_INTRO)).collect(Collectors.toList()));
+		
+		setPatterns(patterns);
+		if (getParent() != null)
+			setPatterns(Util.createTreeNode(getParent(), this));
+		calculateIdealServiceTime();
+		return this;
+	}
+
+
+
 }

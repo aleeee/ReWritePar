@@ -105,13 +105,15 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 		double currentCost = Util.getCost(currentSolution,maxNumberOfResources);
 		double bestCost = Util.getCost(bestSolution,maxNumberOfResources);
 		int x = 0;
-		currentSolution.refactor(rw);
+//		currentSolution.refactor(rw);
+		currentSolution.reWrite();
 		SkeletonPatt first = currentSolution.getPatterns().iterator().next();
 		this.add(s, currentSolution.getPatterns().iterator().next(), first.getRule());
 		currentSolution = Util.clone(first);
 		while (x++ < maxIteration && temprature > 0.1) {
 
-			currentSolution.refactor(rw);
+//			currentSolution.refactor(rw);
+			currentSolution.reWrite();
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
 				Util.getCost(sol,maxNumberOfResources);
