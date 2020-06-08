@@ -7,6 +7,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,11 @@ import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenFactory;
+import org.antlr.v4.runtime.Vocabulary;
+import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.jgrapht.io.Attribute;
 import org.jgrapht.io.ComponentAttributeProvider;
@@ -22,10 +29,12 @@ import org.jgrapht.io.ComponentNameProvider;
 import org.jgrapht.io.DOTExporter;
 import org.jgrapht.io.ExportException;
 import org.jgrapht.io.GraphExporter;
+import org.jgrapht.io.GraphMLExporter;
 import org.jgrapht.io.JSONExporter;
 
 import cpo.CPOSolver;
 import cpo.CPOSolver2;
+import cpo.CPOSolverV;
 import graph.DiGraphGen4;
 import graph.DiGraphGen4.Edge;
 import guru.nidi.graphviz.engine.Format;
@@ -48,7 +57,7 @@ import pattern.skel4.Skel4Parser;
 //import solver.Solver9;
 import tree.model.FarmPatt;
 import tree.model.SkeletonPatt;
-import visitor.TBuilder2;
+import visitor.SkeletonTreeBuilder;
 
 public class Main2 {
 	/**
@@ -68,10 +77,16 @@ public class Main2 {
 		System.out.println("parsing: " + args[0]);
 		Path path = Paths.get(args[0]);
 		Skel4Lexer lexer = new Skel4Lexer(CharStreams.fromPath(path));
+		
+		
 		Skel4Parser parser = new Skel4Parser(new CommonTokenStream(lexer));
+		 
 		ParseTree tree = parser.skeletonProgram();
+		Map<String, Integer> tokenMap = parser.getTokenTypeMap();
+	List<String> dfa=	 parser.getDFAStrings();
+	ParserRuleContext context = parser.getContext();
 //		Visitor6 visitor3 = new Visitor6();
-		TBuilder2 tb = new TBuilder2();
+		SkeletonTreeBuilder tb = new SkeletonTreeBuilder();
 //		SkeletonPatt n = visitor3.visit(tree); // parse and construct the tree
 		SkeletonPatt n = tb.visit(tree);
 		
@@ -81,7 +96,7 @@ public class Main2 {
 //		mcts.selectAction(n);
 		
 		DiGraphGen4 dg = new  DiGraphGen4();
-		dg.bfs(n, 4);
+		dg.bfs(n, 3);
 //		System.out.println(dg);
 //		SkeletonPatt p = dg.g.vertexSet().iterator().next();
 //		System.out.println(p);
@@ -91,7 +106,7 @@ public class Main2 {
 //			continue;
 //		System.out.println(p);
 //		solver.Model3 model = new solver.Model3(p, 16 );
-		CPOSolver2 model = new CPOSolver2(p, 16);
+		CPOSolverV model = new CPOSolverV(p, 16);
 		// Solve the model
 		model.solveIt();
 		// Print the solution
@@ -108,8 +123,8 @@ public class Main2 {
 			
 		}
 		
-//		renderHrefGraph(dg);
-//		exportJson(dg);
+		renderHrefGraph(dg);
+//		exportJsonNew(dg);
 //		try {
 //			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));
 //		} catch (IOException e) {
@@ -153,6 +168,7 @@ public class Main2 {
 		        {
 		            public String getName(SkeletonPatt sk)
 		            {
+		            	
 		                return sk.print();
 		            }
 		        };
@@ -165,13 +181,14 @@ public class Main2 {
 //		        ComponentNameProvider<SkeletonPatt> vertexIDProvider = (SkeletonPatt pat) ->  pat.toString().hashCode() ;
 //				ComponentAttributeProvider<SkeletonPatt> vertexAttributeProvider=(SkeletonPatt pat) -> 
 //				{return null;} ;
-//				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> {return e.getRule().toString();};
+				ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> {return e.getRule().toString();};
 //				ComponentAttributeProvider<Edge> edgeAttributeProvider = (Edge ee) ->
 //				{return null;};
 				  GraphExporter<SkeletonPatt, DiGraphGen4.Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
 		        		new DOTExporter<SkeletonPatt, DiGraphGen4.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
-		        Writer writer=new StringWriter();
-		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\ddd1.dot");;
+//						 new GraphMLExporter<SkeletonPatt, DiGraphGen4.Edge>(vertexIdProvider, vertexLabelProvider, edgeIDProvider, edgeLabelProvider);
+				  Writer writer=new StringWriter();
+		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\_"+Instant.now().getEpochSecond()+"_.dot");;
 //				try {
 //					writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\d1.dot");
 //				} catch (IOException e1) {
@@ -187,14 +204,70 @@ public class Main2 {
 		        	
 		        	Graphviz.useEngine(new GraphvizJdkEngine());
 //					CGraphviz..VizjsOptions();
-					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-						.toFile(new File("C:\\Users\\me\\Desktop\\out\\"+dg_.hashCode()+"new.svg"));
-				} catch (IOException e) {
+					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.XDOT)
+						.toFile(new File("C:\\Users\\me\\Desktop\\out\\_"+Instant.now().getEpochSecond()+"_new.xdot"));
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		        // @example:render:end
 		    }
+	 
+	 private static void exportJsonNew(DiGraphGen4 dgJson)  throws ExportException, IOException
+	    {	
+	 AtomicInteger id = new AtomicInteger();
+//	 dgJson.g.removeAllVertices( dgJson.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));
+	       
+	       
+	 ComponentNameProvider<SkeletonPatt> vertexIdProvider = new ComponentNameProvider<SkeletonPatt>()
+     {
+  
+			@Override
+			public String getName(SkeletonPatt component) {
+				// TODO Auto-generated method stub
+				return String.valueOf(component.toString().hashCode());
+			}
+     };
+     ComponentNameProvider<SkeletonPatt> vertexLabelProvider = new ComponentNameProvider<SkeletonPatt>()
+     {
+         public String getName(SkeletonPatt sk)
+         {
+             return sk.print();
+         }
+     };
+     
+     ComponentNameProvider<DiGraphGen4.Edge> edgeLabelProvider = (DiGraphGen4.Edge sk) -> {return sk.getRule() != null? sk.getRule().toString():
+     													"NO LABLE";}; 
+	       
+	        ComponentNameProvider<SkeletonPatt> vertexIDProvider = (SkeletonPatt pat) ->  String.valueOf(pat.getId()) ;
+			
+//			ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(id.incrementAndGet());
+			ComponentNameProvider<Edge> edgeIDProvider = (Edge e) -> String.valueOf(e.getRule());
+
+			ComponentAttributeProvider<Edge> edgeAttributeProvider = new ComponentAttributeProvider<DiGraphGen4.Edge>() {
+				
+				@Override
+				public Map<String, Attribute> getComponentAttributes(Edge edge) {
+					Map<String, Attribute> attrs = new HashMap<>();
+				    attrs.put("rule", (Attribute) edge.getVertex());
+				   
+				    return attrs;
+				}
+			};
+//	        GraphExporter<SkeletonPatt, Edge> exporter = 	new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider);
+
+			
+			  GraphExporter<SkeletonPatt, Edge> exporter =new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider,new VAttributeProv(), edgeIDProvider, edgeAttributeProvider);
+//	        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
+	        Writer writer=new StringWriter();
+//	        File f = 
+	        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\json_"+Instant.now().getEpochSecond()+"_.json");
+	        exporter.exportGraph(dgJson.g, writer);
+	        
+	       
+	        
+	    }
+	 
 	 private static void exportJson(DiGraphGen4 dgJson)  throws ExportException, IOException
 		    {	
 		 AtomicInteger id = new AtomicInteger();
@@ -235,25 +308,15 @@ public class Main2 {
 //		        		new DOTExporter<SkeletonPatt, DiGraphGen3.Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 		        Writer writer=new StringWriter();
 //		        File f = 
-		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\jsonFull1_.json");
+		        		writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\json\\json_"+Instant.now().getEpochSecond()+"_.json");
 		        exporter.exportGraph(dgJson.g, writer);
 		        
 		       
 		        
 		    }
 	 
-	  class VAttributeProv implements ComponentAttributeProvider<SkeletonPatt> {
-		  
+	 
 
-		  @Override
-		  public Map<String, Attribute> getComponentAttributes(SkeletonPatt node) {
-			  Map<String, Attribute> attrs = new HashMap<>();
-		    attrs.put("children", (Attribute) node.getPatterns());
-		   
-		    return attrs;
-		  }
-
-		
-	  }
+	
 
 }

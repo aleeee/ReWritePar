@@ -1,6 +1,8 @@
 package util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,8 +18,6 @@ import com.google.common.collect.Sets;
 
 import cpo.CPOSolver2;
 import cpo.CPOSolverV;
-import graph.DiGraphGen2;
-import graph.DiGraphGen3;
 import ilog.concert.IloException;
 import pattern.skel4.Skel4Parser.AssignmentContext;
 import tree.model.CompPatt;
@@ -52,7 +52,16 @@ public class Util {
 	}
 
 	
-
+ private static double roundToTwoDecimal(double n) {
+	 try {
+	 BigDecimal stime = BigDecimal.valueOf(n);
+	  stime = stime.setScale(2, RoundingMode.HALF_UP);
+	    return stime.doubleValue();
+	 }catch(Exception e) {
+		 System.out.println("Error rounding number " + e.getMessage());
+	 }
+	return n;
+ }
 	/**
 	 * calculates the service time of pipeline
 	 * 
@@ -60,8 +69,8 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(PipePatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0,
-				(c1, c2) -> c1 > c2 ? c1 : c2);
+		return roundToTwoDecimal(pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0,
+				(c1, c2) -> c1 > c2 ? c1 : c2));
 
 	}
 	/**
@@ -71,8 +80,8 @@ public class Util {
 	 */
 	public static double getOptimalServiceTime(PipePatt pat) {
 //		pat.getChildren().forEach(p-> System.out.println(p.getLable()+" " +p.calculateOptimalServiceTime()));
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0,
-				(c1, c2) -> c1 > c2 ? c1 : c2);
+		return roundToTwoDecimal( pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0,
+				(c1, c2) -> c1 > c2 ? c1 : c2));
 
 	}
 	/**
@@ -82,7 +91,7 @@ public class Util {
 	 * @return
 	 */
 	public static double getServiceTime(CompPatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+		return roundToTwoDecimal( pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0, (c1, c2) -> c1 + c2));
 	}
 	/**
 	 * calculate the optimal ts
@@ -90,7 +99,7 @@ public class Util {
 	 * @return
 	 */
 	public static double getOptimalServiceTime(CompPatt pat) {
-		return pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0, (c1, c2) -> c1 + c2);
+		return roundToTwoDecimal(pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0, (c1, c2) -> c1 + c2));
 	}
 	/**
 	 * calculates the ideal service time of Farm
@@ -104,7 +113,7 @@ public class Util {
 		farmWorker.calculateIdealServiceTime();
 		int parallelismDegree = (int) (farmWorker.getIdealServiceTime()/Constants.TEmitter);
 		pat.setIdealParDegree(parallelismDegree);
-		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree());
+		return roundToTwoDecimal( Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.getIdealServiceTime()/pat.getIdealParDegree()));
 		}catch (Exception e) {
 			log.error(e.getMessage() );
 			return 0;
@@ -118,7 +127,7 @@ public class Util {
 	public static double getOptimizedTs(FarmPatt pat) {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
 		farmWorker.calculateOptimalServiceTime();
-		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree());
+		return roundToTwoDecimal(Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree()));
 	}
 	/**
 	 * calculates the service time of Map
@@ -130,7 +139,7 @@ public class Util {
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
 		int parallelismDegree = (int) Math.sqrt(mapWorker.getIdealServiceTime()/Math.max(Constants.TScatter, Constants.TGather));
 		pat.setIdealParDegree(parallelismDegree);
-		return mapWorker.getIdealServiceTime()/pat.getIdealParDegree();
+		return roundToTwoDecimal(mapWorker.getIdealServiceTime()/pat.getIdealParDegree());
 	}
 	/**
 	 * calculate the optimal service time
@@ -142,7 +151,7 @@ public class Util {
 //		return mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree();
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
 		mapWorker.calculateOptimalServiceTime();
-		return Math.max(Math.max(Constants.TEmitter,Constants.TCollector),mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree());
+		return roundToTwoDecimal( Math.max(Math.max(Constants.TEmitter,Constants.TCollector),mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree()));
 	
 	}
 

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -41,7 +42,7 @@ import tree.model.Solution;
 import util.ReWritingRules;
 import util.Util;
 import static java.util.stream.Collectors.joining;
-public class SimulatedAnnealing extends RecursiveTask<Solution> {
+public class SimulatedAnnealingSeq  implements Callable<Solution> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = 1L;
@@ -53,7 +54,7 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 	private int maxNumberOfResources;
 	private Map<SkeletonPatt, Integer> solutionMap;
 	private Solution solution;
-	public SimulatedAnnealing(SkeletonPatt p,int simAnnealingMaxIter,int maxNumberOfResources) {
+	public SimulatedAnnealingSeq(SkeletonPatt p,int simAnnealingMaxIter,int maxNumberOfResources) {
 		this.s = p;		
 		g = new DefaultDirectedGraph<>(Edge.class);
 		reWriter = new RW();
@@ -65,10 +66,7 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 	}
 
 	
-	@Override
-	public Solution  compute() {
-		return expandAndSearch();
-	}
+	
 
 	public Solution  expandAndSearch() {
 		double temprature = 19;
@@ -188,6 +186,13 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 			log.error("ERR " + g.vertexSet().size());
 			throw e;
 		}
+	}
+
+
+
+	@Override
+	public Solution call() throws Exception {
+		return expandAndSearch();
 	}
 
 }

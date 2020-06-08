@@ -7,6 +7,7 @@
 //import java.io.Writer;
 //import java.nio.file.Path;
 //import java.nio.file.Paths;
+//import java.time.Instant;
 //import java.util.ArrayList;
 //import java.util.Collections;
 //import java.util.Comparator;
@@ -34,7 +35,7 @@
 //import cpo.CPOSolver;
 //import cpo.CPOSolver2;
 //import graph.Edge;
-//import graph.SimulatedAnnealing;
+//import graph.SimulatedAnnealing2;
 //import guru.nidi.graphviz.engine.Format;
 //import guru.nidi.graphviz.engine.Graphviz;
 //import guru.nidi.graphviz.engine.GraphvizJdkEngine;
@@ -88,7 +89,7 @@
 ////			results.add(task.join());
 //	
 ////		System.out.println("results > "+results);
-//		SimulatedAnnealing dg = new  SimulatedAnnealing(n, 5);
+//		SimulatedAnnealing2 dg = new  SimulatedAnnealing2(n, 3, 3,"C:/Users/me/Desktop/out/",16);
 //		try {
 //		List<Edge> solutionpath = dg.expandAndSearch();
 //		System.out.println(solutionpath);
@@ -132,7 +133,7 @@
 ////			
 ////		}
 //		
-////		renderHrefGraph(dg);
+//		renderHrefGraph(dg);
 ////		exportJson(dg);
 ////		try {
 ////			Graphviz.fromString(dg.g.toString()).height(200).render(Format.PNG).toFile(new File("C:\\Users\\me\\Desktop\\mg.png"));
@@ -155,7 +156,7 @@
 //
 //	}
 //
-//	 private static void renderHrefGraph(SimulatedAnnealing dg_)
+//	 private static void renderHrefGraph(SimulatedAnnealing2 dg_)
 //	 
 //		        throws ExportException
 //		    {	
@@ -195,7 +196,7 @@
 //				  GraphExporter<SkeletonPatt, Edge> exporter =//new JSONExporter<SkeletonPatt, Edge>(vertexIDProvider, vertexAttributeProvider, edgeIDProvider, edgeAttributeProvider);
 //		        		new DOTExporter<SkeletonPatt, Edge>(vertexIdProvider, vertexLabelProvider, edgeLabelProvider);
 //		        Writer writer=new StringWriter();
-//		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\cpo\\ddd1.dot");;
+//		        File f = new File("C:\\\\Users\\\\me\\\\Desktop\\\\out\\_"+Instant.now().getEpochSecond()+"_ddd1.dot");;
 ////				try {
 ////					writer = new FileWriter("C:\\\\Users\\\\me\\\\Desktop\\\\out\\\\d1.dot");
 ////				} catch (IOException e1) {
@@ -212,14 +213,14 @@
 //		        	Graphviz.useEngine(new GraphvizJdkEngine());
 ////					CGraphviz..VizjsOptions();
 //					Graphviz.fromFile(f).totalMemory(160000000).height(900).render(Format.SVG_STANDALONE)
-//						.toFile(new File("C:\\Users\\me\\Desktop\\out\\cpo\\"+dg_.hashCode()+"new.svg"));
+//						.toFile(new File("C:\\Users\\me\\Desktop\\out\\_"+Instant.now().getEpochSecond()+"_new.svg"));
 //				} catch (IOException e) {
 //					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
 //		        // @example:render:end
 //		    }
-//	 private static void exportJson(SimulatedAnnealing dgJson)  throws ExportException, IOException
+//	 private static void exportJson(SimulatedAnnealing2 dgJson)  throws ExportException, IOException
 //		    {	
 //		 AtomicInteger id = new AtomicInteger();
 ////		 dgJson.g.removeAllVertices( dgJson.g.vertexSet().stream().filter( v ->  v.getPatterns() == null).collect(Collectors.toList()));

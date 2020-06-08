@@ -21,7 +21,6 @@ import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
-import visitor.NodeVisitor;
 public class CompPatt implements SkeletonPatt {
 	
 	private static final long serialVersionUID = 1L;
@@ -50,11 +49,6 @@ public class CompPatt implements SkeletonPatt {
 		this.idealParDegree=1;
 	}
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-
-	}
 
 	@Override
 	public void refactor(ReWriter reWriter) {
@@ -90,10 +84,6 @@ public class CompPatt implements SkeletonPatt {
 		return lable;
 	}
 
-	@Override
-	public SkeletonPatt getChild() {
-		return child;
-	}
 
 	public SkeletonPatt getParent() {
 		return parent;
@@ -317,79 +307,78 @@ public class CompPatt implements SkeletonPatt {
 		this.id=id;
 		
 	}
-	@Override
-	public SkeletonPatt reWrite() {
-		refactor(false);
-//		refactor(true);
-		return this;
-	}
-	
-	private CompPatt refactor(boolean isCoarseReWrite) {
-		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-		
-		// pipe intro
-		PipePatt pipe = new PipePatt();
-		pipe.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
-		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
-		pipe.calculateIdealServiceTime();
-		if(isCoarseReWrite) {
-			FarmPatt farm = new FarmPatt();
-			ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-			fc.add(pipe);
-			farm.setChildren(fc);
-			farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-			farm.calculateIdealServiceTime();
-			patterns.add(farm);
-		}else {
-			patterns.add(pipe);
-		}
-		// farm intro
-//		if(!Util.detectLoop(this, FarmPatt.class)) {
-		FarmPatt farm = new FarmPatt();
-		CompPatt compStage = new CompPatt();
-		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-		compStage.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
-		compStage.setRule(getRule());
-		compStage.calculateIdealServiceTime();
-		fc.add(compStage);
-		farm.setChildren(fc);
-		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-		farm.calculateIdealServiceTime();
-		patterns.add(farm);
-		// map intro
-
-		// for each stage rewrite
-		for (SkeletonPatt stage : getChildren()) {
-				stage.setParent(this);
-				stage.reWrite();
-				patterns.addAll(stage.getPatterns());
-
-		}
-		// creat map of the comp
-		if (getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
-			ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) getChildren().stream()
-					.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
-			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> Util.clone(o)).collect(Collectors.toList());
-
-			MapPatt map = new MapPatt();
-			CompPatt compMap = new CompPatt();
-
-			compMap.setChildren(mapStages);
-			
-			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-			compMap.calculateIdealServiceTime();
-			mNodes.add(compMap);
-			map.setChildren(mNodes);
-			map.calculateIdealServiceTime();
-			map.setReWritingRule(ReWritingRules.MAP_OF_COMP);
-			patterns.add(map);
-		}
-
-		setPatterns(patterns);
-		if (getParent() != null)
-			setPatterns(Util.createTreeNode(getParent(), this));
-		calculateIdealServiceTime();
-		return this;
-	}
+//	@Override
+//	public SkeletonPatt reWrite() {
+//		refactor();
+//		return this;
+//	}
+//	
+//	private CompPatt refactor() {
+//		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
+//		
+//		// pipe intro
+//		PipePatt pipe = new PipePatt();
+//		pipe.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
+//		pipe.calculateIdealServiceTime();
+////		if(isCoarseReWrite) {
+////			FarmPatt farm = new FarmPatt();
+////			ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
+////			fc.add(pipe);
+////			farm.setChildren(fc);
+////			farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+////			farm.calculateIdealServiceTime();
+////			patterns.add(farm);
+////		}else {
+//			patterns.add(pipe);
+////		}
+//		// farm intro
+////		if(!Util.detectLoop(this, FarmPatt.class)) {
+//		FarmPatt farm = new FarmPatt();
+//		CompPatt compStage = new CompPatt();
+//		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
+//		compStage.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//		compStage.setRule(getRule());
+//		compStage.calculateIdealServiceTime();
+//		fc.add(compStage);
+//		farm.setChildren(fc);
+//		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
+//		farm.calculateIdealServiceTime();
+//		patterns.add(farm);
+//		// map intro
+//
+//		// for each stage rewrite
+//		for (SkeletonPatt stage : getChildren()) {
+//				stage.setParent(this);
+//				stage.reWrite();
+//				patterns.addAll(stage.getPatterns());
+//
+//		}
+//		// creat map of the comp
+//		if (getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
+//			ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) getChildren().stream()
+//					.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
+//			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> Util.clone(o)).collect(Collectors.toList());
+//
+//			MapPatt map = new MapPatt();
+//			CompPatt compMap = new CompPatt();
+//
+//			compMap.setChildren(mapStages);
+//			
+//			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
+//			compMap.calculateIdealServiceTime();
+//			mNodes.add(compMap);
+//			map.setChildren(mNodes);
+//			map.calculateIdealServiceTime();
+//			map.setReWritingRule(ReWritingRules.MAP_OF_COMP);
+//			patterns.add(map);
+//		}
+//
+//		setPatterns(patterns);
+//		if (getParent() != null)
+//			setPatterns(Util.createTreeNode(getParent(), this));
+//		calculateIdealServiceTime();
+//		return this;
+//	}
 
 }

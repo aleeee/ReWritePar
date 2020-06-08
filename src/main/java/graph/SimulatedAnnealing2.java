@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -19,6 +20,7 @@ import java.util.TreeSet;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -43,7 +45,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 
 	private static final long serialVersionUID = 1L;
 	private SkeletonPatt s;
-	RW rw;
+	RW reWriter;
 	private Graph<SkeletonPatt, Edge> g;
 	AtomicInteger intId;
 	private int maxHieght;
@@ -58,7 +60,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 		this.s = p;
 		this.maxHieght = maxHieght;
 		g = new DefaultDirectedGraph<>(Edge.class);
-		rw = new RW();
+		reWriter = new RW();
 		intId = new AtomicInteger();
 		this.maxIteration = simAnnealingMaxIter;
 		solutionList = new StringJoiner("\n");
@@ -97,7 +99,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 
 	public List<Edge> expandAndSearch() {
 		double temprature = 19;
-		double coolingRate = 0.6;
+		double coolingRate = 0.7;
 
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
 		SkeletonPatt bestSolution = Util.clone(s);
@@ -105,23 +107,36 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 		double currentCost = Util.getCost(currentSolution,maxNumberOfResources);
 		double bestCost = Util.getCost(bestSolution,maxNumberOfResources);
 		int x = 0;
-//		currentSolution.refactor(rw);
-		currentSolution.reWrite();
-		SkeletonPatt first = currentSolution.getPatterns().iterator().next();
-		this.add(s, currentSolution.getPatterns().iterator().next(), first.getRule());
+		currentSolution.refactor(reWriter);
+//		currentSolution.reWrite();
+		for (SkeletonPatt sol : currentSolution.getPatterns()) {
+			Util.getCost(sol,maxNumberOfResources);
+			this.add(currentSolution, sol, sol.getRule());
+		}
+		SkeletonPatt first = currentSolution.getPatterns().stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get();
+		solutionPool.addAll(currentSolution.getPatterns());
+		this.add(s, first, first.getRule());
 		currentSolution = Util.clone(first);
 		while (x++ < maxIteration && temprature > 0.1) {
 
-//			currentSolution.refactor(rw);
-			currentSolution.reWrite();
+			currentSolution.refactor(reWriter);
+//			currentSolution.reWrite();
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
 				Util.getCost(sol,maxNumberOfResources);
 				this.add(currentSolution, sol, sol.getRule());
 			}
-			SkeletonPatt newSolution = Util.clone(
-					solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get());
-			solutionPool.addAll(solutions.stream().filter(s -> !s.equals(newSolution)).collect(Collectors.toList()));
+//			SkeletonPatt newSolution = Util.clone(
+//					solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get());
+			Stream<SkeletonPatt> temp = solutions.stream().filter(s -> !solutionPool.contains(s));
+			SkeletonPatt newSolution=null;
+			if(temp.findAny().isPresent()) {
+				 newSolution= Util.clone(solutions.stream().filter(s -> !solutionPool.contains(s)).min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
+			}else {			
+			newSolution=solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get();
+			}
+//			SkeletonPatt newSolution = Util.clone(solutions.stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
+			solutionPool.addAll(solutions);
 			log.debug("best " + bestSolution.toString());
 			double newCost = Util.getCost(newSolution,maxNumberOfResources);
 			if (newCost <= currentCost) {
@@ -143,6 +158,7 @@ public class SimulatedAnnealing2 extends RecursiveTask<List<Edge>> {
 					currentSolution = solutionPool.isEmpty() ? newSolution
 							: solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size()))
 									.findAny().get();
+					
 //					currentSolution = Collections.shuffle(new ArrayList<solutionPool).stream().get(ThreadLocalRandom.current().nextInt(solutionPool.size()));
 //					newSolution.print();
 					solutionPool.add(newSolution);

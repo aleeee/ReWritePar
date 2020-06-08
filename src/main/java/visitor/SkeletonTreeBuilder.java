@@ -32,7 +32,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 import util.Util;
 
-public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
+public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 	Logger log = LoggerFactory.getLogger(getClass());
 	Map<String,SkeletonPatt> variables = new HashMap<>();
 
@@ -71,6 +71,10 @@ public class TBuilder2 extends Skel4BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitAssignment(AssignmentContext ctx) {
 		SkeletonPatt v =Util.getType(ctx);
 		if(v instanceof SeqPatt) {
+			if(variables.containsKey(ctx.varName.getText())){
+				log.error("variable "+ ctx.varName.getText() + " already exist");
+				System.exit(0);
+			}
 			variables.put(ctx.varName.getText(), v);
 		}else {
 			variables.put(ctx.varName.getText(), super.visitAssignment(ctx));

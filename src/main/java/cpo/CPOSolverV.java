@@ -1,5 +1,6 @@
 package cpo;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +55,7 @@ public class CPOSolverV {
 		addVars(g);
 		addConstraints(g);
 		addObjective(g);
-		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\cpoModelV" + skeletonPatt.hashCode()
-				+ skeletonPatt.getLable() + skeletonPatt.getIdealServiceTime() + ".cpo";
+//		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\new\\cpoModelV_"+Instant.now().getEpochSecond()+"_.cpo";
 //		System.out.println(g + "modelName " + modelName);
 //		cplex.exportModel(modelName);
 		
@@ -120,12 +120,16 @@ public class CPOSolverV {
 //		}
 		if (p.getChildren() == null)
 			return;
+		}catch(Exception e) {
+			p.setOptParallelismDegree(1);
+			log.warn("!  getSolution "+p +"\t"+e.getMessage());
+		}
+		if(p.getChildren() !=null) {
 		for (SkeletonPatt d : p.getChildren()) {
 			getSolutions(d);
 		}
-		}catch(Exception e) {
-			log.error("Error  getSolution "+p +"\t"+e.getMessage());
 		}
+		
 
 	}
 

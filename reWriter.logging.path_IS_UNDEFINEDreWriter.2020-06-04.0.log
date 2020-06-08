@@ -1,0 +1,19 @@
+SimulatedAnnealing2 - iteration: 1 -> pipe  ( [farm  ( [a] )  nw: 10, b] )  ts::  [20.00] 	 res: 13
+SimulatedAnnealing2 -  best : pipe  ( [a, b] )  ts::  [20.00] 
+SimulatedAnnealing2 - no edge to the best solution: pipe ( a, b ) 
+SimulatedAnnealing2 - iteration: 1 -> farm  ( [pipe ( a, b ) ] )  nw: 7 ts::  [2.86] 	 res: 16
+SimulatedAnnealing2 -  best : pipe  ( [a, b] )  ts::  [20.00] 
+SimulatedAnnealing2 - no edge to the best solution: pipe ( a, b ) 
+SimulatedAnnealing2 - iteration: 1 -> farm  ( [pipe ( a, b ) ] )  nw: 7 ts::  [2.86] 	 res: 16
+SimulatedAnnealing2 -  best : pipe  ( [a, b] )  ts::  [20.00] 
+SimulatedAnnealing2 - no edge to the best solution: pipe ( a, b ) 
+SimulatedAnnealing2 - iteration: 1 -> farm  ( [comp ( a, b ) ] )  nw: 14 ts::  [2.14] 	 res: 16
+SimulatedAnnealing2 - iteration: 2 -> farm  ( [pipe ( a, b ) ] )  nw: 7 ts::  [2.86] 	 res: 16
+SimulatedAnnealing2 - iteration: 3 -> pipe  ( [farm  ( [a] )  nw: 10, b] )  ts::  [20.00] 	 res: 13
+SimulatedAnnealing2 -  best : farm  ( [pipe ( a, b ) ] )  nw: 7 ts::  [2.86] 
+CPOSolverV - !  getSolution comp ( capture, calculate, farm  ( compare )  nw: 0 ) 	null
+CPOSolverV - !  getSolution comp ( farm  ( capture )  nw: 0, calculate, compare ) 	null
+CPOSolverV - !  getSolution comp ( capture, farm  ( calculate )  nw: 0, compare ) 	null
+CPOSolverV - !  getSolution comp ( capture, calculate, farm  ( compare )  nw: 0 ) 	null
+CPOSolverV - !  getSolution comp ( farm  ( capture )  nw: 0, calculate, compare ) 	null
+CPOSolverV - !  getSolution comp ( capture, farm  ( calculate )  nw: 0, compare ) 	null

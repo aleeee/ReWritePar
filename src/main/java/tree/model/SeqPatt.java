@@ -18,7 +18,6 @@ import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
-import visitor.NodeVisitor;
 
 public class SeqPatt implements SkeletonPatt {
 	
@@ -56,10 +55,6 @@ public class SeqPatt implements SkeletonPatt {
 		this.optimizedTs=serviceTime;
 	}
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
 
 	@Override
 	public void refactor(ReWriter reWriter) {
@@ -91,10 +86,6 @@ public class SeqPatt implements SkeletonPatt {
 		return lable;
 	}
 
-	@Override
-	public SkeletonPatt getChild() {
-		return child;
-	}
 
 	public SkeletonPatt getParent() {
 		return parent;
@@ -260,26 +251,5 @@ public class SeqPatt implements SkeletonPatt {
 		return model;
 	}
 	
-	@Override
-	public SkeletonPatt reWrite() {
-		refactor();
-		return this;
-	}
-	
-	private SeqPatt refactor() {
-		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-		SkeletonPatt s = Util.clone(this);
-		fc.add(s);
-		// farm intro
-		FarmPatt farm = new FarmPatt();
-		farm.setChildren(fc);
-		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-		farm.calculateIdealServiceTime();
-		patterns.add(farm);
-		setPatterns(patterns);
-		if (getParent() != null)
-			setPatterns(Util.createTreeNode(getParent(), this));
-		return this;
-	}
+
 }

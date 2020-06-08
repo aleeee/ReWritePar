@@ -21,10 +21,11 @@ import org.slf4j.LoggerFactory;
 
 import graph.Edge;
 import graph.SimulatedAnnealing;
+import graph.SimulatedAnnealingSeq;
 import tree.model.SkeletonPatt;
 import tree.model.Solution;
 
-public class Starter  {
+public class StarterSeq  {
 	Logger log = LoggerFactory.getLogger(getClass());
 	
 	private static final long serialVersionUID = 1L;
@@ -33,9 +34,9 @@ public class Starter  {
 	private int simAnnealingMaxIter;
 	private String outputDir;
 	private int maxNumberOfResources;
-	public Starter(File file) {
+	public StarterSeq(File file) {
 	}
-	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, int maxNumberOfResources,String outputDir) {
+	public  StarterSeq(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, int maxNumberOfResources,String outputDir) {
 		this.inputPattern =input;
 		this.maxNumOfSim=maxNumberOfSimulation;
 		this.simAnnealingMaxIter=simulatedAnnealingMaxIter;
@@ -47,15 +48,15 @@ public class Starter  {
 	}
 	
 	private void forkJoinSim(SkeletonPatt n,String outputDir,int maxNumberOfResources){
-		List<ForkJoinTask<Solution>> forks = new ArrayList<ForkJoinTask<Solution>>();
+		
+	    List<Solution> results = new ArrayList<Solution>();
+		SimulatedAnnealingSeq seqSim = new SimulatedAnnealingSeq(n,  simAnnealingMaxIter,maxNumberOfResources);
 
 		for (int i = 0; i < maxNumOfSim; i++) {
-			forks.add(new SimulatedAnnealing(n,  simAnnealingMaxIter,maxNumberOfResources).fork());
+			
+			results.add(seqSim.expandAndSearch());
 		}
 
-		List<Solution> results = new ArrayList<Solution>();
-		for (ForkJoinTask<Solution> task : forks)
-			results.add(task.join());
 		writeResults( results);
 	}
 	

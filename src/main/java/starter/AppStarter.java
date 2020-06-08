@@ -8,11 +8,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.concurrent.ForkJoinTask;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -20,99 +26,59 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import checkers.units.quals.m;
 import graph.Edge;
 import pattern.skel4.Skel4Lexer;
 import pattern.skel4.Skel4Parser;
 import tree.model.SkeletonPatt;
-import visitor.TBuilder2;
+import visitor.SkeletonTreeBuilder;
 
 public class AppStarter {
 	final  Logger log = LoggerFactory.getLogger(AppStarter.class);
-	List<File> inputCodes;
-	List<SkeletonPatt> inputs;
+	File inputCode;
+	SkeletonPatt inputSkeleton;
 
-	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources) {
+	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism, int runner) {
 		long startTime = System.currentTimeMillis();
 		log.info("input " + folderPath);
 		try {
-			inputCodes = readAllInputCodesInFolder(folderPath);
-			inputs = new ArrayList<>();
+			inputCode =  new File(folderPath); 
 
-			for (File file : inputCodes) {
-				Skel4Lexer lexer = null;
+			Skel4Lexer lexer = null;
 
-				lexer = new Skel4Lexer(CharStreams.fromFileName(file.getPath()));
+			lexer = new Skel4Lexer(CharStreams.fromFileName(inputCode.getPath()));
 
-				Skel4Parser parser = new Skel4Parser(new CommonTokenStream(lexer));
-				ParseTree tree = parser.skeletonProgram();
-				TBuilder2 tb = new TBuilder2();
-				inputs.add(tb.visit(tree));
-			}
+			Skel4Parser parser = new Skel4Parser(new CommonTokenStream(lexer));
+			ParseTree tree = parser.skeletonProgram();
+			SkeletonTreeBuilder tb = new SkeletonTreeBuilder();
+			inputSkeleton = tb.visit(tree);
+			
 		} catch (IOException e) {
 			log.error("Error while parsing input " + e.getMessage());
 			System.exit(-1);
 		}
-
-		List<ForkJoinTask<List<List<Edge>>>> forks = new ArrayList<>();
-
-		List<List<Edge>> results = new ArrayList<>();
-
-		for (SkeletonPatt p : inputs) {
-			try (FileWriter writer = new FileWriter(new File(outputDir + "/solutions_" + p.hashCode() + ".txt"),true)) {
-				writer.write("////------input----->  " + p + "------------/////\n");
-				writer.close();
-			} catch (IOException e) {
-				log.error("Error creating solution list file {}", e.getMessage());
-			}
-			try (FileWriter writer1 = new FileWriter(new File(outputDir + "/bestSolutions_" + p.hashCode() + ".txt"),true)) {
-				writer1.write("////------input----->  " + p + "------------/////\n");
-				writer1.close();
-			} catch (IOException e) {
-				log.error("Error creating solution list file {}", e.getMessage());
-			}
-			try (FileWriter writer = new FileWriter(new File(outputDir + "/path_ts_resources" + p.hashCode() + ".txt"),true)) {
-				writer.write("////------input----->  " + p + "------------/////\n");
-				writer.close();
-			} catch (IOException e) {
-				log.error("Error creating solution list file {}", e.getMessage());
-			}
-			forks.add(new Starter(p, maxNumberOfSimulation, simulatedAnnealingMaxIter, outputDir,maxNumberOfResources).fork());
-		}
-
-		for (ForkJoinTask<List<List<Edge>>> task : forks)
-			results.addAll(task.join());
-
-		StringJoiner stringPaths = new StringJoiner("\n");
-		for (List<Edge> edge : results) {
-			StringJoiner path = new StringJoiner(",", "(", ")");
-			edge.stream().map(Edge::getRule).forEach(r -> path.add(r.getRule()));
-			stringPaths.merge(path);
-		}
-		log.info("paths  {}", stringPaths);
-		try (FileWriter writer2 = new FileWriter(new File(outputDir + "/paths.txt"),true)) {
-			writer2.write(stringPaths.toString());
-			writer2.close();
-		} catch (IOException e) {
-			log.error("Error Writing to file " + e.getMessage());
-			System.exit(-1);
-		}
+		
+		
+		Starter simRunner1 = new Starter(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir);
+		StarterSeq simRunner2 = new StarterSeq(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir);
+		Starter4 simRunner3 = new Starter4(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism);
+		if(runner == 0)
+			simRunner1.run();
+		if(runner == 1)
+			simRunner2.run();
+		if(runner == 2)
+			simRunner3.run();
 		long stopTime = (System.currentTimeMillis() - startTime);
 
 		log.info("Finished: process takes " + stopTime + " milliseconds");
 
 	}
 
-	private List<File> readAllInputCodesInFolder(String folderPath) throws IOException {
-
-		return Files.walk(Paths.get(folderPath)).filter(Files::isRegularFile).map(Path::toFile)
-				.collect(Collectors.toList());
-
-	}
 
 	public static void main(String[] args) {
-		if (args.length < 5) {
+		if (args.length < 6) {
 			System.err.println(
-					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources");
+					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources $parallelism");
 			System.exit(0);
 		}
 		System.setProperty("reWriter.logging.path", args[1]+"logs/");
@@ -124,7 +90,9 @@ public class AppStarter {
 			int simulatedAnnealingMaxIter = Integer.parseInt(args[2]);
 			int maxNumberOfSimulation = Integer.parseInt(args[3]);
 			int maxNumberOfResources = Integer.parseInt(args[4]);
-			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources);
+			int parallelism = Integer.parseInt(args[5]);
+			int runner = Integer.parseInt(args[6]);
+			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism, runner);
 //		} catch (Exception e) {
 //			log.error("Error  " + e.getMessage());
 //			System.exit(0);

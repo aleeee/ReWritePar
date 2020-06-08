@@ -19,7 +19,6 @@ import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
 import util.Util;
-import visitor.NodeVisitor;
 
 public class FarmPatt implements SkeletonPatt {
 	/**
@@ -44,6 +43,8 @@ public class FarmPatt implements SkeletonPatt {
 	
 	public FarmPatt() {
 		this.lable= "farm";
+		this.idealParDegree=1;
+		this.optParallelismDegree=1;
 	}
 
 	public FarmPatt(String lable, int serviceTime) {
@@ -52,10 +53,6 @@ public class FarmPatt implements SkeletonPatt {
 		this.idealServiceTime = serviceTime;
 	}
 
-	@Override
-	public void accept(NodeVisitor visitor) {
-		visitor.visit(this);
-	}
 
 	@Override
 	public void refactor(ReWriter reWriter) {
@@ -72,10 +69,7 @@ public class FarmPatt implements SkeletonPatt {
 		return lable;
 	}
 
-	@Override
-	public SkeletonPatt getChild() {
-		return child;
-	}
+
 	@Override
 	public ReWritingRules getRule() {
 		return rule;
@@ -315,34 +309,6 @@ public class FarmPatt implements SkeletonPatt {
 		
 		
 		return model;
-	}
-
-	@Override
-	public SkeletonPatt reWrite() {
-		refactor();
-		return this;
-	}
-	
-	private FarmPatt refactor() {
-		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-		// farm elim
-		SkeletonPatt c = Util.clone(getChildren().get(0));
-		
-		c.setReWritingRule(ReWritingRules.FARM_ELIM);
-		c.calculateIdealServiceTime();
-		patterns.add(c);
-
-		SkeletonPatt stage = getChildren().get(0);
-		stage.setParent(this);
-		stage.reWrite();
-		
-		patterns.addAll(stage.getPatterns().stream().filter(p -> !p.getRule().equals(ReWritingRules.FARM_INTRO)).collect(Collectors.toList()));
-		
-		setPatterns(patterns);
-		if (getParent() != null)
-			setPatterns(Util.createTreeNode(getParent(), this));
-		calculateIdealServiceTime();
-		return this;
 	}
 
 

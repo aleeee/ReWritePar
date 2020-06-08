@@ -1,0 +1,6 @@
+CPOSolverV - !  getSolution comp ( farm  ( a )  nw: 0, a ) 	null
+TBuilder2 - variable aalready exist
+TBuilder2 - variable a already exist
+TBuilder2 - variable a already exist
+CPOSolverV - !  getSolution comp ( farm  ( a )  nw: 0, b ) 	null
+CPOSolverV - !  getSolution comp ( a, farm  ( b )  nw: 0 ) 	null

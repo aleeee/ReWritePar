@@ -44,11 +44,25 @@ x86-64_linux
             <scope>compile</scope>
         </dependency>
 		
-		
-		
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+
+		/home/alemu/solver/cplex
 
 install cplex into local maven
 mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
 mvn install:install-file -DgroupId=ilog.concert -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/opt/ibm/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/home/alemu/solver/ILOG/CPLEX_Studio1210/cpoptimizer/lib/ILOG.CP.jar
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=12.9 -Dpackaging=jar -Dfile=/home/alemu/solver/cplex/lib/cplex.jar
+mvn install:install-file -DgroupId=cplex -DartifactId=cplex -Dversion=1210 -Dpackaging=jar -Dfile=/home/alemu/solver/cpoptimizer/lib/ILOG.CP.jar
+
 
 java -Djava.library.path=/opt/ibm/ILOG/CPLEX_Studio1210/opl/bin/x86-64_linux  -jar target/ReWritePar-0.1.1-jar-with-dependencies.jar /home/ale/sim/in   
+
+/home/alemu/in home/alemu/out/ 10 20
+
+/home/alemu/solver/opl/bin/x86-64_linux
+export LD_LIBRARY_PATH=/home/alemu/solver/opl/bin/x86-64_linux:$LD_LIBRARY_PATH
+export PATH=/home/alemu/solver/opl/bin/x86-64_linux:$PATH
+
+export LD_LIBRARY_PATH=/opt/ibm/ILOG/CPLEX_Studio1210/opl/bin/x86-64_linux:$LD_LIBRARY_PATH
+export PATH=/opt/ibm/ILOG/CPLEX_Studio1210/opl/bin/x86-64_linux:$PATH

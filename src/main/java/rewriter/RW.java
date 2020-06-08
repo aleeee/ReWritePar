@@ -6,7 +6,6 @@ import tree.model.MapPatt;
 import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import util.ReWrite;
-import util.Ref2;
 
 public class RW implements ReWriter {
 	
