@@ -8,31 +8,34 @@ import tree.model.SeqPatt;
 import util.ReWrite;
 
 public class RW implements ReWriter {
-	
+	private ReWrite reWritor;
+	 public RW() {
+		this.reWritor = new ReWrite();
+	}
 	@Override
 	public void reWrite(SeqPatt seq) {
-		seq = ReWrite.refactor(seq);
+		seq = reWritor.refactor(seq);
 	}
 
 	@Override
 	public void reWrite(CompPatt comp) {
-		comp = ReWrite.refactor(comp);
+		comp = reWritor.refactor(comp);
 	}
 
 	@Override
 	public void reWrite(FarmPatt farm) {
-        farm = ReWrite.refactor(farm);
+        farm = reWritor.refactor(farm);
 	}
 
 	@Override
 	public void reWrite(PipePatt pipe) {
-		pipe = ReWrite.refactor(pipe);
+		pipe = reWritor.refactor(pipe);
 
 	}
 
 	@Override
 	public void reWrite(MapPatt map) {
-		map = ReWrite.refactor(map);
+		map = reWritor.refactor(map);
 	}
 
 }

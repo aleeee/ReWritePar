@@ -38,15 +38,17 @@ public class CompPatt implements SkeletonPatt {
 	int optParDegree;
 	double optServiceTime;
 	private int numResource;
-	
+	private Util util;
 	public CompPatt() {
 		this.lable = "comp";
+		this.util = new Util();
 	}
 	public CompPatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
 		this.idealServiceTime = serviceTime;
 		this.idealParDegree=1;
+		this.util=new Util();
 	}
 
 
@@ -70,7 +72,7 @@ public class CompPatt implements SkeletonPatt {
 	
 	@Override
 	public void calculateIdealServiceTime() {
-		this.idealServiceTime=Util.getServiceTime(this);
+		this.idealServiceTime=util.getServiceTime(this);
 		
 	}	
 
@@ -191,7 +193,7 @@ public class CompPatt implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
-		idealServiceTime=Util.getServiceTime(this);		
+		idealServiceTime=util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 
@@ -209,7 +211,7 @@ public class CompPatt implements SkeletonPatt {
 	}
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optServiceTime = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = util.getOptimalServiceTime(this);
 		
 	}
 	public int getOptParDegree() {
@@ -225,12 +227,12 @@ public class CompPatt implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return this.optServiceTime = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = util.getOptimalServiceTime(this);
 		
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
-	   this.optServiceTime = Util.getOptimalServiceTime(this);
+	   this.optServiceTime = util.getOptimalServiceTime(this);
 		
 		
 	}
@@ -318,7 +320,7 @@ public class CompPatt implements SkeletonPatt {
 //		
 //		// pipe intro
 //		PipePatt pipe = new PipePatt();
-//		pipe.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//		pipe.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
 //		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
 //		pipe.calculateIdealServiceTime();
 ////		if(isCoarseReWrite) {
@@ -333,11 +335,11 @@ public class CompPatt implements SkeletonPatt {
 //			patterns.add(pipe);
 ////		}
 //		// farm intro
-////		if(!Util.detectLoop(this, FarmPatt.class)) {
+////		if(!util.detectLoop(this, FarmPatt.class)) {
 //		FarmPatt farm = new FarmPatt();
 //		CompPatt compStage = new CompPatt();
 //		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-//		compStage.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//		compStage.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
 //		compStage.setRule(getRule());
 //		compStage.calculateIdealServiceTime();
 //		fc.add(compStage);
@@ -358,7 +360,7 @@ public class CompPatt implements SkeletonPatt {
 //		if (getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
 //			ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) getChildren().stream()
 //					.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
-//			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> Util.clone(o)).collect(Collectors.toList());
+//			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> util.clone(o)).collect(Collectors.toList());
 //
 //			MapPatt map = new MapPatt();
 //			CompPatt compMap = new CompPatt();
@@ -376,7 +378,7 @@ public class CompPatt implements SkeletonPatt {
 //
 //		setPatterns(patterns);
 //		if (getParent() != null)
-//			setPatterns(Util.createTreeNode(getParent(), this));
+//			setPatterns(util.createTreeNode(getParent(), this));
 //		calculateIdealServiceTime();
 //		return this;
 //	}

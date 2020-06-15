@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 import java.util.stream.Collectors;
@@ -33,14 +34,16 @@ public class Starter  {
 	private int simAnnealingMaxIter;
 	private String outputDir;
 	private int maxNumberOfResources;
+	private int parallelism;
 	public Starter(File file) {
 	}
-	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, int maxNumberOfResources,String outputDir) {
+	public  Starter(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter, int maxNumberOfResources,String outputDir,int parallelism) {
 		this.inputPattern =input;
 		this.maxNumOfSim=maxNumberOfSimulation;
 		this.simAnnealingMaxIter=simulatedAnnealingMaxIter;
 		this.outputDir=outputDir;
 		this.maxNumberOfResources=maxNumberOfResources;
+		this.parallelism=parallelism;
 	}
 	public void run () {
 		forkJoinSim(inputPattern,outputDir,maxNumberOfResources);
@@ -48,15 +51,22 @@ public class Starter  {
 	
 	private void forkJoinSim(SkeletonPatt n,String outputDir,int maxNumberOfResources){
 		List<ForkJoinTask<Solution>> forks = new ArrayList<ForkJoinTask<Solution>>();
-
+		
+		List<SimulatedAnnealing> tasks  = new ArrayList<SimulatedAnnealing>();
+		
 		for (int i = 0; i < maxNumOfSim; i++) {
+//			tasks.add(new SimulatedAnnealing(n,  simAnnealingMaxIter,maxNumberOfResources));
 			forks.add(new SimulatedAnnealing(n,  simAnnealingMaxIter,maxNumberOfResources).fork());
 		}
-
+		
 		List<Solution> results = new ArrayList<Solution>();
-		for (ForkJoinTask<Solution> task : forks)
-			results.add(task.join());
-		writeResults( results);
+		
+//		tasks.parallelStream().forEach(t -> results.add(t.invoke()));
+		
+		forks.parallelStream().forEach(t -> results.add(t.invoke()));
+//		for (ForkJoinTask<Solution> task : forks)
+//			results.add(task.join());
+//		writeResults( results);
 	}
 	
 	private void writeResults(List<Solution> results){

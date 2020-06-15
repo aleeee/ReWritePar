@@ -10,7 +10,7 @@
 	<property name="MAX_HISTORY" value="4" />
 	<property name="PATTERN_NAME" value="reWriter.%d{yyyy-MM-dd}.%i.log" />
 	<property name="PATTERN" value="%logger{0} - %msg%n" />
-	<property name= "CONSOLE_PATTERN" value = "%logger{0} - %msg%n"></property>
+	<property name= "CONSOLE_PATTERN" value = "[%thread] %-5level  %logger{35} %msg%n"></property>
 
 	<appender name="CONSOLE"	class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -34,7 +34,7 @@
 
 
 	<root level="${LEVEL_LOGGING}">
-		<appender-ref ref="FILE-ROLLING" />
+<!-- 		<appender-ref ref="FILE-ROLLING" /> -->
 		<appender-ref ref="CONSOLE" />
 	</root>
 

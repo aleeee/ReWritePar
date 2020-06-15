@@ -2,6 +2,7 @@ package util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +19,7 @@ import com.google.common.collect.Sets;
 
 import cpo.CPOSolver2;
 import cpo.CPOSolverV;
+import cpo.ILOCPOSolver;
 import ilog.concert.IloException;
 import pattern.skel4.Skel4Parser.AssignmentContext;
 import tree.model.CompPatt;
@@ -28,11 +30,14 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class Util {
-	final static Logger log = LoggerFactory.getLogger(Util.class);
+	final  Logger log = LoggerFactory.getLogger(Util.class);
+	public Util() {
+		
+	}
 	enum SkeletonType {F,P, S, C, M};
-//	static int n = 256;
+//	 int n = 256;
 
-	public static SkeletonPatt getType(AssignmentContext ctx) {
+	public  SkeletonPatt getType(AssignmentContext ctx) {
 		String type = ctx.expr.sType.getText();
 		switch (type) {
 		case "Seq":
@@ -52,7 +57,7 @@ public class Util {
 	}
 
 	
- private static double roundToTwoDecimal(double n) {
+ private  double roundToTwoDecimal(double n) {
 	 try {
 	 BigDecimal stime = BigDecimal.valueOf(n);
 	  stime = stime.setScale(2, RoundingMode.HALF_UP);
@@ -68,7 +73,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(PipePatt pat) {
+	public  double getServiceTime(PipePatt pat) {
 		return roundToTwoDecimal(pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2));
 
@@ -78,7 +83,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getOptimalServiceTime(PipePatt pat) {
+	public  double getOptimalServiceTime(PipePatt pat) {
 //		pat.getChildren().forEach(p-> System.out.println(p.getLable()+" " +p.calculateOptimalServiceTime()));
 		return roundToTwoDecimal( pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0,
 				(c1, c2) -> c1 > c2 ? c1 : c2));
@@ -90,7 +95,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(CompPatt pat) {
+	public  double getServiceTime(CompPatt pat) {
 		return roundToTwoDecimal( pat.getChildren().stream().mapToDouble(SkeletonPatt::getIdealServiceTime).reduce(0, (c1, c2) -> c1 + c2));
 	}
 	/**
@@ -98,7 +103,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getOptimalServiceTime(CompPatt pat) {
+	public  double getOptimalServiceTime(CompPatt pat) {
 		return roundToTwoDecimal(pat.getChildren().stream().mapToDouble(SkeletonPatt::calculateOptimalServiceTime).reduce(0, (c1, c2) -> c1 + c2));
 	}
 	/**
@@ -107,7 +112,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(FarmPatt pat) {
+	public  double getServiceTime(FarmPatt pat) {
 		try {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
 		farmWorker.calculateIdealServiceTime();
@@ -124,7 +129,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getOptimizedTs(FarmPatt pat) {
+	public  double getOptimizedTs(FarmPatt pat) {
 		SkeletonPatt farmWorker = pat.getChildren().get(0);
 		farmWorker.calculateOptimalServiceTime();
 		return roundToTwoDecimal(Math.max(Math.max(Constants.TEmitter,Constants.TCollector),farmWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree()));
@@ -135,7 +140,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getServiceTime(MapPatt pat) {
+	public  double getServiceTime(MapPatt pat) {
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
 		int parallelismDegree = (int) Math.sqrt(mapWorker.getIdealServiceTime()/Math.max(Constants.TScatter, Constants.TGather));
 		pat.setIdealParDegree(parallelismDegree);
@@ -146,7 +151,7 @@ public class Util {
 	 * @param pat
 	 * @return
 	 */
-	public static double getOptimalServiceTime(MapPatt pat) {
+	public  double getOptimalServiceTime(MapPatt pat) {
 //		SkeletonPatt mapWorker = pat.getChildren().get(0);
 //		return mapWorker.calculateOptimalServiceTime()/pat.getOptParallelismDegree();
 		SkeletonPatt mapWorker = pat.getChildren().get(0);
@@ -164,7 +169,7 @@ public class Util {
 	 * @param node
 	 * @return
 	 */
-	public static Set<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
+	public  Set<SkeletonPatt> createTreeNode(SkeletonPatt parent, SkeletonPatt node) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		for (SkeletonPatt p : node.getPatterns()) {
 			ArrayList<SkeletonPatt> sc = new ArrayList<SkeletonPatt>();
@@ -220,7 +225,7 @@ public class Util {
 //		return optimalPattern;
 	}
 	
-	public static int getHeight(SkeletonPatt pat) {
+	public  int getHeight(SkeletonPatt pat) {
 		int height = 0;
 		if (pat == null)
 			return height;
@@ -232,7 +237,7 @@ public class Util {
 		return height +1;
 	}
 	
-	public static SkeletonPatt clone(SkeletonPatt original) {
+	public  SkeletonPatt clone(SkeletonPatt original) {
 		SkeletonPatt copy = null;
 		try {
 			if(original instanceof SeqPatt) {
@@ -254,8 +259,8 @@ public class Util {
 		}
 	
 	}
-	static int sum=0;
-	public static int getNumberOfResources(SkeletonPatt pat) {
+	 int sum=0;
+	public  int getNumberOfResources(SkeletonPatt pat) {
 		 sum =+pat.getOptParallelismDegree();
 		
 		if( pat.getChildren() ==null) 
@@ -267,7 +272,7 @@ public class Util {
 		return sum;
 	}
 	
-	public  synchronized static double getCost(SkeletonPatt p,int maxNumberOfResources) {
+	public  double getCost(SkeletonPatt p,int maxNumberOfResources) {
 		if(p instanceof SeqPatt) return p.getIdealServiceTime();
 //		CPOSolver2 model;
 		CPOSolverV model;
@@ -278,12 +283,37 @@ public class Util {
 			model.getSolutions(p);
 			p.calculateOptimalServiceTime();
 			model.cleanup();
-		} catch (IloException e) {
+//			Thread.sleep(20);
+		} catch (Exception e) {
 			log.warn("No solution " + e.getMessage());
 		}
 		return p.getOptServiceTime();
 	}
-	public static <T> boolean detectLoop(SkeletonPatt pat, T s) {
+//	public synchronized  double getCost(SkeletonPatt p,int maxNumberOfResources) {
+//		if(p instanceof SeqPatt) return p.getIdealServiceTime();
+////		CPOSolver2 model;
+//		CPOSolverV model;
+//		try {
+//			p.calculateIdealServiceTime();
+//			ILOCPOSolver.init();
+//			ILOCPOSolver.setNumAvailableProcessors(maxNumberOfResources);
+//			ILOCPOSolver.setSkeleton(p);
+//			ILOCPOSolver.addVars();
+//			ILOCPOSolver.addConstraints();
+//			ILOCPOSolver.addObjective();
+//			ILOCPOSolver.solveIt();
+//			ILOCPOSolver.getSolutions();
+//			p.calculateOptimalServiceTime();
+//			ILOCPOSolver.cleanup();
+//			
+////			model = new CPOSolverV(p, maxNumberOfResources);
+//		
+//		} catch (Exception e) {
+//			log.warn("No solution " + e.getMessage());
+//		}
+//		return p.getOptServiceTime();
+//	}
+	public  <T> boolean detectLoop(SkeletonPatt pat, T s) {
 //		System.out.println("detecting...." + pat);
 		if (pat == null  || pat.getParent() == null) 
 			return false;
@@ -293,4 +323,5 @@ public class Util {
 		}
 		return detectLoop(pat.getParent(),s);
 	}
+	
 }

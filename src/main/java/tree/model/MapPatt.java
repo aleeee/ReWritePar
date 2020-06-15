@@ -34,13 +34,17 @@ public class MapPatt  implements SkeletonPatt {
 	int optParDegree;
 	double optServiceTime;
 	int numResource;
+	private Util util;
+	
 	public MapPatt() {
 		this.lable= "map";
+		this.util=new Util();
 	}
 	public MapPatt(String lable, double serviceTime) {
 		super();
 		this.lable = lable;
 		this.idealServiceTime = serviceTime;
+		this.util=new Util();
 	}
 	@Override
 	public void refactor(ReWriter reWriter) {
@@ -49,7 +53,7 @@ public class MapPatt  implements SkeletonPatt {
 
 	@Override
 	public void calculateIdealServiceTime() {
-		this.idealServiceTime=Util.getServiceTime(this);
+		this.idealServiceTime=util.getServiceTime(this);
 
 	}
 
@@ -181,7 +185,7 @@ public class MapPatt  implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
-		idealServiceTime=Util.getServiceTime(this);		
+		idealServiceTime=util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 
@@ -195,7 +199,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime =Util.getOptimalServiceTime(this);
+		return optServiceTime =util.getOptimalServiceTime(this);
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
@@ -208,7 +212,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optServiceTime = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = util.getOptimalServiceTime(this);
 		
 	}
 	
@@ -271,7 +275,7 @@ public class MapPatt  implements SkeletonPatt {
 //	private MapPatt refactor() {
 //		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 ////		mapelim map(D)!D
-//		SkeletonPatt p = Util.clone(getChildren().get(0));
+//		SkeletonPatt p = util.clone(getChildren().get(0));
 //
 //		p.setReWritingRule(ReWritingRules.MAP_ELIM);
 //		p.calculateIdealServiceTime();
@@ -282,12 +286,12 @@ public class MapPatt  implements SkeletonPatt {
 //
 //		if (getChildren().get(0) instanceof CompPatt) {
 //			CompPatt compPat = new CompPatt();
-//			CompPatt c = (CompPatt) Util.clone(getChildren().get(0));
+//			CompPatt c = (CompPatt) util.clone(getChildren().get(0));
 //			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 //			for (SkeletonPatt sk : c.getChildren()) {
 //				MapPatt m = new MapPatt();
 //				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-//				mNodes.add(Util.clone(sk));
+//				mNodes.add(util.clone(sk));
 //				m.setChildren(mNodes);
 //				m.calculateIdealServiceTime();
 //				nodes.add(m);
@@ -298,12 +302,12 @@ public class MapPatt  implements SkeletonPatt {
 //			patterns.add(compPat);
 //		} else if (getChildren().get(0) instanceof PipePatt) {
 //			PipePatt pipe = new PipePatt();
-//			PipePatt pi = (PipePatt) Util.clone(getChildren().get(0));
+//			PipePatt pi = (PipePatt) util.clone(getChildren().get(0));
 //			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
 //			for (SkeletonPatt sk :pi.getChildren()) {
 //				MapPatt m = new MapPatt();
 //				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-//				mNodes.add(Util.clone(sk));
+//				mNodes.add(util.clone(sk));
 //				m.setChildren(mNodes);
 //				m.calculateIdealServiceTime();
 //				nodes.add(m);
@@ -315,7 +319,7 @@ public class MapPatt  implements SkeletonPatt {
 //		}
 //		setPatterns(patterns);
 //		if (getParent() != null)
-//			setPatterns(Util.createTreeNode(getParent(), this));
+//			setPatterns(util.createTreeNode(getParent(), this));
 //		calculateIdealServiceTime();
 //		return this;
 //	}

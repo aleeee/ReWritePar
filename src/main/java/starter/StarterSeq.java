@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import graph.Edge;
 import graph.SimulatedAnnealing;
 import graph.SimulatedAnnealingSeq;
+import graph.SimulatedAnnealingThread;
 import tree.model.SkeletonPatt;
 import tree.model.Solution;
 
@@ -50,7 +51,7 @@ public class StarterSeq  {
 	private void forkJoinSim(SkeletonPatt n,String outputDir,int maxNumberOfResources){
 		
 	    List<Solution> results = new ArrayList<Solution>();
-		SimulatedAnnealingSeq seqSim = new SimulatedAnnealingSeq(n,  simAnnealingMaxIter,maxNumberOfResources);
+		SimulatedAnnealingThread seqSim = new SimulatedAnnealingThread(n,  simAnnealingMaxIter,maxNumberOfResources);
 
 		for (int i = 0; i < maxNumOfSim; i++) {
 			

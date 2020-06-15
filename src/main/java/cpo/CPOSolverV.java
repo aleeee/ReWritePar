@@ -17,6 +17,7 @@ import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
+import ilog.concert.cppimpl.IloEnv;
 import ilog.cp.IloCP;
 import ilog.cp.IloCPEngine;
 import tree.model.CompPatt;
@@ -41,8 +42,12 @@ public class CPOSolverV {
 	List<SkeletonPatt> result = new ArrayList<>();
 	private SolverModel model;
 	public CPOSolverV(SkeletonPatt skeletonPatt, int maxParDegree) throws IloException {
-
+		
+		
 		this.cplex = new IloCP();
+		
+		this.cplex.setParameter(IloCP.IntParam.Workers, 1);
+		this.cplex.setParameter(IloCP.IntParam.ParallelMode, 1);
 		expr = cplex.constant(0);
 		this.obj = cplex.constant(0);
 		this.pd_obj= cplex.constant(0);
@@ -58,23 +63,23 @@ public class CPOSolverV {
 //		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\new\\cpoModelV_"+Instant.now().getEpochSecond()+"_.cpo";
 //		System.out.println(g + "modelName " + modelName);
 //		cplex.exportModel(modelName);
-		
+//		
 		cplex.setOut(null);
 	}
 
-	private void addConstraints(SkeletonPatt p) throws IloException {
+	private  void addConstraints(SkeletonPatt p) throws IloException {
 //		cplex.addLe(variables.get(p).get(1), numAvailableProcessors);
 		p.addConstraint(this.model);
 //		cplex.addLe(expr, numAvailableProcessors);
 
 	}
 	
-	private void addVars(SkeletonPatt v) {
+	private  void addVars(SkeletonPatt v) {
 		varCreator.accept(v);
 		addVariables(v);
 	}
 	// create variables for all nodes
-	private void addVariables(SkeletonPatt p) {
+	private  void addVariables(SkeletonPatt p) {
 		if(p.getChildren() != null) {
 		for (SkeletonPatt v : p.getChildren()) {
 			varCreator.accept(v);
@@ -86,13 +91,13 @@ public class CPOSolverV {
 	}
 
 	
-	private void addObjective(SkeletonPatt p) throws IloException {
+	private  void addObjective(SkeletonPatt p) throws IloException {
 		model = p.addObjective(this.model);
 		cplex.addMinimize(cplex.diff(model.getObj(), model.getPd_obj()));
 	}
 
 
-	public List<SkeletonPatt> getSolutions() throws IloException {
+	public  List<SkeletonPatt> getSolutions() throws IloException {
 		getSolutions(g);
 		for (SkeletonPatt v : g.getChildren()) {
 			getSolutions(v);
@@ -100,24 +105,20 @@ public class CPOSolverV {
 		return result;
 	}
 
-	public void getSolutions(SkeletonPatt p) throws IloException {
-//		if (p instanceof FarmPatt || p instanceof MapPatt) {
+	public  void getSolutions(SkeletonPatt p) throws IloException {
 		try {
 			List<IloNumVar> vars = variables.get(p);
 			double value = cplex.getValue(vars.get(0));
 			int parDegree = (int) cplex.getValue(vars.get(1));
-//			int numRes = (int) cplex.getValue(resourcesVars.get(p));
-//			if((p instanceof FarmPatt || p instanceof MapPatt))
-//				parDegree = parDegree-2;
+
 			p.setOptServiceTime(value);
 			p.setOptParallelismDegree((int) parDegree);
-//			p.setNumberOfResources(numRes);
 			if (value >= 0.5) {
 				result.add(p);
 			}else {
 				System.out.println("not resolved");
 			}
-//		}
+
 		if (p.getChildren() == null)
 			return;
 		}catch(Exception e) {
@@ -133,7 +134,7 @@ public class CPOSolverV {
 
 	}
 
-	public void solveIt() throws IloException {
+	public  void solveIt() throws IloException {
 		cplex.solve();
 	}
 
@@ -147,14 +148,11 @@ public class CPOSolverV {
 			tsi = cplex.intVar(1 ,ts_i*n_i, "tsi");
 			if(s instanceof SeqPatt) {
 				n = cplex.intVar(1, 1,"n");
-//				n = cplex.intVar(1, numAvailableProcessors, "n");
 			}else {
 			n = cplex.intVar(1, numAvailableProcessors, "n");}
-//			if(s instanceof FarmPatt || s  instanceof MapPatt) {
-//				r = cplex.sum(n, 2);
-//			}else {
+
 				r = cplex.intVar(1,numAvailableProcessors);
-//			}
+
 		} catch (IloException e) {
 			log.error("Error at var creation"+ e.getMessage());
 		}
@@ -167,7 +165,7 @@ public class CPOSolverV {
 		resourcesVars.put(s,r);
 	};
 
-	public void cleanup() throws IloException {
+	public  void cleanup() throws IloException {
 		cplex.clearModel();
 		cplex.end();
 	}

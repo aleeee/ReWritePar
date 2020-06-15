@@ -37,8 +37,8 @@ public class AppStarter {
 	final  Logger log = LoggerFactory.getLogger(AppStarter.class);
 	File inputCode;
 	SkeletonPatt inputSkeleton;
-
-	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism, int runner) {
+	
+	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism, int runner,int method) {
 		long startTime = System.currentTimeMillis();
 		log.info("input " + folderPath);
 		try {
@@ -59,15 +59,15 @@ public class AppStarter {
 		}
 		
 		
-		Starter simRunner1 = new Starter(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir);
+		Starter simRunner1 = new Starter(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism);
 		StarterSeq simRunner2 = new StarterSeq(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir);
-		Starter4 simRunner3 = new Starter4(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism);
-		if(runner == 0)
-			simRunner1.run();
-		if(runner == 1)
-			simRunner2.run();
-		if(runner == 2)
-			simRunner3.run();
+		Starter4 simRunner3 = new Starter4(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
+		if(runner == 0) {
+			simRunner1.run();}
+		if(runner == 1) {
+			simRunner2.run();}
+		if(runner == 2) {
+			simRunner3.run();}
 		long stopTime = (System.currentTimeMillis() - startTime);
 
 		log.info("Finished: process takes " + stopTime + " milliseconds");
@@ -76,7 +76,7 @@ public class AppStarter {
 
 
 	public static void main(String[] args) {
-		if (args.length < 6) {
+		if (args.length < 8) {
 			System.err.println(
 					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources $parallelism");
 			System.exit(0);
@@ -92,7 +92,8 @@ public class AppStarter {
 			int maxNumberOfResources = Integer.parseInt(args[4]);
 			int parallelism = Integer.parseInt(args[5]);
 			int runner = Integer.parseInt(args[6]);
-			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism, runner);
+			int methodid = Integer.parseInt(args[7]);
+			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism, runner, methodid);
 //		} catch (Exception e) {
 //			log.error("Error  " + e.getMessage());
 //			System.exit(0);

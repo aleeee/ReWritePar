@@ -54,8 +54,10 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 	private int maxNumberOfResources;
 	private Map<SkeletonPatt, Integer> solutionMap;
 	private Solution solution;
+	private Util util;
 	public SimulatedAnnealingSeq(SkeletonPatt p,int simAnnealingMaxIter,int maxNumberOfResources) {
 		this.s = p;		
+		this.util= new Util();
 		g = new DefaultDirectedGraph<>(Edge.class);
 		reWriter = new RW();
 		intId = new AtomicInteger();
@@ -69,26 +71,26 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 	
 
 	public Solution  expandAndSearch() {
-		double temprature = 19;
-		double coolingRate = 0.7;
+		double temprature = 59;
+		double coolingRate = 0.9;
 
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
-		SkeletonPatt bestSolution = Util.clone(s);
-		SkeletonPatt currentSolution = Util.clone(s);
-		double currentCost = Util.getCost(currentSolution,maxNumberOfResources);
-		double bestCost = Util.getCost(bestSolution,maxNumberOfResources);
+		SkeletonPatt bestSolution = util.clone(s);
+		SkeletonPatt currentSolution = util.clone(s);
+		double currentCost = util.getCost(currentSolution,maxNumberOfResources);
+		double bestCost = util.getCost(bestSolution,maxNumberOfResources);
 		int x = 0;
 		currentSolution.refactor(reWriter);
 		
-		for (SkeletonPatt sol : currentSolution.getPatterns()) {
-			Util.getCost(sol,maxNumberOfResources);
-			this.add(currentSolution, sol, sol.getRule());
-		}
+//		for (SkeletonPatt sol : currentSolution.getPatterns()) {
+//			util.getCost(sol,maxNumberOfResources);
+//			this.add(currentSolution, sol, sol.getRule());
+//		}
 		
 		SkeletonPatt first = currentSolution.getPatterns().stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get();
 		solutionPool.addAll(currentSolution.getPatterns());
-		this.add(s, first, first.getRule());
-		currentSolution = Util.clone(first);
+//		this.add(s, first, first.getRule());
+		currentSolution = util.clone(first);
 		
 		while (x++ < maxIteration && temprature > 0.1) {
 			
@@ -96,7 +98,7 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 			
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
-				Util.getCost(sol,maxNumberOfResources);
+				util.getCost(sol,maxNumberOfResources);
 				this.add(currentSolution, sol, sol.getRule());
 
 			}
@@ -104,23 +106,23 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 			Stream<SkeletonPatt> temp = solutions.stream().filter(s -> !solutionPool.contains(s));
 			SkeletonPatt newSolution=null;
 			if(temp.findAny().isPresent()) {
-				 newSolution= Util.clone(solutions.stream().filter(s -> !solutionPool.contains(s)).min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
+				 newSolution= util.clone(solutions.stream().filter(s -> !solutionPool.contains(s)).min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
 			}else {			
 				newSolution=solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get();
 			}
 			
 			solutionPool.addAll(solutions);
 			log.debug("best " + bestSolution.toString());
-			double newCost = Util.getCost(newSolution,maxNumberOfResources);
+			double newCost = util.getCost(newSolution,maxNumberOfResources);
 			if (newCost <= currentCost) {
-				currentSolution = Util.clone(newSolution);
+				currentSolution = util.clone(newSolution);
 				currentCost = newCost;
 				log.debug("currentCost " + currentSolution.toString());
 				if (newCost < bestCost || (newCost == bestCost
 						&& newSolution.getNumberOfResources() < bestSolution.getNumberOfResources())) {
-					bestSolution = Util.clone(newSolution);
+					bestSolution = util.clone(newSolution);
 					bestCost = newCost;
-					this.add(currentSolution, bestSolution, bestSolution.getRule());
+//					this.add(currentSolution, bestSolution, bestSolution.getRule());
 				}
 			} else {
 				if (Math.exp((newCost - currentCost) / temprature) > Math.random()) {
@@ -131,16 +133,16 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 					solutionPool.add(newSolution);
 				}
 			}
-			log.debug("best " + bestSolution + "\t" + Util.getCost(bestSolution,maxNumberOfResources));
+			log.debug("best " + bestSolution + "\t" + util.getCost(bestSolution,maxNumberOfResources));
 			
-			Util.getCost(currentSolution,maxNumberOfResources);
+			util.getCost(currentSolution,maxNumberOfResources);
 			if (currentSolution.getNumberOfResources() > maxNumberOfResources || currentSolution.getNumberOfResources() <1) {
 				currentSolution.getChildren().forEach(c -> {
 					System.out.println(c.getNumberOfResources());
 					System.out.println(c.getOptParallelismDegree());});
 			}
 			log.info("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
-			log.debug("new  " + newSolution + "\t" + Util.getCost(newSolution,maxNumberOfResources));
+			log.debug("new  " + newSolution + "\t" + util.getCost(newSolution,maxNumberOfResources));
 			temprature *= coolingRate;
 		}
 		log.info(" best : " + bestSolution.print());
@@ -183,7 +185,7 @@ public class SimulatedAnnealingSeq  implements Callable<Solution> {
 			}
 			g.addEdge(from, to, new Edge(from, to, rule));
 		} catch (Exception e) {
-			log.error("ERR " + g.vertexSet().size());
+			log.error("ERR ", e.getMessage());
 			throw e;
 		}
 	}

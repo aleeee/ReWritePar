@@ -29,7 +29,7 @@ public class DiGraphGen4 {
 	public static Graph<SkeletonPatt, Edge> g = new DefaultDirectedGraph<>(Edge.class);
 	
 	private Map<SkeletonPatt, List<Edge>> neighbors = new LinkedHashMap<SkeletonPatt, List<Edge>>();
-
+	private Util util = new Util();
 	private Queue<SkeletonPatt> queue = new LinkedList<SkeletonPatt>();
 	AtomicInteger intId = new AtomicInteger();
 	public static class Edge {
@@ -135,7 +135,7 @@ public class DiGraphGen4 {
 			this.add(curNode);
 			patterns.put(curNode, curNode.getPatterns());
 			for (SkeletonPatt sk : curNode.getPatterns()) {
-				if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < depth) {
+				if (!this.contains(sk) && !queue.contains(sk) && util.getHeight(sk) < depth) {
 					queue.add(sk);
 				}
 			}
@@ -148,7 +148,7 @@ public class DiGraphGen4 {
 					node.setDepth(curNode.getDepth()+1);
 					if (node.getPatterns() != null) {
 						for (SkeletonPatt sk : node.getPatterns()) {
-							if (!this.contains(sk) && !queue.contains(sk) && Util.getHeight(sk) < depth) {
+							if (!this.contains(sk) && !queue.contains(sk) && util.getHeight(sk) < depth) {
 								queue.add(sk);
 							}
 						}

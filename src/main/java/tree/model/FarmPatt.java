@@ -40,15 +40,17 @@ public class FarmPatt implements SkeletonPatt {
 	double optServiceTime;
 //	double optimizedTs;
 	int numResources;
-	
+	private Util util;
 	public FarmPatt() {
 		this.lable= "farm";
 		this.idealParDegree=1;
 		this.optParallelismDegree=1;
+		this.util=new Util();
 	}
 
 	public FarmPatt(String lable, int serviceTime) {
 		super();
+		this.util= new Util();
 		this.lable = lable;
 		this.idealServiceTime = serviceTime;
 	}
@@ -208,7 +210,7 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
-		idealServiceTime=Util.getServiceTime(this);		
+		idealServiceTime=util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 
@@ -224,7 +226,7 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime=Util.getOptimizedTs(this);
+		return optServiceTime=util.getOptimizedTs(this);
 	}
 
 	@Override
@@ -238,12 +240,12 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public void calculateIdealServiceTime() {
-		this.idealServiceTime=Util.getServiceTime(this);		
+		this.idealServiceTime=util.getServiceTime(this);		
 	}
 
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optServiceTime=Util.getOptimizedTs(this);
+		return this.optServiceTime=util.getOptimizedTs(this);
 		
 	}
 

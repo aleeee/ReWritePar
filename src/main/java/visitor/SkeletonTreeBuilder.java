@@ -35,6 +35,7 @@ import util.Util;
 public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 	Logger log = LoggerFactory.getLogger(getClass());
 	Map<String,SkeletonPatt> variables = new HashMap<>();
+	private Util util = new Util();
 
 	@Override
 	public SkeletonPatt visitSkeletonProgram(SkeletonProgramContext ctx) {
@@ -69,7 +70,7 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitAssignment(AssignmentContext ctx) {
-		SkeletonPatt v =Util.getType(ctx);
+		SkeletonPatt v =util.getType(ctx);
 		if(v instanceof SeqPatt) {
 			if(variables.containsKey(ctx.varName.getText())){
 				log.error("variable "+ ctx.varName.getText() + " already exist");

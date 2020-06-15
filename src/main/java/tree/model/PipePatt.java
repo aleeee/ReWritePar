@@ -37,14 +37,17 @@ public class PipePatt implements SkeletonPatt {
 	double optServiceTime;
 //	double optimizedTs;
 	int numResource;
+	private Util util ;
 	public PipePatt() {
 		this.lable= "pipe";
+		this.util=new Util();
 	}
 	public PipePatt(String lable, int serviceTime) {
 		super();
 		this.lable = lable;
 		this.idealServiceTime = serviceTime;
 		this.idealParDegree=1;
+		this.util= new Util();
 	}
 	@Override
 	public void refactor(ReWriter reWriter) {
@@ -54,7 +57,7 @@ public class PipePatt implements SkeletonPatt {
 
 	@Override
 	public void calculateIdealServiceTime() {
-		this.idealServiceTime=Util.getServiceTime(this);
+		this.idealServiceTime=util.getServiceTime(this);
 
 	}
 	@Override
@@ -185,7 +188,7 @@ public class PipePatt implements SkeletonPatt {
 
 	@Override
 	public double getIdealServiceTime() {
-		idealServiceTime=Util.getServiceTime(this);		
+		idealServiceTime=util.getServiceTime(this);		
 		return idealServiceTime;
 	}
 
@@ -199,7 +202,7 @@ public class PipePatt implements SkeletonPatt {
 	}
 	@Override
 	public double getOptServiceTime() {
-		return optServiceTime=Util.getOptimalServiceTime(this);
+		return optServiceTime=util.getOptimalServiceTime(this);
 	}
 	@Override
 	public void setOptServiceTime(double ts) {
@@ -213,7 +216,7 @@ public class PipePatt implements SkeletonPatt {
 	
 	@Override
 	public double calculateOptimalServiceTime() {
-		return this.optServiceTime = Util.getOptimalServiceTime(this);
+		return this.optServiceTime = util.getOptimalServiceTime(this);
 	}
 	@Override
 	public int getNumberOfResources() {
@@ -287,7 +290,7 @@ public class PipePatt implements SkeletonPatt {
 //
 //		FarmPatt farm = new FarmPatt();
 //		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-//		PipePatt fStage = (PipePatt) Util.clone(this);
+//		PipePatt fStage = (PipePatt) util.clone(this);
 //		fc.add(fStage);
 //		farm.setChildren(fc);
 //		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
@@ -299,7 +302,7 @@ public class PipePatt implements SkeletonPatt {
 //		CompPatt comp = new CompPatt();
 //		
 //		ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) getChildren().stream()
-//				.map(pn -> Util.clone(pn)).collect(Collectors.toList());
+//				.map(pn -> util.clone(pn)).collect(Collectors.toList());
 //		ArrayList<SkeletonPatt> farmWorker = new  ArrayList<>();
 //		comp.setChildren(compStages);
 //		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
@@ -321,7 +324,7 @@ public class PipePatt implements SkeletonPatt {
 //				if (index == 0) {
 //
 //					PipePatt pipe0 = (PipePatt) getChildren().get(index);
-//					SkeletonPatt pat = Util.clone(pipe0.getChildren().get(0));
+//					SkeletonPatt pat = util.clone(pipe0.getChildren().get(0));
 //					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
 //					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
 //
@@ -330,9 +333,9 @@ public class PipePatt implements SkeletonPatt {
 //					// start i at 1 because we took the first element to form associative pipe
 //					for (int i = 1; i < pipe0.getChildren().size(); i++) { 
 //																			
-//						innerPipeNodes.add(Util.clone(pipe0.getChildren().get(i)));
+//						innerPipeNodes.add(util.clone(pipe0.getChildren().get(i)));
 //					}
-//					innerPipeNodes.addAll(getChildren().subList(1,getChildren().size()).stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//					innerPipeNodes.addAll(getChildren().subList(1,getChildren().size()).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
 //					innerPipe.setChildren(innerPipeNodes);
 //					innerPipe.calculateIdealServiceTime();
 //					
@@ -344,17 +347,17 @@ public class PipePatt implements SkeletonPatt {
 //					outerPipe.setReWriteNodes(false);
 //					patterns.add(outerPipe);
 //				} else {
-//					PipePatt pipei = (PipePatt) Util.clone(getChildren().get(index));
+//					PipePatt pipei = (PipePatt) util.clone(getChildren().get(index));
 //					// get the last element of the inner pipe
-//					SkeletonPatt pat = Util.clone(pipei.getChildren().get(pipei.getChildren().size() - 1)); 
+//					SkeletonPatt pat = util.clone(pipei.getChildren().get(pipei.getChildren().size() - 1)); 
 //																								
 //					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
 //					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
 //
 //					PipePatt outerPipe = new PipePatt();
 //					PipePatt innerPipe = new PipePatt();
-//					innerPipeNodes.addAll(getChildren().subList(0, index).stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
-//					innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1).stream().map(o -> Util.clone(o)).collect(Collectors.toList()));
+//					innerPipeNodes.addAll(getChildren().subList(0, index).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
+//					innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
 //					innerPipe.setChildren(innerPipeNodes);
 //					innerPipe.calculateIdealServiceTime();
 //					// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
@@ -362,7 +365,7 @@ public class PipePatt implements SkeletonPatt {
 //					outerPipeNodes.add(innerPipe);
 //					outerPipeNodes.add(pat);
 //				//	if there are elements after inner pipe
-//					outerPipeNodes.addAll(getChildren().subList(index + 1, getChildren().size()).stream().map(o-> Util.clone(o)).collect(Collectors.toList())); 
+//					outerPipeNodes.addAll(getChildren().subList(index + 1, getChildren().size()).stream().map(o-> util.clone(o)).collect(Collectors.toList())); 
 //						
 //					outerPipe.setChildren(outerPipeNodes);
 //					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
@@ -380,7 +383,7 @@ public class PipePatt implements SkeletonPatt {
 //		// creat map of the pipe
 //		if (getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
 //			ArrayList<SkeletonPatt> mapStages = (ArrayList<SkeletonPatt>) getChildren().stream()
-//					.map(p -> Util.clone(p.getChildren().get(0))).collect(Collectors.toList());
+//					.map(p -> util.clone(p.getChildren().get(0))).collect(Collectors.toList());
 //			MapPatt map = new MapPatt();
 //
 //			PipePatt piMap = new PipePatt();
@@ -405,7 +408,7 @@ public class PipePatt implements SkeletonPatt {
 //
 //		setPatterns(patterns);
 //		if (getParent() != null)
-//			setPatterns(Util.createTreeNode(getParent(), this));
+//			setPatterns(util.createTreeNode(getParent(), this));
 //		calculateIdealServiceTime();
 //		return this;
 //	}
