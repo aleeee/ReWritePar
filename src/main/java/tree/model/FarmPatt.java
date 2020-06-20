@@ -1,14 +1,9 @@
 package tree.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.jgrapht.io.AttributeType;
-
 import cpo.SolverModel;
 import ilog.concert.IloException;
 import ilog.concert.IloIntExpr;
@@ -21,9 +16,7 @@ import util.ReWritingRules;
 import util.Util;
 
 public class FarmPatt implements SkeletonPatt {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
@@ -38,9 +31,10 @@ public class FarmPatt implements SkeletonPatt {
 	int idealParDegree;
 	double idealServiceTime;
 	double optServiceTime;
-//	double optimizedTs;
 	int numResources;
 	private Util util;
+	private double latency;
+	private double completionTime;
 	public FarmPatt() {
 		this.lable= "farm";
 		this.idealParDegree=1;
@@ -121,22 +115,10 @@ public class FarmPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-//		return "F "+(this.getChildren() != null? " ( " +this.getChildren().get(0).toString() +" ) ":null);
-
 		return getLable() +" "+(this.getChildren() != null? " ( " +this.getChildren().toString() +" ) ":null)
-//				+ " n_id: " +getIdealParDegree() + " ts_id:  ["+getIdealServiceTime()+"]"
 				+ " nw: " +getOptParallelismDegree() ;
-				//+(getParent() == null?   " opt_ts:  ["+getOptimizedTs()+"]" : "");
 	}
 
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = 1;
-//		result = prime * result + ((children == null) ? 0 : children.hashCode());
-//		result = prime * result + ((lable == null) ? 0 : lable.hashCode());
-//		return result;
-//	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -164,11 +146,6 @@ public class FarmPatt implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
-//		if(rule == null) {
-//			if(other.rule != null)
-//				return false;
-//		}else if(!rule.equals(other.rule))
-//			return false;
 		return true;
 	}
 
@@ -182,15 +159,6 @@ public class FarmPatt implements SkeletonPatt {
 		return depth;
 	}
 
-//	@Override
-//	public String getValue() {
-//		return this.toString();
-//	}
-//
-//	@Override
-//	public AttributeType getType() {
-//		return AttributeType.STRING;
-//	}
 	public int getId() {
 		return id;
 	}
@@ -266,23 +234,14 @@ public class FarmPatt implements SkeletonPatt {
 			throws IloException {
 		IloCP cplex = model.getCplex();
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
-		SkeletonPatt childNode=this.children.get(0);
 		List<IloNumVar> fVars = variables.get(this);
 		IloIntVar pd = (IloIntVar) fVars.get(1);
 		cplex.addLe(pd, model.getNumAvailableProcessors());
 		cplex.addLe(pd, this.idealParDegree);
 		cplex.addGe(pd,1);
-//		IloIntExpr c= cplex.constant(2);
-//		IloIntExpr nw =  cplex.diff(pd,c);
-//		IloIntVar workerPd = (IloIntVar) variables.get(childNode).get(1);
 		IloIntExpr res= model.getResourcesVars().get(this);
-//		cplex.addEq(res, cplex.sum(pd,2));
 		IloIntExpr childRes= model.getResourcesVars().get(this.children.get(0));
 		cplex.addEq(res, cplex.sum(cplex.prod(childRes, pd),2));
-//		if(childNode instanceof FarmPatt || childNode instanceof MapPatt)
-//			workerPd = cplex.sum(workerPd,2);
-//		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
-//		cplex.addLe(cplex.prod((nw) ,childRes), model.getNumAvailableProcessors());
 		cplex.addLe(cplex.sum(cplex.prod((pd) ,childRes),2), model.getNumAvailableProcessors());
 		cplex.addLe(res,model.getNumAvailableProcessors());
 		this.children.get(0).addConstraint(model);
@@ -298,7 +257,6 @@ public class FarmPatt implements SkeletonPatt {
 		
 		List<IloNumVar> vars = variables.get(this);
 		IloIntVar pd = (IloIntVar) vars.get(1);
-//		IloIntExpr nw =  cplex.diff(pd,2);
 		double ts = this.children.get(0).getIdealServiceTime();			
 		cplex.addEq(vars.get(0) , cplex.div((int)ts,pd));
 		obj =  cplex.sum(obj, vars.get(0));
@@ -311,6 +269,28 @@ public class FarmPatt implements SkeletonPatt {
 		
 		
 		return model;
+	}
+
+	@Override
+	public void setLatency(double latency) {
+		this.latency=latency;
+		
+	}
+
+	@Override
+	public double getLatency() {
+		return latency;
+	}
+
+	@Override
+	public void setCompletionTime(double completionTime) {
+		this.completionTime=completionTime;
+		
+	}
+
+	@Override
+	public double getComletionTime() {
+		return completionTime;
 	}
 
 

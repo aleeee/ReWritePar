@@ -1,35 +1,17 @@
 package starter;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.StringJoiner;
-import java.util.concurrent.ForkJoinTask;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import checkers.units.quals.m;
-import graph.Edge;
-import pattern.skel4.Skel4Lexer;
-import pattern.skel4.Skel4Parser;
+import pattern.skel4.SkeletonLexer;
+import pattern.skel4.SkeletonParser;
 import tree.model.SkeletonPatt;
 import visitor.SkeletonTreeBuilder;
 
@@ -39,16 +21,16 @@ public class AppStarter {
 	SkeletonPatt inputSkeleton;
 	
 	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism, int runner,int method) {
-		long startTime = System.currentTimeMillis();
+		Instant startTime = Instant.now();
 		log.info("input " + folderPath);
 		try {
 			inputCode =  new File(folderPath); 
 
-			Skel4Lexer lexer = null;
+			SkeletonLexer lexer = null;
 
-			lexer = new Skel4Lexer(CharStreams.fromFileName(inputCode.getPath()));
+			lexer = new SkeletonLexer(CharStreams.fromFileName(inputCode.getPath()));
 
-			Skel4Parser parser = new Skel4Parser(new CommonTokenStream(lexer));
+			SkeletonParser parser = new SkeletonParser(new CommonTokenStream(lexer));
 			ParseTree tree = parser.skeletonProgram();
 			SkeletonTreeBuilder tb = new SkeletonTreeBuilder();
 			inputSkeleton = tb.visit(tree);
@@ -59,18 +41,18 @@ public class AppStarter {
 		}
 		
 		
-		Starter simRunner1 = new Starter(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism);
-		StarterSeq simRunner2 = new StarterSeq(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir);
-		Starter4 simRunner3 = new Starter4(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
-		if(runner == 0) {
-			simRunner1.run();}
-		if(runner == 1) {
-			simRunner2.run();}
-		if(runner == 2) {
-			simRunner3.run();}
-		long stopTime = (System.currentTimeMillis() - startTime);
+		SimRunner simRunner = new SimRunner(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
+//		Starter5 simRunner = new Starter5(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
+		
+		if(method ==0) {
+			simRunner.test();
+		}else {
+			simRunner.run();
+		}
 
-		log.info("Finished: process takes " + stopTime + " milliseconds");
+		Duration timelapse = Duration.between(startTime, Instant.now());
+
+		log.info("Finished: process takes " + timelapse.toMillis() + " milliseconds");
 
 	}
 
@@ -84,7 +66,6 @@ public class AppStarter {
 		System.setProperty("reWriter.logging.path", args[1]+"logs/");
 		System.out.println("Starting with input args : " + args);
 	
-//		try {
 			String inputDir = args[0];
 			String outputDir = args[1];
 			int simulatedAnnealingMaxIter = Integer.parseInt(args[2]);
@@ -94,10 +75,7 @@ public class AppStarter {
 			int runner = Integer.parseInt(args[6]);
 			int methodid = Integer.parseInt(args[7]);
 			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism, runner, methodid);
-//		} catch (Exception e) {
-//			log.error("Error  " + e.getMessage());
-//			System.exit(0);
-//		}
+		
 	}
    
 }

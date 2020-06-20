@@ -4,26 +4,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pattern.skel4.Skel4BaseVisitor;
-import pattern.skel4.Skel4Parser.AssignmentContext;
-import pattern.skel4.Skel4Parser.BlockContext;
-import pattern.skel4.Skel4Parser.CompositionContext;
-import pattern.skel4.Skel4Parser.FarmSkelContext;
-import pattern.skel4.Skel4Parser.MainContext;
-import pattern.skel4.Skel4Parser.MainExprContext;
-import pattern.skel4.Skel4Parser.MapSkelContext;
-import pattern.skel4.Skel4Parser.PatternExprContext;
-import pattern.skel4.Skel4Parser.PipeSkelContext;
-import pattern.skel4.Skel4Parser.ProgramPartContext;
-import pattern.skel4.Skel4Parser.SequenceContext;
-import pattern.skel4.Skel4Parser.SkeletonProgramContext;
-import pattern.skel4.Skel4Parser.StagesContext;
-import pattern.skel4.Skel4Parser.StatementContext;
+import pattern.skel4.SkeletonBaseVisitor;
+import pattern.skel4.SkeletonParser.AssignmentContext;
+import pattern.skel4.SkeletonParser.BlockContext;
+import pattern.skel4.SkeletonParser.CompositionContext;
+import pattern.skel4.SkeletonParser.FarmSkelContext;
+import pattern.skel4.SkeletonParser.MainContext;
+import pattern.skel4.SkeletonParser.MainExprContext;
+import pattern.skel4.SkeletonParser.MapSkelContext;
+import pattern.skel4.SkeletonParser.PatternExprContext;
+import pattern.skel4.SkeletonParser.PipeSkelContext;
+import pattern.skel4.SkeletonParser.ProgramPartContext;
+import pattern.skel4.SkeletonParser.SequenceContext;
+import pattern.skel4.SkeletonParser.SkeletonProgramContext;
+import pattern.skel4.SkeletonParser.StagesContext;
+import pattern.skel4.SkeletonParser.StatementContext;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
 import tree.model.MapPatt;
@@ -32,7 +30,7 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 import util.Util;
 
-public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
+public class SkeletonTreeBuilder extends SkeletonBaseVisitor<SkeletonPatt>{
 	Logger log = LoggerFactory.getLogger(getClass());
 	Map<String,SkeletonPatt> variables = new HashMap<>();
 	private Util util = new Util();
@@ -46,19 +44,15 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitProgramPart(ProgramPartContext ctx) {
-//		SeqPatt s = new SeqPatt();
 		ArrayList<SkeletonPatt> children = new ArrayList<>();
 		ctx.statement().forEach(p -> {children.add(visit(p));});
 		SkeletonPatt main = visit(ctx.mainExpr());
 		children.add(main);
-//		s.setChildren(children);
-//		System.out.println("main " + main);
 		return main;
 	}
 
 	@Override
 	public SkeletonPatt visitStatement(StatementContext ctx) {
-		// TODO Auto-generated method stub
 		return super.visitStatement(ctx);
 	}
 
@@ -93,10 +87,7 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 				System.exit(-1);
 				return null;
 			}else{
-//				SeqPatt s= (SeqPatt) variables.get(ctx.varName.getText());
-//				s.setLable(ctx.varName.getText());
 				return variables.get(ctx.varName.getText());
-//				return s;
 			}
 		}else{
 			return super.visitPatternExpr(ctx);
@@ -107,7 +98,6 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitMain(MainContext ctx) {
-		// TODO Auto-generated method stub
 		return super.visitMain(ctx);
 	}
 
@@ -164,7 +154,6 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 	public SkeletonPatt visitStages(StagesContext ctx) {
 		SeqPatt stages = new SeqPatt(0);
 		ArrayList<SkeletonPatt> children = new ArrayList<>();
-//		ctx.expr.forEach(e -> {children.add(visit(e));});
 		
 		for(PatternExprContext exp: ctx.expr) {
 			SkeletonPatt stage = visit(exp);
@@ -176,7 +165,6 @@ public class SkeletonTreeBuilder extends Skel4BaseVisitor<SkeletonPatt>{
 
 	@Override
 	public SkeletonPatt visitBlock(BlockContext ctx) {
-		// TODO Auto-generated method stub
 		return visit(ctx.expr);
 	}
 

@@ -1,12 +1,10 @@
 package util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import rewriter.RW;
 import tree.model.CompPatt;
 import tree.model.FarmPatt;
@@ -16,19 +14,20 @@ import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
 public class ReWrite {
-//	private  RW reWriter ;
+
 	private Util util;
+
 	public ReWrite() {
 		this.util = new Util();
-//		this.reWriter = new RW();
 	}
+
 	/**
 	 * refactor Seqential pattern
 	 * 
 	 * @param seq
 	 * @return Seq with its possible refactoring options (list of patterns)
 	 */
-	public  SeqPatt refactor(SeqPatt seq) {
+	public SeqPatt refactor(SeqPatt seq) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
 		SkeletonPatt s = util.clone(seq);
@@ -42,7 +41,7 @@ public class ReWrite {
 		seq.setPatterns(patterns);
 		if (seq.getParent() != null)
 			seq.setPatterns(util.createTreeNode(seq.getParent(), seq));
-		
+
 		return seq;
 	}
 
@@ -52,12 +51,13 @@ public class ReWrite {
 	 * @param comp
 	 * @return CompPatt with its possible refactoring options (list of patterns)
 	 */
-	public  CompPatt refactor(CompPatt comp) {
-Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-		
+	public CompPatt refactor(CompPatt comp, RW rewriter) {
+		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
+
 		// pipe intro
 		PipePatt pipe = new PipePatt();
-		pipe.setChildren((ArrayList<SkeletonPatt>) comp.getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
+		pipe.setChildren((ArrayList<SkeletonPatt>) comp.getChildren().stream().map(o -> util.clone(o))
+				.collect(Collectors.toList()));
 		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
 		pipe.calculateIdealServiceTime();
 
@@ -66,7 +66,8 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		FarmPatt farm = new FarmPatt();
 		CompPatt compStage = new CompPatt();
 		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-		compStage.setChildren((ArrayList<SkeletonPatt>) comp.getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
+		compStage.setChildren((ArrayList<SkeletonPatt>) comp.getChildren().stream().map(o -> util.clone(o))
+				.collect(Collectors.toList()));
 		compStage.setRule(comp.getRule());
 		compStage.calculateIdealServiceTime();
 		fc.add(compStage);
@@ -78,22 +79,23 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 
 		// for each stage rewrite
 		for (SkeletonPatt stage : comp.getChildren()) {
-				stage.setParent(pipe);
-				stage.refactor(new RW());
-				patterns.addAll(stage.getPatterns());
+			stage.setParent(pipe);
+			stage.refactor(rewriter);
+			patterns.addAll(stage.getPatterns());
 
 		}
 		// creat map of the comp
 		if (comp.getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
 			ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) comp.getChildren().stream()
 					.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
-			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> util.clone(o)).collect(Collectors.toList());
+			ArrayList<SkeletonPatt> mapStages = (ArrayList<SkeletonPatt>) compStages.stream().map(o -> util.clone(o))
+					.collect(Collectors.toList());
 
 			MapPatt map = new MapPatt();
 			CompPatt compMap = new CompPatt();
 
 			compMap.setChildren(mapStages);
-			
+
 			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 			compMap.calculateIdealServiceTime();
 			mNodes.add(compMap);
@@ -107,7 +109,7 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		if (comp.getParent() != null)
 			comp.setPatterns(util.createTreeNode(comp.getParent(), comp));
 		comp.calculateIdealServiceTime();
-		
+
 		return comp;
 	}
 
@@ -117,21 +119,22 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 	 * @param farm
 	 * @return Farm pattern with its possible refactoring options (list of patterns)
 	 */
-	public  FarmPatt refactor(FarmPatt farm) {
+	public FarmPatt refactor(FarmPatt farm, RW rewriter) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		// farm elim
 		SkeletonPatt c = util.clone(farm.getChildren().get(0));
-		
+
 		c.setReWritingRule(ReWritingRules.FARM_ELIM);
 		c.calculateIdealServiceTime();
 		patterns.add(c);
 
 		SkeletonPatt stage = farm.getChildren().get(0);
 		stage.setParent(farm);
-		stage.refactor(new RW());
-		
-		patterns.addAll(stage.getPatterns().stream().filter(p -> !p.getRule().equals(ReWritingRules.FARM_INTRO)).collect(Collectors.toList()));
-		
+		stage.refactor(rewriter);
+
+		patterns.addAll(stage.getPatterns().stream().filter(p -> !p.getRule().equals(ReWritingRules.FARM_INTRO))
+				.collect(Collectors.toList()));
+
 		farm.setPatterns(patterns);
 		if (farm.getParent() != null)
 			farm.setPatterns(util.createTreeNode(farm.getParent(), farm));
@@ -146,8 +149,8 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 	 * @return Pipeline pattern with its possible refactoring options (list of
 	 *         patterns)
 	 */
-	public  PipePatt refactor(PipePatt pipe) {
-	  boolean	isCoarseReWrite = false;
+	public PipePatt refactor(PipePatt pipe, RW rewriter) {
+		boolean isCoarseReWrite = false;
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 
 		FarmPatt farm = new FarmPatt();
@@ -162,81 +165,85 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 
 		// pipe elim
 		CompPatt comp = new CompPatt();
-		
+
 		ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) pipe.getChildren().stream()
 				.map(pn -> util.clone(pn)).collect(Collectors.toList());
-		ArrayList<SkeletonPatt> farmWorker = new  ArrayList<>();
+		ArrayList<SkeletonPatt> farmWorker = new ArrayList<>();
 		comp.setChildren(compStages);
 		comp.setReWritingRule(ReWritingRules.PIPE_ELIM);
 		comp.calculateIdealServiceTime();
-		if(isCoarseReWrite) {
+		if (isCoarseReWrite) {
 			FarmPatt farmSkel = new FarmPatt();
 			farmWorker.add(comp);
 			farmSkel.setChildren(farmWorker);
 			farmSkel.setReWritingRule(ReWritingRules.FARM_INTRO);
 			patterns.add(farmSkel);
-		}else {
+		} else {
 			patterns.add(comp);
 		}
 		// pipeassoc pipe(D1; pipe(D2;D3)) = pipe(pipe(D1;D2);D3)
 		if (pipe.getChildren() != null && pipe.getChildren().stream().anyMatch(sk -> sk instanceof PipePatt)) {
 
-			PipePatt p0 =  (PipePatt) pipe.getChildren().stream().filter(e -> e instanceof PipePatt).findFirst().get();
-				int index = pipe.getChildren().indexOf(p0);
-				if (index == 0) {
+			PipePatt p0 = (PipePatt) pipe.getChildren().stream().filter(e -> e instanceof PipePatt).findFirst().get();
+			int index = pipe.getChildren().indexOf(p0);
+			if (index == 0) {
 
-					PipePatt pipe0 = (PipePatt) pipe.getChildren().get(index);
-					SkeletonPatt pat = util.clone(pipe0.getChildren().get(0));
-					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
-					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
+				PipePatt pipe0 = (PipePatt) pipe.getChildren().get(index);
+				SkeletonPatt pat = util.clone(pipe0.getChildren().get(0));
+				ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
+				ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
 
-					PipePatt outerPipe = new PipePatt();
-					PipePatt innerPipe = new PipePatt();
-					// start i at 1 because we took the first element to form associative pipe
-					for (int i = 1; i < pipe0.getChildren().size(); i++) { 
-																			
-						innerPipeNodes.add(util.clone(pipe0.getChildren().get(i)));
-					}
-					innerPipeNodes.addAll(pipe.getChildren().subList(1,pipe.getChildren().size()).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
-					innerPipe.setChildren(innerPipeNodes);
-					innerPipe.calculateIdealServiceTime();
-					
-					outerPipeNodes.add(pat);
-					outerPipeNodes.add(innerPipe);
-					outerPipe.setChildren(outerPipeNodes);
-					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
-					outerPipe.calculateIdealServiceTime();
-					outerPipe.setReWriteNodes(false);
-					patterns.add(outerPipe);
-				} else {
-					PipePatt pipei = (PipePatt) util.clone(pipe.getChildren().get(index));
-					// get the last element of the inner pipe
-					SkeletonPatt pat = util.clone(pipei.getChildren().get(pipei.getChildren().size() - 1)); 
-																								
-					ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
-					ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
+				PipePatt outerPipe = new PipePatt();
+				PipePatt innerPipe = new PipePatt();
+				// start i at 1 because we took the first element to form associative pipe
+				for (int i = 1; i < pipe0.getChildren().size(); i++) {
 
-					PipePatt outerPipe = new PipePatt();
-					PipePatt innerPipe = new PipePatt();
-					innerPipeNodes.addAll(pipe.getChildren().subList(0, index).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
-					innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1).stream().map(o -> util.clone(o)).collect(Collectors.toList()));
-					innerPipe.setChildren(innerPipeNodes);
-					innerPipe.calculateIdealServiceTime();
-					// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
-
-					outerPipeNodes.add(innerPipe);
-					outerPipeNodes.add(pat);
-				//	if there are elements after inner pipe
-					outerPipeNodes.addAll(pipe.getChildren().subList(index + 1, pipe.getChildren().size()).stream().map(o-> util.clone(o)).collect(Collectors.toList())); 
-						
-					outerPipe.setChildren(outerPipeNodes);
-					outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
-					outerPipe.calculateIdealServiceTime();
-					outerPipe.setReWriteNodes(false);
-					patterns.add(outerPipe);
-
+					innerPipeNodes.add(util.clone(pipe0.getChildren().get(i)));
 				}
-			
+				innerPipeNodes.addAll(pipe.getChildren().subList(1, pipe.getChildren().size()).stream()
+						.map(o -> util.clone(o)).collect(Collectors.toList()));
+				innerPipe.setChildren(innerPipeNodes);
+				innerPipe.calculateIdealServiceTime();
+
+				outerPipeNodes.add(pat);
+				outerPipeNodes.add(innerPipe);
+				outerPipe.setChildren(outerPipeNodes);
+				outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
+				outerPipe.calculateIdealServiceTime();
+				outerPipe.setReWriteNodes(false);
+				patterns.add(outerPipe);
+			} else {
+				PipePatt pipei = (PipePatt) util.clone(pipe.getChildren().get(index));
+				// get the last element of the inner pipe
+				SkeletonPatt pat = util.clone(pipei.getChildren().get(pipei.getChildren().size() - 1));
+
+				ArrayList<SkeletonPatt> innerPipeNodes = new ArrayList<SkeletonPatt>();
+				ArrayList<SkeletonPatt> outerPipeNodes = new ArrayList<SkeletonPatt>();
+
+				PipePatt outerPipe = new PipePatt();
+				PipePatt innerPipe = new PipePatt();
+				innerPipeNodes.addAll(pipe.getChildren().subList(0, index).stream().map(o -> util.clone(o))
+						.collect(Collectors.toList()));
+				innerPipeNodes.addAll(pipei.getChildren().subList(0, pipei.getChildren().size() - 1).stream()
+						.map(o -> util.clone(o)).collect(Collectors.toList()));
+				innerPipe.setChildren(innerPipeNodes);
+				innerPipe.calculateIdealServiceTime();
+				// eg . pipe(a, pipe(b,c), d) ----> pipe(pipe(a,b),c,d)
+
+				outerPipeNodes.add(innerPipe);
+				outerPipeNodes.add(pat);
+				// if there are elements after inner pipe
+				outerPipeNodes.addAll(pipe.getChildren().subList(index + 1, pipe.getChildren().size()).stream()
+						.map(o -> util.clone(o)).collect(Collectors.toList()));
+
+				outerPipe.setChildren(outerPipeNodes);
+				outerPipe.setReWritingRule(ReWritingRules.PIPE_ASSOC);
+				outerPipe.calculateIdealServiceTime();
+				outerPipe.setReWriteNodes(false);
+				patterns.add(outerPipe);
+
+			}
+
 		}
 		// mapofpipe pipe(map(D1);map(D2))= map(pipe((D1;D2))
 		// if pipe has map stages
@@ -261,18 +268,18 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 			patterns.add(map);
 		}
 		// refactor stages
-			for (SkeletonPatt stage : pipe.getChildren()) {
-				stage.setParent(pipe);
-				stage.refactor(new RW());
-				patterns.addAll(stage.getPatterns());
+		for (SkeletonPatt stage : pipe.getChildren()) {
+			stage.setParent(pipe);
+			stage.refactor(rewriter);
+			patterns.addAll(stage.getPatterns());
 
 		}
 
-			pipe.setPatterns(patterns);
+		pipe.setPatterns(patterns);
 		if (pipe.getParent() != null)
 			pipe.setPatterns(util.createTreeNode(pipe.getParent(), pipe));
 		pipe.calculateIdealServiceTime();
-		
+
 		return pipe;
 	}
 
@@ -282,7 +289,7 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 	 * @param map
 	 * @return Map pattern with its possible refactoring options (list of patterns)
 	 */
-	public  MapPatt refactor(MapPatt map) {
+	public MapPatt refactor(MapPatt map, RW rewriter) {
 		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 //		mapelim map(D)!D
 		SkeletonPatt p = util.clone(map.getChildren().get(0));
@@ -290,7 +297,7 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 		p.setReWritingRule(ReWritingRules.MAP_ELIM);
 		p.calculateIdealServiceTime();
 		patterns.add(p);
-		
+
 		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
 		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
 
@@ -314,7 +321,7 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 			PipePatt pipe = new PipePatt();
 			PipePatt pi = (PipePatt) util.clone(map.getChildren().get(0));
 			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
-			for (SkeletonPatt sk :pi.getChildren()) {
+			for (SkeletonPatt sk : pi.getChildren()) {
 				MapPatt m = new MapPatt();
 				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
 				mNodes.add(util.clone(sk));
@@ -327,11 +334,15 @@ Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
 			pipe.setReWritingRule(ReWritingRules.PIPE_OF_MAP);
 			patterns.add(pipe);
 		}
+		SkeletonPatt worker = map.getChildren().get(0);
+		worker.refactor(rewriter);
+		patterns.addAll(worker.getPatterns());
+
 		map.setPatterns(patterns);
 		if (map.getParent() != null)
 			map.setPatterns(util.createTreeNode(map.getParent(), map));
 		map.calculateIdealServiceTime();
-		
+
 		return map;
 	}
 

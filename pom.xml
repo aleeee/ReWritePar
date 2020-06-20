@@ -22,6 +22,11 @@
 	</properties>
 
 	<dependencies>
+	<dependency>
+    <groupId>com.pivovarit</groupId>
+    <artifactId>parallel-collectors</artifactId>
+    <version>2.3.3</version>
+</dependency>
 		<!-- <dependency> -->
 		<!-- <groupId>org.springframework.boot</groupId> -->
 		<!-- <artifactId>spring-boot-starter-web</artifactId> -->
@@ -49,11 +54,11 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.10.0.pr1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.fasterxml.jackson.core</groupId> -->
+<!-- 			<artifactId>jackson-databind</artifactId> -->
+<!-- 			<version>2.10.0.pr1</version> -->
+<!-- 		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<!-- https://mvnrepository.com/artifact/guru.nidi/graphviz-java -->
 		<dependency>
@@ -98,11 +103,11 @@
 			<!-- <systemPath>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community129\cplex\lib\cplex.jar</systemPath> -->
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.slf4j</groupId> -->
-		<!-- <artifactId>slf4j-simple</artifactId> -->
-		<!-- <version>1.7.30</version> -->
-		<!-- </dependency> -->
+		<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>1.7.30</version>
+		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>

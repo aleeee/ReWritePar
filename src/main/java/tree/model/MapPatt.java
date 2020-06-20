@@ -1,12 +1,10 @@
 package tree.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.io.AttributeType;
 
 import cpo.SolverModel;
 import ilog.concert.IloException;
@@ -20,6 +18,8 @@ import util.ReWritingRules;
 import util.Util;
 
 public class MapPatt  implements SkeletonPatt {
+
+	private static final long serialVersionUID = 1L;
 	ArrayList<SkeletonPatt> children;
 	SkeletonPatt parent;
 	String lable;
@@ -35,6 +35,8 @@ public class MapPatt  implements SkeletonPatt {
 	double optServiceTime;
 	int numResource;
 	private Util util;
+	private double latency;
+	private double completionTime;
 	
 	public MapPatt() {
 		this.lable= "map";
@@ -53,7 +55,7 @@ public class MapPatt  implements SkeletonPatt {
 
 	@Override
 	public void calculateIdealServiceTime() {
-		this.idealServiceTime=util.getServiceTime(this);
+		this.idealServiceTime=util.getIdealServiceTime(this);
 
 	}
 
@@ -142,11 +144,6 @@ public class MapPatt  implements SkeletonPatt {
 				return false;
 		} else if (!lable.equals(other.lable))
 			return false;
-//		if(rule == null) {
-//			if(other.rule != null)
-//				return false;
-//		}else if(!rule.equals(other.rule))
-//			return false;
 		return true;
 	}
 	@Override
@@ -158,14 +155,6 @@ public class MapPatt  implements SkeletonPatt {
 		return depth;
 	}
 
-//	@Override
-//	public String getValue() {
-//		return this.toString();
-//	}
-//	@Override
-//	public AttributeType getType() {
-//		return AttributeType.STRING;
-//	}
 	
 	public int getId() {
 		return id;
@@ -184,8 +173,7 @@ public class MapPatt  implements SkeletonPatt {
 	}
 
 	@Override
-	public double getIdealServiceTime() {
-		idealServiceTime=util.getServiceTime(this);		
+	public double getIdealServiceTime() {	
 		return idealServiceTime;
 	}
 
@@ -234,13 +222,9 @@ public class MapPatt  implements SkeletonPatt {
 		IloIntVar pd = (IloIntVar) fVars.get(1);
 		cplex.addLe(pd, model.getNumAvailableProcessors());
 		cplex.addLe(pd, this.idealParDegree);
-//		IloIntExpr c = cplex.constant(2);
-//		IloIntExpr nw =  cplex.diff(pd,c);
 		IloIntExpr res= model.getResourcesVars().get(this);
-//		cplex.addEq(res, cplex.sum(pd,2));
 		IloIntExpr childRes= model.getResourcesVars().get(this.children.get(0));
 		cplex.addEq(res, cplex.sum(cplex.prod(childRes, pd),2));
-//		cplex.addLe(cplex.sum(cplex.prod(pd ,variables.get(this.children.get(0)).get(1)),2), model.getNumAvailableProcessors());
 		cplex.addLe(cplex.sum(cplex.prod(pd ,childRes),2), model.getNumAvailableProcessors());
 		cplex.addLe(res, model.getNumAvailableProcessors());
 		this.children.get(0).addConstraint(model);
@@ -255,7 +239,6 @@ public class MapPatt  implements SkeletonPatt {
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		List<IloNumVar> vars = variables.get(this);
 		IloIntVar pd = (IloIntVar) vars.get(1);
-//		IloIntExpr nw =  cplex.diff(pd,2);
 		double ts = this.children.get(0).getIdealServiceTime();			
 		cplex.addEq(vars.get(0) , cplex.div( (int)ts,pd));
 		obj =  cplex.sum(obj, vars.get(0));
@@ -266,62 +249,24 @@ public class MapPatt  implements SkeletonPatt {
 		model = this.children.get(0).addObjective(model);			
 		return model;
 	}
-//	@Override
-//	public SkeletonPatt reWrite() {
-//		refactor();
-//		return this;
-//	}
-//	
-//	private MapPatt refactor() {
-//		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-////		mapelim map(D)!D
-//		SkeletonPatt p = util.clone(getChildren().get(0));
-//
-//		p.setReWritingRule(ReWritingRules.MAP_ELIM);
-//		p.calculateIdealServiceTime();
-//		patterns.add(p);
-//		
-//		// compofmap map(comp(D1;D2)!comp((map(D1);map(D2)) and pipeofmap
-//		// map(pipe(D1;D2) = pipe((map(D1);map(D2))
-//
-//		if (getChildren().get(0) instanceof CompPatt) {
-//			CompPatt compPat = new CompPatt();
-//			CompPatt c = (CompPatt) util.clone(getChildren().get(0));
-//			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
-//			for (SkeletonPatt sk : c.getChildren()) {
-//				MapPatt m = new MapPatt();
-//				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-//				mNodes.add(util.clone(sk));
-//				m.setChildren(mNodes);
-//				m.calculateIdealServiceTime();
-//				nodes.add(m);
-//			}
-//			compPat.setChildren(nodes);
-//			compPat.calculateIdealServiceTime();
-//			compPat.setReWritingRule(ReWritingRules.MAP_DIST);
-//			patterns.add(compPat);
-//		} else if (getChildren().get(0) instanceof PipePatt) {
-//			PipePatt pipe = new PipePatt();
-//			PipePatt pi = (PipePatt) util.clone(getChildren().get(0));
-//			ArrayList<SkeletonPatt> nodes = new ArrayList<SkeletonPatt>();
-//			for (SkeletonPatt sk :pi.getChildren()) {
-//				MapPatt m = new MapPatt();
-//				ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-//				mNodes.add(util.clone(sk));
-//				m.setChildren(mNodes);
-//				m.calculateIdealServiceTime();
-//				nodes.add(m);
-//			}
-//			pipe.setChildren(nodes);
-//			pipe.calculateIdealServiceTime();
-//			pipe.setReWritingRule(ReWritingRules.PIPE_OF_MAP);
-//			patterns.add(pipe);
-//		}
-//		setPatterns(patterns);
-//		if (getParent() != null)
-//			setPatterns(util.createTreeNode(getParent(), this));
-//		calculateIdealServiceTime();
-//		return this;
-//	}
+
+	@Override
+	public void setLatency(double latency) {
+		this.latency=latency;
+		
+	}
+	@Override
+	public double getLatency() {
+		return latency;
+	}
+	@Override
+	public void setCompletionTime(double completionTime) {
+		this.completionTime=completionTime;
+		
+	}
+	@Override
+	public double getComletionTime() {
+		return completionTime;
+	}
 	
 }

@@ -19,23 +19,23 @@ public class RW implements ReWriter {
 
 	@Override
 	public void reWrite(CompPatt comp) {
-		comp = reWritor.refactor(comp);
+		comp = reWritor.refactor(comp,this);
 	}
 
 	@Override
 	public void reWrite(FarmPatt farm) {
-        farm = reWritor.refactor(farm);
+        farm = reWritor.refactor(farm,this);
 	}
 
 	@Override
 	public void reWrite(PipePatt pipe) {
-		pipe = reWritor.refactor(pipe);
+		pipe = reWritor.refactor(pipe,this);
 
 	}
 
 	@Override
 	public void reWrite(MapPatt map) {
-		map = reWritor.refactor(map);
+		map = reWritor.refactor(map,this);
 	}
 
 }

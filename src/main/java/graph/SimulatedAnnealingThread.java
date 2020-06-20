@@ -23,19 +23,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jgrapht.Graph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DirectedAcyclicGraph;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.GraphWalk;
-import org.jgrapht.io.ExportException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import rewriter.RW;
 import tree.model.SkeletonPatt;
 import tree.model.Solution;
@@ -48,29 +35,116 @@ public class SimulatedAnnealingThread  implements Callable<Solution> {
 	private static final long serialVersionUID = 1L;
 	private SkeletonPatt s;
 	RW reWriter;
-	private Graph<SkeletonPatt, Edge> g;
 //	AtomicInteger intId;	
 	private int maxIteration;
 	private int maxNumberOfResources;
 	private Map<SkeletonPatt, Integer> solutionMap;
 	private Solution solution;
 	private Util util;
+//	Vcpo model;
 	public SimulatedAnnealingThread(SkeletonPatt p,int simAnnealingMaxIter,int maxNumberOfResources) {
 		this.s = p;		
 		this.util= new Util();
-		g = new DefaultDirectedGraph<>(Edge.class);
 		reWriter = new RW();
 //		intId = new AtomicInteger();
 		this.maxIteration = simAnnealingMaxIter;	
 		this.maxNumberOfResources=maxNumberOfResources;
 		this.solutionMap = new HashMap<>();
 		this.solution=new Solution();
+//		model = new Vcpo();
+//		util.getCostModel(model, p, maxNumberOfResources);
 	}
 
 	
 	
+public Solution expandAndSearch() {
+	double temprature = 100;
+	double coolingRate = 0.99;
 
-	public Solution  expandAndSearch() {
+	Set<SkeletonPatt> solutionPool = new HashSet<>();
+	SkeletonPatt bestSolution = util.clone(s);
+	SkeletonPatt currentSolution = util.clone(s);
+	double currentCost = util.getCost(currentSolution,maxNumberOfResources);
+//	double currentCost=util.getCostModel(model, currentSolution, maxNumberOfResources);
+	double bestCost = util.getCost(bestSolution,maxNumberOfResources);
+//	double bestCost = util.getCostModel(model,bestSolution,maxNumberOfResources);
+	
+	int x = 0;
+	currentSolution.refactor(reWriter);
+//	for (;x++ < maxIteration ;) {
+	SkeletonPatt first = currentSolution.getPatterns().stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get();
+	solutionPool.addAll(currentSolution.getPatterns());
+//	this.add(s, first, first.getRule());
+	currentSolution = util.clone(first);
+//	System.out.println(maxIteration);
+	while (x++ < maxIteration && temprature > 0.1) {
+		currentSolution.refactor(reWriter);
+		
+		List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
+		for (SkeletonPatt sol : solutions) {
+			util.getCost(sol,maxNumberOfResources);
+//			this.add(currentSolution, sol, sol.getRule());
+//			util.getCostModel(model, sol, maxNumberOfResources);
+//			System.out.println(sol.print());
+		}
+		addSolutionMap(currentSolution);
+		Stream<SkeletonPatt> temp = solutions.stream().filter(s -> !solutionPool.contains(s));
+		SkeletonPatt newSolution=null;
+		if(temp.findAny().isPresent()) {
+			 newSolution= util.clone(solutions.stream().filter(s -> !solutionPool.contains(s)).min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get());
+		}else {			
+			newSolution=solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get();
+		}
+//		
+		solutionPool.addAll(solutions);
+//		log.debug("best " + bestSolution.toString());
+		double newCost = util.getCost(newSolution,maxNumberOfResources);
+		
+//		double newCost = util.getCostModel(model, newSolution, maxNumberOfResources);
+//		System.out.println(newSolution.print());
+		if (newCost <= currentCost) {
+			currentSolution = util.clone(newSolution);
+			currentCost = newCost;
+//			log.debug("currentCost " + currentSolution.toString());
+			if (newCost < bestCost || (newCost == bestCost
+					&& newSolution.getNumberOfResources() < bestSolution.getNumberOfResources())) {
+				bestSolution = util.clone(newSolution);
+				bestCost = newCost;
+//				this.add(currentSolution, bestSolution, bestSolution.getRule());
+			}
+		} 
+			else {
+			if (Math.exp((newCost - currentCost) / temprature) > Math.random()) {
+				currentSolution = solutionPool.isEmpty() ? newSolution
+						: solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size()))
+								.findAny().get();
+				
+				solutionPool.add(newSolution);
+			}
+		}
+//		log.debug("best " + bestSolution + "\t" + util.getCost(bestSolution,maxNumberOfResources));
+		
+//		util.getCost(currentSolution,maxNumberOfResources);
+		if (currentSolution.getNumberOfResources() > maxNumberOfResources || currentSolution.getNumberOfResources() <1) {
+			currentSolution.getChildren().forEach(c -> {
+				System.out.println(c.getNumberOfResources());
+				System.out.println(c.getOptParallelismDegree());});
+		}
+//		log.info("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
+//		System.out.println("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
+//		log.debug("new  " + newSolution + "\t" + util.getCost(newSolution,maxNumberOfResources));
+		temprature *= coolingRate;
+	}
+//	log.info(" best : " + bestSolution.print());
+//		System.out.println(" best : " + bestSolution.print());
+	
+	addSolutionMap(bestSolution);
+	solution.setBestSolution(bestSolution);
+	solution.setSolutionList(solutionMap);
+	
+	return solution;
+}
+	public Solution  etxpandAndSearch() {
 		double temprature = 100;
 		double coolingRate = 0.99;
 
@@ -93,13 +167,14 @@ public class SimulatedAnnealingThread  implements Callable<Solution> {
 		currentSolution = util.clone(first);
 		
 		while (x++ < maxIteration && temprature > 0.1) {
+//			for (;x++ < maxIteration ;) {
 			
 			currentSolution.refactor(reWriter);
 			
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
 				util.getCost(sol,maxNumberOfResources);
-				this.add(currentSolution, sol, sol.getRule());
+//				this.add(currentSolution, sol, sol.getRule());
 
 			}
 			addSolutionMap(currentSolution);
@@ -125,13 +200,13 @@ public class SimulatedAnnealingThread  implements Callable<Solution> {
 //					this.add(currentSolution, bestSolution, bestSolution.getRule());
 				}
 			} else {
-//				if (Math.exp((newCost - currentCost) / temprature) > Math.random()) {
-//					currentSolution = solutionPool.isEmpty() ? newSolution
-//							: solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size()))
-//									.findAny().get();
-//					
-//					solutionPool.add(newSolution);
-//				}
+				if (Math.exp((newCost - currentCost) / temprature) > Math.random()) {
+					currentSolution = solutionPool.isEmpty() ? newSolution
+							: solutionPool.stream().skip(ThreadLocalRandom.current().nextInt(solutionPool.size()))
+									.findAny().get();
+					
+					solutionPool.add(newSolution);
+				}
 			}
 //			log.debug("best " + bestSolution + "\t" + util.getCost(bestSolution,maxNumberOfResources));
 			
@@ -154,39 +229,13 @@ public class SimulatedAnnealingThread  implements Callable<Solution> {
 		return solution;
 	}
 
-	public Graph<SkeletonPatt, Edge> getG() {
-		return g;
-	}
-
-	public void setG(Graph<SkeletonPatt, Edge> g) {
-		this.g = g;
-	}
+	
 	
 	private void addSolutionMap(SkeletonPatt sol) {
 		if(solutionMap.containsKey(sol)) {
 			solutionMap.put(sol,Integer.valueOf(solutionMap.get(sol).intValue() +1));
 		}else {
 			solutionMap.put(sol,1);
-		}
-	}
-	/**
-	 * Add an edge to the graph
-	 */
-	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
-		try {
-					
-			if (!g.containsVertex(from)) {
-//				from.setId(intId.getAndIncrement());
-				g.addVertex(from);
-			}
-			if (!g.containsVertex(to)) {
-//				to.setId(intId.getAndIncrement());
-				g.addVertex(to);
-			}
-			g.addEdge(from, to, new Edge(from, to, rule));
-		} catch (Exception e) {
-//			log.error("ERR ", e.getMessage());
-			throw e;
 		}
 	}
 

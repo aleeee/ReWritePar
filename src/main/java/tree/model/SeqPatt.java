@@ -2,12 +2,9 @@
 package tree.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.io.AttributeType;
 
 import cpo.SolverModel;
 import ilog.concert.IloException;
@@ -17,7 +14,6 @@ import ilog.concert.IloNumVar;
 import ilog.cp.IloCP;
 import rewriter.ReWriter;
 import util.ReWritingRules;
-import util.Util;
 
 public class SeqPatt implements SkeletonPatt {
 	
@@ -117,7 +113,6 @@ public class SeqPatt implements SkeletonPatt {
 
 	@Override
 	public String toString() {
-//		return lable +" ["+getIdealServiceTime()+" ] n> "+ getIdealParDegree() ;
 		return lable;
 	}
 
@@ -167,14 +162,7 @@ public class SeqPatt implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-//	@Override
-//	public String getValue() {
-//		return this.toString();
-//	}
-//	@Override
-//	public AttributeType getType() {
-//		return AttributeType.STRING;
-//	}
+
 	public int getId() {
 		return id;
 	}
@@ -249,6 +237,22 @@ public class SeqPatt implements SkeletonPatt {
 		model.setObj(obj);
 		model.setPd_obj(pd_obj);
 		return model;
+	}
+	@Override
+	public void setLatency(double latency) {
+				
+	}
+	@Override
+	public double getLatency() {
+		return this.idealServiceTime;
+	}
+	@Override
+	public void setCompletionTime(double completionTime) {
+				
+	}
+	@Override
+	public double getComletionTime() {
+		return  this.idealServiceTime;
 	}
 	
 

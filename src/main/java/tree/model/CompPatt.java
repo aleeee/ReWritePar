@@ -2,14 +2,11 @@ package tree.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.jgrapht.io.AttributeType;
 
 import cpo.SolverModel;
 import ilog.concert.IloException;
@@ -37,8 +34,9 @@ public class CompPatt implements SkeletonPatt {
 	double idealServiceTime;
 	int optParDegree;
 	double optServiceTime;
-	private int numResource;
 	private Util util;
+	private double latency;
+	private double completionTime;
 	public CompPatt() {
 		this.lable = "comp";
 		this.util = new Util();
@@ -126,11 +124,9 @@ public class CompPatt implements SkeletonPatt {
 	
 	@Override
 	public String toString() {
-//		return " C ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")  + " ) ":null );
 
 		return getLable() +" ( "+( this.getChildren() != null? this.getChildren().toString().replace("[", "").replace("]", "")
 				+ " ) ":null );
-		//+  "ts::+  ["+getOptimizedTs()+"]";
 	}
 	
 	@Override
@@ -170,15 +166,6 @@ public class CompPatt implements SkeletonPatt {
 	public int getDepth() {
 		return depth;
 	}
-	
-//	@Override
-//	public String getValue() {
-//		return null;
-//	}
-//	@Override
-//	public AttributeType getType() {
-//		return AttributeType.STRING;
-//	}
 	
 	
 	@Override
@@ -238,12 +225,11 @@ public class CompPatt implements SkeletonPatt {
 	}
 	@Override
 	public int getNumberOfResources() {
-		 return this.numResource=this.children.stream().mapToInt(c -> c.getNumberOfResources()).max().getAsInt();
+		 return this.children.stream().mapToInt(c -> c.getNumberOfResources()).max().getAsInt();
 
 	}
 	@Override
 	public void setNumberOfResources(int r) {
-		this.numResource=r;
 	}
 	@Override
 	public void addConstraint(SolverModel model) throws IloException {
@@ -251,22 +237,14 @@ public class CompPatt implements SkeletonPatt {
 		Map<SkeletonPatt, List<IloNumVar>> variables = model.getVariables();
 		
 		List<IloNumVar> vars = variables.get(this);	
-//		List<IloIntVar> stageVars = new ArrayList<>();	
-		List<IloNumVar> stageVars = new ArrayList<>();	
 		IloIntVar n_i = (IloIntVar) vars.get(1);
 		cplex.addLe(n_i, model.getNumAvailableProcessors());	
 		IloIntExpr res= model.getResourcesVars().get(this);
 		cplex.addEq(res, n_i);
 		Collection<IloIntExpr> sv=new ArrayList<IloIntExpr>();
 		for (SkeletonPatt v : children) {
-//			if(v instanceof FarmPatt || v instanceof MapPatt) {
-//				IloIntExpr nw =    cplex.sum((IloIntVar)variables.get(v).get(1), 2);
-////				stageVars.addAll( (Collection<? extends IloNumVar>) nw);
-//				sv.add(nw);
-//			}
-//			else {
 				sv.add((IloIntExpr) model.getResourcesVars().get(v));
-//			}
+
 		}
 		cplex.addEq(n_i, cplex.max(sv.stream().collect(Collectors.toList())));
 		cplex.addLe(res, model.getNumAvailableProcessors());
@@ -309,78 +287,24 @@ public class CompPatt implements SkeletonPatt {
 		this.id=id;
 		
 	}
-//	@Override
-//	public SkeletonPatt reWrite() {
-//		refactor();
-//		return this;
-//	}
-//	
-//	private CompPatt refactor() {
-//		Set<SkeletonPatt> patterns = new LinkedHashSet<SkeletonPatt>();
-//		
-//		// pipe intro
-//		PipePatt pipe = new PipePatt();
-//		pipe.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
-//		pipe.setReWritingRule(ReWritingRules.PIPE_INTRO);
-//		pipe.calculateIdealServiceTime();
-////		if(isCoarseReWrite) {
-////			FarmPatt farm = new FarmPatt();
-////			ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-////			fc.add(pipe);
-////			farm.setChildren(fc);
-////			farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-////			farm.calculateIdealServiceTime();
-////			patterns.add(farm);
-////		}else {
-//			patterns.add(pipe);
-////		}
-//		// farm intro
-////		if(!util.detectLoop(this, FarmPatt.class)) {
-//		FarmPatt farm = new FarmPatt();
-//		CompPatt compStage = new CompPatt();
-//		ArrayList<SkeletonPatt> fc = new ArrayList<SkeletonPatt>();
-//		compStage.setChildren((ArrayList<SkeletonPatt>) getChildren().stream().map(o -> util.clone(o)).collect(Collectors.toList()));
-//		compStage.setRule(getRule());
-//		compStage.calculateIdealServiceTime();
-//		fc.add(compStage);
-//		farm.setChildren(fc);
-//		farm.setReWritingRule(ReWritingRules.FARM_INTRO);
-//		farm.calculateIdealServiceTime();
-//		patterns.add(farm);
-//		// map intro
-//
-//		// for each stage rewrite
-//		for (SkeletonPatt stage : getChildren()) {
-//				stage.setParent(this);
-//				stage.reWrite();
-//				patterns.addAll(stage.getPatterns());
-//
-//		}
-//		// creat map of the comp
-//		if (getChildren().stream().allMatch(sk -> sk instanceof MapPatt)) {
-//			ArrayList<SkeletonPatt> compStages = (ArrayList<SkeletonPatt>) getChildren().stream()
-//					.map(p -> p.getChildren().get(0)).collect(Collectors.toList());
-//			ArrayList<SkeletonPatt> mapStages =  (ArrayList<SkeletonPatt>) compStages.stream().map(o -> util.clone(o)).collect(Collectors.toList());
-//
-//			MapPatt map = new MapPatt();
-//			CompPatt compMap = new CompPatt();
-//
-//			compMap.setChildren(mapStages);
-//			
-//			ArrayList<SkeletonPatt> mNodes = new ArrayList<SkeletonPatt>();
-//			compMap.calculateIdealServiceTime();
-//			mNodes.add(compMap);
-//			map.setChildren(mNodes);
-//			map.calculateIdealServiceTime();
-//			map.setReWritingRule(ReWritingRules.MAP_OF_COMP);
-//			patterns.add(map);
-//		}
-//
-//		setPatterns(patterns);
-//		if (getParent() != null)
-//			setPatterns(util.createTreeNode(getParent(), this));
-//		calculateIdealServiceTime();
-//		return this;
-//	}
+
+	@Override
+	public void setLatency(double latency) {
+		this.latency=latency;
+		
+	}
+	@Override
+	public double getLatency() {
+		return latency;
+	}
+	@Override
+	public void setCompletionTime(double completionTime) {
+		this.completionTime=completionTime;
+		
+	}
+	@Override
+	public double getComletionTime() {
+		return completionTime;
+	}
 
 }

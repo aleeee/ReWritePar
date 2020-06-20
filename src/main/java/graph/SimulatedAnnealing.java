@@ -1,47 +1,28 @@
 package graph;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Time;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.TreeSet;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.jgrapht.Graph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DirectedAcyclicGraph;
-import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.GraphWalk;
-import org.jgrapht.io.ExportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import rewriter.RW;
 import tree.model.SkeletonPatt;
 import tree.model.Solution;
 import util.ReWritingRules;
 import util.Util;
-import static java.util.stream.Collectors.joining;
-public class SimulatedAnnealing extends RecursiveTask<Solution> {
+public class SimulatedAnnealing  implements Callable<Solution> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = 1L;
@@ -56,7 +37,7 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 	private Util util;
 	public SimulatedAnnealing(SkeletonPatt p,int simAnnealingMaxIter,int maxNumberOfResources) {
 		this.s = p;		
-		this.util=util;
+		this.util= new Util();
 		g = new DefaultDirectedGraph<>(Edge.class);
 		reWriter = new RW();
 		intId = new AtomicInteger();
@@ -67,14 +48,11 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 	}
 
 	
-	@Override
-	public Solution  compute() {
-		return expandAndSearch();
-	}
+	
 
 	public Solution  expandAndSearch() {
-		double temprature = 19;
-		double coolingRate = 0.7;
+		double temprature = 100;
+		double coolingRate = 0.97;
 
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
 		SkeletonPatt bestSolution = util.clone(s);
@@ -88,16 +66,16 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 			util.getCost(sol,maxNumberOfResources);
 			this.add(currentSolution, sol, sol.getRule());
 		}
-		
+//				Set<SkeletonPatt> p =  currentSolution.getPatterns();
+
 		SkeletonPatt first = currentSolution.getPatterns().stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get();
 		solutionPool.addAll(currentSolution.getPatterns());
 		this.add(s, first, first.getRule());
 		currentSolution = util.clone(first);
-		
 		while (x++ < maxIteration && temprature > 0.1) {
 			
 			currentSolution.refactor(reWriter);
-			
+//			currentSolution.setPatterns(p);
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
 				util.getCost(sol,maxNumberOfResources);
@@ -113,7 +91,7 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 				newSolution=solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get();
 			}
 			
-			solutionPool.addAll(solutions);
+//			solutionPool.addAll(solutions);
 			log.debug("best " + bestSolution.toString());
 			double newCost = util.getCost(newSolution,maxNumberOfResources);
 			if (newCost <= currentCost) {
@@ -138,11 +116,6 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 			log.debug("best " + bestSolution + "\t" + util.getCost(bestSolution,maxNumberOfResources));
 			
 			util.getCost(currentSolution,maxNumberOfResources);
-			if (currentSolution.getNumberOfResources() > maxNumberOfResources || currentSolution.getNumberOfResources() <1) {
-				currentSolution.getChildren().forEach(c -> {
-					System.out.println(c.getNumberOfResources());
-					System.out.println(c.getOptParallelismDegree());});
-			}
 			log.info("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
 			log.debug("new  " + newSolution + "\t" + util.getCost(newSolution,maxNumberOfResources));
 			temprature *= coolingRate;
@@ -177,19 +150,26 @@ public class SimulatedAnnealing extends RecursiveTask<Solution> {
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		try {
 					
-			if (!g.containsVertex(from)) {
-				from.setId(intId.getAndIncrement());
-				g.addVertex(from);
-			}
-			if (!g.containsVertex(to)) {
-				to.setId(intId.getAndIncrement());
-				g.addVertex(to);
-			}
-			g.addEdge(from, to, new Edge(from, to, rule));
+//			if (!g.containsVertex(from)) {
+//				from.setId(intId.getAndIncrement());
+//				g.addVertex(from);
+//			}
+//			if (!g.containsVertex(to)) {
+//				to.setId(intId.getAndIncrement());
+//				g.addVertex(to);
+//			}
+//			g.addEdge(from, to, new Edge(from, to, rule));
 		} catch (Exception e) {
-			log.error("ERR " + g.vertexSet().size());
+			log.error("ERR ", e.getMessage());
 			throw e;
 		}
+	}
+
+
+
+	@Override
+	public Solution call() throws Exception {
+		return expandAndSearch();
 	}
 
 }

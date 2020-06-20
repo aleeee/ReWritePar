@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.enterprise.inject.Instance;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +15,7 @@ import ilog.concert.IloIntExpr;
 import ilog.concert.IloIntVar;
 import ilog.concert.IloNumExpr;
 import ilog.concert.IloNumVar;
-import ilog.concert.cppimpl.IloEnv;
 import ilog.cp.IloCP;
-import ilog.cp.IloCPEngine;
-import tree.model.CompPatt;
-import tree.model.FarmPatt;
-import tree.model.MapPatt;
-import tree.model.PipePatt;
 import tree.model.SeqPatt;
 import tree.model.SkeletonPatt;
 
@@ -60,17 +52,14 @@ public class CPOSolverV {
 		addVars(g);
 		addConstraints(g);
 		addObjective(g);
-//		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\new\\cpoModelV_"+Instant.now().getEpochSecond()+"_.cpo";
-//		System.out.println(g + "modelName " + modelName);
-//		cplex.exportModel(modelName);
-//		
+		String modelName = "C:\\Users\\me\\Desktop\\out\\cpo\\new\\cpoModelV_"+Instant.now().getEpochSecond()+"_.cpo";
+		cplex.exportModel(modelName);
+
 		cplex.setOut(null);
 	}
 
 	private  void addConstraints(SkeletonPatt p) throws IloException {
-//		cplex.addLe(variables.get(p).get(1), numAvailableProcessors);
 		p.addConstraint(this.model);
-//		cplex.addLe(expr, numAvailableProcessors);
 
 	}
 	
@@ -167,6 +156,13 @@ public class CPOSolverV {
 
 	public  void cleanup() throws IloException {
 		cplex.clearModel();
+		
+
+		cplex.clearExplanations();
+		cplex.clearStartingPoint();
+		cplex.clearModel();
+		cplex.removeAllKPIs();
+		
 		cplex.end();
 	}
 	
