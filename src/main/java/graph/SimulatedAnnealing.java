@@ -51,7 +51,7 @@ public class SimulatedAnnealing  implements Callable<Solution> {
 	
 
 	public Solution  expandAndSearch() {
-		double temprature = 100;
+		double temprature = 20;
 		double coolingRate = 0.97;
 
 		Set<SkeletonPatt> solutionPool = new HashSet<>();
@@ -66,21 +66,20 @@ public class SimulatedAnnealing  implements Callable<Solution> {
 			util.getCost(sol,maxNumberOfResources);
 			this.add(currentSolution, sol, sol.getRule());
 		}
-//				Set<SkeletonPatt> p =  currentSolution.getPatterns();
 
 		SkeletonPatt first = currentSolution.getPatterns().stream().min(Comparator.comparing(SkeletonPatt::getOptServiceTime)).get();
 		solutionPool.addAll(currentSolution.getPatterns());
 		this.add(s, first, first.getRule());
 		currentSolution = util.clone(first);
-		while (x++ < maxIteration && temprature > 0.1) {
+		while (x++ < maxIteration ) {
 			
 			currentSolution.refactor(reWriter);
-//			currentSolution.setPatterns(p);
 			List<SkeletonPatt> solutions = new ArrayList<SkeletonPatt>(currentSolution.getPatterns());
 			for (SkeletonPatt sol : solutions) {
 				util.getCost(sol,maxNumberOfResources);
 				this.add(currentSolution, sol, sol.getRule());
-
+				
+				
 			}
 			addSolutionMap(currentSolution);
 			Stream<SkeletonPatt> temp = solutions.stream().filter(s -> !solutionPool.contains(s));
@@ -91,7 +90,7 @@ public class SimulatedAnnealing  implements Callable<Solution> {
 				newSolution=solutions.stream().skip(ThreadLocalRandom.current().nextInt(solutions.size())).findAny().get();
 			}
 			
-//			solutionPool.addAll(solutions);
+			solutionPool.addAll(solutions);
 			log.debug("best " + bestSolution.toString());
 			double newCost = util.getCost(newSolution,maxNumberOfResources);
 			if (newCost <= currentCost) {
@@ -119,6 +118,7 @@ public class SimulatedAnnealing  implements Callable<Solution> {
 			log.info("iteration: "+x +" -> "+ currentSolution.print() +"\t res: " + currentSolution.getNumberOfResources());
 			log.debug("new  " + newSolution + "\t" + util.getCost(newSolution,maxNumberOfResources));
 			temprature *= coolingRate;
+			System.gc();
 		}
 		log.info(" best : " + bestSolution.print());
 		
@@ -150,15 +150,15 @@ public class SimulatedAnnealing  implements Callable<Solution> {
 	public void add(SkeletonPatt from, SkeletonPatt to, ReWritingRules rule) {
 		try {
 					
-//			if (!g.containsVertex(from)) {
-//				from.setId(intId.getAndIncrement());
-//				g.addVertex(from);
-//			}
-//			if (!g.containsVertex(to)) {
-//				to.setId(intId.getAndIncrement());
-//				g.addVertex(to);
-//			}
-//			g.addEdge(from, to, new Edge(from, to, rule));
+			if (!g.containsVertex(from)) {
+				from.setId(intId.getAndIncrement());
+				g.addVertex(from);
+			}
+			if (!g.containsVertex(to)) {
+				to.setId(intId.getAndIncrement());
+				g.addVertex(to);
+			}
+			g.addEdge(from, to, new Edge(from, to, rule));
 		} catch (Exception e) {
 			log.error("ERR ", e.getMessage());
 			throw e;

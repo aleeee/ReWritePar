@@ -7,7 +7,6 @@ import java.time.Instant;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pattern.skel4.SkeletonLexer;
@@ -20,7 +19,7 @@ public class AppStarter {
 	File inputCode;
 	SkeletonPatt inputSkeleton;
 	
-	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism, int runner,int method) {
+	public AppStarter(String folderPath, String outputDir, int simulatedAnnealingMaxIter, int maxNumberOfSimulation, int maxNumberOfResources, int parallelism) {
 		Instant startTime = Instant.now();
 		log.info("input " + folderPath);
 		try {
@@ -41,14 +40,11 @@ public class AppStarter {
 		}
 		
 		
-		SimRunner simRunner = new SimRunner(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
-//		Starter5 simRunner = new Starter5(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism,method);
+		SimRunner simRunner = new SimRunner(inputSkeleton, maxNumberOfSimulation, simulatedAnnealingMaxIter,maxNumberOfResources,outputDir,parallelism);
 		
-		if(method ==0) {
-			simRunner.test();
-		}else {
+	
 			simRunner.run();
-		}
+		
 
 		Duration timelapse = Duration.between(startTime, Instant.now());
 
@@ -58,7 +54,7 @@ public class AppStarter {
 
 
 	public static void main(String[] args) {
-		if (args.length < 8) {
+		if (args.length < 6) {
 			System.err.println(
 					"use: java -Djava.library.path=$cplex_inst_dir/opl/bin/x86-64_linux  -jar $projectName.jar $inputDir $outputDir $saMaxIter $numberOfsim $maxResources $parallelism");
 			System.exit(0);
@@ -72,9 +68,8 @@ public class AppStarter {
 			int maxNumberOfSimulation = Integer.parseInt(args[3]);
 			int maxNumberOfResources = Integer.parseInt(args[4]);
 			int parallelism = Integer.parseInt(args[5]);
-			int runner = Integer.parseInt(args[6]);
-			int methodid = Integer.parseInt(args[7]);
-			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism, runner, methodid);
+		
+			new AppStarter(inputDir, outputDir, simulatedAnnealingMaxIter, maxNumberOfSimulation,maxNumberOfResources,parallelism);
 		
 	}
    

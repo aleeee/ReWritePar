@@ -143,8 +143,8 @@ public class Util {
 				farmWorker.calculateOptimalServiceTime() / pat.getOptParallelismDegree()));
 	}
 	
-	public double getComletiontime(FarmPatt skel, int size) {
-		return size * skel.getOptServiceTime();
+	public double getComletiontime(FarmPatt skel) {
+		return Constants.InputSize * skel.getOptServiceTime();
 	}
 	
 	public double getLatency(FarmPatt skel) {
@@ -222,17 +222,7 @@ public class Util {
 
 	}
 
-	public int getHeight(SkeletonPatt pat) {
-		int height = 0;
-		if (pat == null)
-			return height;
-		if (pat.getChildren() == null)
-			return 1;
-		for (SkeletonPatt sk : pat.getChildren()) {
-			height = Math.max(height, getHeight(sk));
-		}
-		return height + 1;
-	}
+	
 
 	public SkeletonPatt clone(SkeletonPatt original) {
 		SkeletonPatt copy = null;
@@ -285,21 +275,15 @@ public class Util {
 			model.solveIt();
 			model.getSolutions(p);
 			p.calculateOptimalServiceTime();
-//			model.cleanup();
+			
+			model.cleanup();
 		} catch (Exception e) {
 			log.warn("No solution " + e.getMessage());
 		}
 		return p.getOptServiceTime();
 	}
 
-//	public <T> boolean detectLoop(SkeletonPatt pat, T s) {
-//		if (pat == null || pat.getParent() == null)
-//			return false;
-//
-//		if (pat.getParent().getClass() == s) {
-//			return true;
-//		}
-//		return detectLoop(pat.getParent(), s);
-//	}
+
+
 
 }

@@ -11,14 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -44,7 +39,7 @@ public class SimRunner {
 	}
 
 	public SimRunner(SkeletonPatt input, int maxNumberOfSimulation, int simulatedAnnealingMaxIter,
-			int maxNumberOfResources, String outputDir, int parallelism, int method) {
+			int maxNumberOfResources, String outputDir, int parallelism) {
 		this.inputPattern = input;
 		this.maxNumOfSim = maxNumberOfSimulation;
 		this.simAnnealingMaxIter = simulatedAnnealingMaxIter;
@@ -65,18 +60,6 @@ public class SimRunner {
 
 			tasks.add(new SimulatedAnnealing(util.clone(inputPattern), simAnnealingMaxIter, maxNumberOfResources));
 		}
-//		CompletableFuture<List<Solution>> t = IntStream.range(0, maxNumOfSim).boxed()
-//		          .map(o -> CompletableFuture.supplyAsync(() ->
-//		          {
-//					try {
-//						return new SimulatedAnnealing(inputPattern, simAnnealingMaxIter, maxNumberOfResources).call();
-//					} catch (Exception e1) {
-//						log.error("Error running simulated annealing {}",e1.getMessage());
-//						System.exit(1);
-//					}
-//					return null;
-//				}, pool))
-//		          .collect(toFuture());
 		try {
 			List<Future<Solution>> results = pool.invokeAll(tasks);
 			for (Future<Solution> future : results) {
@@ -84,7 +67,6 @@ public class SimRunner {
 					res.add(future.get());
 
 			}
-//			res.addAll(t.get());
 			pool.shutdown();
 
 		} catch (Exception e) {
@@ -95,23 +77,7 @@ public class SimRunner {
 
 	}
 
-	public static <T> Collector<CompletableFuture<T>, ?, CompletableFuture<List<T>>> toFuture() {
-		return Collectors.collectingAndThen(Collectors.toList(), list -> {
-			CompletableFuture<List<T>> future = CompletableFuture
-					.allOf(list.toArray(new CompletableFuture[list.size()]))
-					.thenApply(__ -> list.stream().map(CompletableFuture::join).collect(Collectors.toList()));
-
-			for (CompletableFuture<T> f : list) {
-				f.whenComplete((integer, throwable) -> {
-					if (throwable != null) {
-						future.completeExceptionally(throwable);
-					}
-				});
-			}
-
-			return future;
-		});
-	}
+	
 
 	private void writeResults(List<Solution> results) {
 
@@ -164,52 +130,4 @@ public class SimRunner {
 
 	}
 
-void test() {
-	final ExecutorService executor = Executors.newFixedThreadPool(parallelism);
-	final LinkedBlockingQueue<Future<Solution>> futures = new LinkedBlockingQueue<>(parallelism);
-	List<Solution> res = new ArrayList<Solution>();
-	try {   
-	    Thread taskGenerator = new Thread() {
-	        @Override
-	        public void run() {
-	            while (true) {
-	            	maxNumOfSim--;
-	                Callable<Solution> task = new SimulatedAnnealing(util.clone(inputPattern), simAnnealingMaxIter, maxNumberOfResources);
-	                Future<Solution> future = executor.submit(task);
-	                try {
-	                    // if queue is full blocks until a task
-	                    // is completed and hence no future tasks are submitted.
-	                    futures.put(future);
-	                } catch (InterruptedException ex) {
-	                    Thread.currentThread().interrupt();         
-	                }
-	                if(maxNumOfSim < 1) 
-	                	return;
-	                }
-	            } 
-	    };
-	    taskGenerator.start();
-
-	    // read from queue as long as task are being generated
-	    // or while Queue has elements in it
-	    while (taskGenerator.isAlive()
-	                    || !futures.isEmpty()) {
-	        Future<Solution> compoundFuture = futures.take();
-	               
-	        try {    
-						res .add(compoundFuture.get());
-
-			} catch (Exception e) {
-				log.error("Error while running simulation {}", e.getMessage());
-			}
-
-			writeResults(res);
-	    }
-	    executor.shutdown();
-	} catch (InterruptedException ex) {
-	    Thread.currentThread().interrupt();     
-	} finally {
-	    executor.shutdownNow();
-	}
-}
 }
